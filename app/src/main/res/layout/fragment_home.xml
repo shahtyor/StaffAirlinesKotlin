@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    style="@style/StaffNoActionBar"
+    tools:context=".ui.home.HomeFragment">
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="top"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_gravity="top"
+            android:layout_marginLeft="80dp"
+            android:layout_marginTop="25dp"
+            android:layout_marginRight="80dp"
+            android:src="@drawable/sa" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_marginTop="40dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/datepicktv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="7dp"
+                android:layout_weight="9.0"
+                android:minWidth="300dp"
+                android:textColor="@color/black"
+                android:onClick="datepicktv_click"
+                android:textSize="15sp" />
+
+            <ImageButton
+                android:id="@+id/datebutton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.0"
+                android:background="@color/white"
+                android:minWidth="30dp"
+                android:minHeight="30dp"
+                android:layout_marginRight="20dp"
+                android:scaleType="fitCenter"
+                android:onClick="datebutton_click"
+                android:src="@drawable/cal" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:background="@color/lightgray"
+            android:layout_height="1px" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="9.0"
+                android:orientation="vertical"
+                >
+
+                <TextView
+                    android:id="@+id/origin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Origin city or airport"
+                    android:textSize="15sp"
+                    android:minHeight="20dp"
+                    android:textColor="@color/text_gray"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginTop="20dp"
+                    android:onClick="origin_click"
+                    />
+
+                <ImageView
+                    android:layout_marginTop="5dp"
+                    android:layout_width="match_parent"
+                    android:background="@color/lightgray"
+                    android:layout_height="2px" />
+
+                <TextView
+                    android:id="@+id/destination"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Destination city or airport"
+                    android:textSize="15sp"
+                    android:minHeight="20dp"
+                    android:textColor="@color/text_gray"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginTop="30dp"
+                    android:onClick="destination_click"
+                    />
+
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/btReplace"
+                android:layout_width="wrap_content"
+                android:layout_height="101dp"
+                android:layout_marginRight="20dp"
+                android:layout_weight="1.0"
+                android:background="@color/white"
+                android:scaleType="fitCenter"
+                android:paddingRight="5dp"
+                android:paddingLeft="5dp"
+                android:onClick="btReplace_click"
+                android:src="@drawable/arr" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:background="@color/lightgray"
+            android:layout_height="1px" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:text="Passengers"
+                android:textColor="@color/black"
+                android:textSize="15sp"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="40dp"
+                />
+
+            <ImageButton
+                android:id="@+id/minusbut"
+                android:layout_width="50dp"
+                android:layout_height="40dp"
+                android:src="@drawable/minus_blue"
+                android:background="@drawable/minus_button_off"
+                style="@style/NotTintedButton"
+                android:layout_marginTop="10dp"
+                android:onClick="minusbut_click"
+                />
+
+            <!--<Button
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:text="-"
+                android:textSize="20sp"
+                android:textColor="@color/staff_blue"
+                android:background="@drawable/minus_button_on"
+                style="@style/NotTintedButton"
+                />-->
+
+            <TextView
+                android:id="@+id/cntpass"
+                android:layout_width="50dp"
+                android:layout_height="40dp"
+                android:text="1"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:background="@drawable/border_top_bottom"
+                android:layout_marginTop="7dp"
+                />
+
+            <ImageButton
+                android:id="@+id/plusbut"
+                android:layout_width="50dp"
+                android:layout_height="40dp"
+                android:src="@drawable/plus_white"
+                android:background="@drawable/plus_button_on"
+                android:layout_marginTop="10dp"
+                android:onClick="plusbut_click"
+                />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btSearch"
+            android:layout_width="300dp"
+            android:layout_height="50dp"
+            style="@style/NotTintedButton"
+            android:text="SEARCH"
+            android:onClick="search_click"
+            android:textSize="20sp"
+            android:layout_marginTop="50dp"
+            android:layout_marginLeft="55dp"
+            android:shadowColor="@color/white"
+            android:textColor="@color/staff_blue"
+            android:outlineSpotShadowColor="@color/white"
+            android:background="@drawable/search_button_off"
+            />
+
+        <TextView android:id="@+id/lbOriginId" android:visibility="invisible" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+        <TextView android:id="@+id/lbDestinationId" android:visibility="invisible" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+        <TextView android:id="@+id/lbOriginCode" android:visibility="invisible" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+        <TextView android:id="@+id/lbDestinationCode" android:visibility="invisible" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+        <TextView android:id="@+id/lbOriginCountry" android:visibility="invisible" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+        <TextView android:id="@+id/lbDestinationCountry" android:visibility="invisible" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
