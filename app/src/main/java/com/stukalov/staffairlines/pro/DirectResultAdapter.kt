@@ -1,13 +1,14 @@
 package com.stukalov.staffairlines.pro
 
-import android.R.string
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import java.util.Locale
 
 
@@ -69,6 +70,8 @@ class DirectResultAdapter(private val context: Context, private val ExtResult: E
             holder.tvdurtext = convertView.findViewById(R.id.durtext) as TextView
             holder.tvtimearr = convertView.findViewById(R.id.timearr) as TextView
             holder.tvarrpoint = convertView.findViewById(R.id.arrpoint) as TextView
+            holder.tvcntrat = convertView.findViewById(R.id.cntrating) as TextView
+            holder.flframelay = convertView.findViewById(R.id.RatingFrame) as FrameLayout
 
             convertView.tag = holder
         } else {
@@ -97,6 +100,22 @@ class DirectResultAdapter(private val context: Context, private val ExtResult: E
         val identifier = GlobalStuff.StaffRes.getIdentifier(mc, "drawable", "com.stukalov.staffairlines.pro")
         val durt = GetTimeAsHM2(f.Duration)
 
+
+        var MarkColor: Int = 0
+        var MarkBack: Int = 0
+        if (f.RatingType == RType.Green) {
+            MarkColor = ContextCompat.getColor(context, R.color.sa_green)
+            MarkBack = R.drawable.round_box_green
+        }
+        else if (f.RatingType == RType.Yellow) {
+            MarkColor = ContextCompat.getColor(context, R.color.sa_yellow)
+            MarkBack = R.drawable.round_box_yellow
+        }
+        else {
+            MarkColor = ContextCompat.getColor(context, R.color.sa_red)
+            MarkBack = R.drawable.round_box_red
+        }
+
         holder.ivaclogo!!.setImageResource(identifier)
         holder.tvacname!!.setText(f.MarketingName)
         holder.tvtimedep!!.setText(deptime)
@@ -105,6 +124,10 @@ class DirectResultAdapter(private val context: Context, private val ExtResult: E
         holder.tvdurtext!!.setText(durt)
         holder.tvtimearr!!.setText(arrtime)
         holder.tvarrpoint!!.setText(dest)
+        holder.tvcntrat!!.setText(f.AllPlaces)
+        holder.tvcntrat!!.setTextColor(MarkColor)
+        holder.tvcntrat!!.setBackgroundResource(MarkBack)
+        holder.flframelay!!.setBackgroundColor(MarkColor)
 
         return convertView
     }
@@ -118,6 +141,8 @@ class DirectResultAdapter(private val context: Context, private val ExtResult: E
         var tvdurtext: TextView? = null
         var tvtimearr: TextView? = null
         var tvarrpoint: TextView? = null
+        var tvcntrat: TextView? = null
+        var flframelay: FrameLayout? = null
     }
 
     fun GetTimeAsHM2(minutes: Int): String {

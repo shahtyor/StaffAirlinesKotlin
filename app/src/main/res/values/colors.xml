@@ -13,4 +13,7 @@
     <color name="lightgray">#EDEDED</color>
     <color name="text_gray">#BBBBBB</color>
     <color name="hint_text">#B8B8B8</color>
+    <color name="sa_green">#92C55A</color>
+    <color name="sa_yellow">#F9AA33</color>
+    <color name="sa_red">#FF643B</color>
 </resources>

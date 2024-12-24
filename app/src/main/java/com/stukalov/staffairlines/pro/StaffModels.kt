@@ -23,7 +23,11 @@ enum class RType(val value: Int)
 {
     Red(1),
     Yellow(2),
-    Green(3)
+    Green(3);
+
+    companion object {
+        fun fromInt(value: Int) = RType.values().first { it.value == value }
+    }
 }
 
 data class Location(
@@ -138,8 +142,8 @@ data class Flight(
     var EconomyPlaces: Int,
     var BusinessPlaces: Int,
     var AllPlaces: String,
-
-    var Rating: RType,
+    @SerializedName("Rating")
+    var Rating: Int,
 
     /// <summary>
     /// Прогноз загрузки
@@ -159,7 +163,11 @@ data class Flight(
     var AgentInfo: PlaceInfo,
 
     var Reporters: Boolean
-    )
+)
+{
+    val RatingType: RType
+        get() = RType.fromInt(Rating)
+}
 
 data class PlaceInfo(
     var EconomyPlaces: Int?,

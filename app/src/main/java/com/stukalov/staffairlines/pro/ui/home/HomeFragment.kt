@@ -58,6 +58,9 @@ class HomeFragment : Fragment() {
     lateinit var tbSearchDT: TextView
     lateinit var btSearch: Button
     lateinit var btReplace: ImageButton
+    lateinit var btMinusBut: ImageButton
+    lateinit var btPlusBut: ImageButton
+    lateinit var tbCntPass: TextView
     //lateinit var mView: View
 
     override fun onCreateView(
@@ -94,6 +97,9 @@ class HomeFragment : Fragment() {
         tbSearchDT = view.findViewById<TextView>(R.id.datepicktv)
         btSearch = view.findViewById(R.id.btSearch)
         btReplace = view.findViewById(R.id.btReplace)
+        btMinusBut = view.findViewById(R.id.minusbut)
+        btPlusBut =  view.findViewById(R.id.plusbut)
+        tbCntPass = view.findViewById(R.id.cntpass)
 
         SetSelPoint()
         if (GlobalStuff.SearchDT == null) {
@@ -104,6 +110,22 @@ class HomeFragment : Fragment() {
 
         btReplace.setOnClickListener {
             ReplacePoint()
+        }
+
+        btMinusBut.setOnClickListener {
+            minusbut_click(view)
+        }
+
+        btPlusBut.setOnClickListener {
+            plusbut_click(view)
+        }
+
+        tbOrigin.setOnClickListener {
+            origin_click(view)
+        }
+
+        tbDestination.setOnClickListener {
+            destination_click(view)
         }
 
         /*btSearch.setOnClickListener{
@@ -241,5 +263,82 @@ class HomeFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    fun minusbut_click(view: View)
+    {
+        var cnt = tbCntPass.text.toString().toInt()
+        if (cnt > 1)
+        {
+            cnt--
+        }
+        tbCntPass.text = cnt.toString()
+
+        if (cnt < 4)
+        {
+            btPlusBut.setBackgroundResource(R.drawable.plus_button_on)
+            btPlusBut.setImageResource(R.drawable.plus_white)
+        }
+        else
+        {
+            btPlusBut.setBackgroundResource(R.drawable.plus_button_off)
+            btPlusBut.setImageResource(R.drawable.plus_blue)
+        }
+
+        if (cnt > 1)
+        {
+            cnt--
+            btMinusBut.setBackgroundResource(R.drawable.minus_button_on)
+            btMinusBut.setImageResource(R.drawable.minus_white)
+        }
+        else
+        {
+            btMinusBut.setBackgroundResource(R.drawable.minus_button_off)
+            btMinusBut.setImageResource(R.drawable.minus_blue)
+        }
+    }
+
+    fun plusbut_click(view: View)
+    {
+        var cnt = tbCntPass.text.toString().toInt()
+        if (cnt < 4)
+        {
+            cnt++
+        }
+        tbCntPass.text = cnt.toString()
+
+        if (cnt < 4)
+        {
+            btPlusBut.setBackgroundResource(R.drawable.plus_button_on)
+            btPlusBut.setImageResource(R.drawable.plus_white)
+        }
+        else
+        {
+            btPlusBut.setBackgroundResource(R.drawable.plus_button_off)
+            btPlusBut.setImageResource(R.drawable.plus_blue)
+        }
+
+        if (cnt > 1)
+        {
+            btMinusBut.setBackgroundResource(R.drawable.minus_button_on)
+            btMinusBut.setImageResource(R.drawable.minus_white)
+        }
+        else
+        {
+            btMinusBut.setBackgroundResource(R.drawable.minus_button_off)
+            btMinusBut.setImageResource(R.drawable.minus_blue)
+        }
+    }
+
+    fun origin_click(view: View) {
+        val bundle = Bundle()
+        bundle.putString("PointMode", PointType.Origin.name)
+        GlobalStuff.navController.navigate(R.id.sel_point, bundle)
+    }
+
+    fun destination_click(view: View) {
+        val bundle = Bundle()
+        bundle.putString("PointMode", PointType.Destination.name)
+        GlobalStuff.navController.navigate(R.id.sel_point, bundle)
     }
 }
