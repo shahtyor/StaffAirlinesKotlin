@@ -4,15 +4,19 @@ import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.opengl.Visibility
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.DatePicker
 import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.graphics.Color
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
@@ -24,6 +28,7 @@ import com.stukalov.staffairlines.pro.GlobalStuff
 import com.stukalov.staffairlines.pro.MainActivity
 import com.stukalov.staffairlines.pro.PointType
 import com.stukalov.staffairlines.pro.R
+import com.stukalov.staffairlines.pro.SelectedPoint
 import com.stukalov.staffairlines.pro.StaffMethods
 import com.stukalov.staffairlines.pro.databinding.FragmentHomeBinding
 import kotlinx.coroutines.Deferred
@@ -61,7 +66,7 @@ class HomeFragment : Fragment() {
     lateinit var btMinusBut: ImageButton
     lateinit var btPlusBut: ImageButton
     lateinit var tbCntPass: TextView
-    //lateinit var mView: View
+    lateinit var btDate: ImageButton
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -100,6 +105,7 @@ class HomeFragment : Fragment() {
         btMinusBut = view.findViewById(R.id.minusbut)
         btPlusBut =  view.findViewById(R.id.plusbut)
         tbCntPass = view.findViewById(R.id.cntpass)
+        btDate = view.findViewById(R.id.datebutton)
 
         SetSelPoint()
         if (GlobalStuff.SearchDT == null) {
@@ -128,8 +134,17 @@ class HomeFragment : Fragment() {
             destination_click(view)
         }
 
-        /*btSearch.setOnClickListener{
-            Search()*/
+        btDate.setOnClickListener {
+            datebutton_click(view)
+        }
+
+        tbSearchDT.setOnClickListener {
+            datepicktv_click(view)
+        }
+
+        btSearch.setOnClickListener {
+            search_click(view)
+        }
     }
 
     /*fun SearchFun(SM: StaffMethods) = coroutineScope{
@@ -152,6 +167,8 @@ class HomeFragment : Fragment() {
                 lbDestinationCode.text = ""
                 lbDestinationCountry.text = ""
                 tbDestination.setTextColor(getResources().getColor(R.color.text_gray))
+                GlobalStuff.OriginPoint = GlobalStuff.DestinationPoint
+                GlobalStuff.DestinationPoint = null
             }
             else if (lbDestinationId.text.isNullOrEmpty())
             {
@@ -165,12 +182,15 @@ class HomeFragment : Fragment() {
                 lbOriginCode.text = ""
                 lbOriginCountry.text = ""
                 tbOrigin.setTextColor(getResources().getColor(R.color.text_gray))
+                GlobalStuff.DestinationPoint = GlobalStuff.OriginPoint
+                GlobalStuff.OriginPoint = null
             }
             else {
                 val t1 = tbOrigin.text
                 val t2 = lbOriginId.text
                 val t3 = lbOriginCode.text
                 val t4 = lbOriginCountry.text
+                val t5 = GlobalStuff.OriginPoint
                 tbOrigin.text = tbDestination.text
                 lbOriginId.text = lbDestinationId.text
                 lbOriginCode.text = lbDestinationCode.text
@@ -179,6 +199,8 @@ class HomeFragment : Fragment() {
                 lbDestinationId.text = t2
                 lbDestinationCode.text = t3
                 lbDestinationCountry.text = t4
+                GlobalStuff.OriginPoint = GlobalStuff.DestinationPoint
+                GlobalStuff.DestinationPoint = t5
             }
         }
     }
@@ -340,5 +362,59 @@ class HomeFragment : Fragment() {
         val bundle = Bundle()
         bundle.putString("PointMode", PointType.Destination.name)
         GlobalStuff.navController.navigate(R.id.sel_point, bundle)
+    }
+
+    fun datebutton_click(view: View) {
+        GlobalStuff.dtSearch = tbSearchDT
+
+        val newFragment = DatePickerFragment()
+        newFragment.show(GlobalStuff.supportFragManager,"datePicker")
+    }
+
+    fun datepicktv_click(view: View) {
+        GlobalStuff.dtSearch = tbSearchDT
+
+        val newFragment = DatePickerFragment()
+        newFragment.show(GlobalStuff.supportFragManager,"datePicker")
+    }
+
+    fun search_click(view: View) {
+        val SM: StaffMethods = StaffMethods()
+
+        if (GlobalStuff.OriginPoint != null && GlobalStuff.DestinationPoint != null) {
+
+            val spin_layout = view.findViewById<LinearLayout>(R.id.spinner_home)
+            spin_layout.isVisible = true
+
+            lifecycleScope.launch {
+                val jsonloc = withContext(Dispatchers.IO) {
+                    var result = SM.ExtendedSearch(
+                        GlobalStuff.OriginPoint!!.Code,
+                        GlobalStuff.DestinationPoint!!.Code,
+                        GlobalStuff.SearchDT!!,
+                        "",
+                        false,
+                        GetNonDirectType.Off,
+                        1,
+                        "USD",
+                        "EN",
+                        "USA",
+                        "",
+                        false,
+                        "3.0",
+                        "--"
+                    )
+                    if (result == "OK") {
+                        if (GlobalStuff.ExtResult != null) {
+                            Handler(Looper.getMainLooper()).postDelayed({
+                                val bundle = Bundle()
+                                bundle.putString("keyDashBoard", "No")
+                                GlobalStuff.navController.navigate(R.id.resultlayout, bundle)
+                            }, 1000)
+                        }
+                    }
+                }
+            }
+        }
     }
 }

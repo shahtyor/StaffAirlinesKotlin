@@ -77,6 +77,7 @@ class MainActivity : AppCompatActivity() {
         GlobalStuff.activity = this.baseContext
         GlobalStuff.navController = navController
         GlobalStuff.StaffRes = resources
+        GlobalStuff.supportFragManager = supportFragmentManager
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -87,58 +88,5 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    fun datebutton_click(view: View) {
-        var dtSearch = findViewById<TextView>(R.id.datepicktv)
-        GlobalStuff.dtSearch = dtSearch
-
-        val newFragment = DatePickerFragment()
-        newFragment.show(supportFragmentManager,"datePicker")
-    }
-
-    fun datepicktv_click(view: View) {
-        var dtSearch = findViewById<TextView>(R.id.datepicktv)
-        GlobalStuff.dtSearch = dtSearch
-
-        val newFragment = DatePickerFragment()
-        newFragment.show(supportFragmentManager,"datePicker")
-    }
-
-    fun search_click(view: View) {
-        val SM: StaffMethods = StaffMethods()
-
-        if (GlobalStuff.OriginPoint != null && GlobalStuff.DestinationPoint != null) {
-
-            lifecycleScope.launch {
-                val jsonloc = withContext(Dispatchers.IO) {
-                    var result = SM.ExtendedSearch(
-                        GlobalStuff.OriginPoint!!.Code,
-                        GlobalStuff.DestinationPoint!!.Code,
-                        GlobalStuff.SearchDT!!,
-                        "",
-                        false,
-                        GetNonDirectType.Off,
-                        1,
-                        "USD",
-                        "EN",
-                        "USA",
-                        "",
-                        false,
-                        "3.0",
-                        "--"
-                    )
-                    if (result == "OK") {
-                        if (GlobalStuff.ExtResult != null) {
-                            Handler(Looper.getMainLooper()).postDelayed({
-                                val bundle = Bundle()
-                                bundle.putString("keyDashBoard", "No")
-                                navController.navigate(R.id.resultlayout, bundle)
-                            }, 1000)
-                        }
-                    }
-                }
-            }
-        }
     }
 }

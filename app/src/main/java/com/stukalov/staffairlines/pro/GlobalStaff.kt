@@ -1,5 +1,6 @@
 package com.stukalov.staffairlines.pro
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
 import android.widget.ArrayAdapter
@@ -7,7 +8,7 @@ import android.widget.TextView
 import androidx.navigation.NavController
 import java.time.LocalDate
 
-//class GlobalStaff {
+    @SuppressLint("StaticFieldLeak")
     object GlobalStuff {
         lateinit var navController: NavController
         lateinit var Locations: List<Location>
@@ -18,5 +19,6 @@ import java.time.LocalDate
         lateinit var dtSearch: TextView
         var ExtResult: ExtendedResult? = null
         lateinit var StaffRes: Resources
+        lateinit var supportFragManager: androidx.fragment.app.FragmentManager
     }
 //}
