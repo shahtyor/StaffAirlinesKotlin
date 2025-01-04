@@ -35,4 +35,10 @@
                 android:label="Back to search"
                 tools:layout="@layout/fragment_result" />
 
+            <fragment
+                android:id="@+id/result_one"
+                android:name="com.stukalov.staffairlines.pro.ui.flight.FlightFragment"
+                android:label="Flight"
+                tools:layout="@layout/fragment_flight" />
+
         </navigation>

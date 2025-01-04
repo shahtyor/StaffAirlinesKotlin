@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
+    android:layout_gravity="top"
     style="@style/StaffNoActionBar"
     tools:context=".ui.home.HomeFragment">
 
@@ -223,11 +224,12 @@
     <FrameLayout
         android:id="@+id/spinner_home"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="fill_parent"
         android:background="@drawable/overlay_back"
         android:elevation="4dp"
         android:translationZ="4dp"
-        android:visibility="gone">
+        android:visibility="gone"
+        tools:ignore="MissingConstraints">
 
         <ProgressBar
             android:id="@+id/loading_spinner"

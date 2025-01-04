@@ -10,6 +10,7 @@ import android.os.Looper
 import android.view.MenuItem
 import android.view.View
 import android.widget.DatePicker
+import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.ListView
 import android.widget.TextView
@@ -18,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.graphics.PointMode
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
+import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
@@ -76,6 +78,7 @@ class MainActivity : AppCompatActivity() {
 
         GlobalStuff.activity = this.baseContext
         GlobalStuff.navController = navController
+        GlobalStuff.navView = navView
         GlobalStuff.StaffRes = resources
         GlobalStuff.supportFragManager = supportFragmentManager
     }

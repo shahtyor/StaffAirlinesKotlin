@@ -13,9 +13,11 @@ import android.widget.ListView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.stukalov.staffairlines.pro.DirectResultAdapter
+import com.stukalov.staffairlines.pro.Flight
 import com.stukalov.staffairlines.pro.GlobalStuff
 import com.stukalov.staffairlines.pro.Location
 import com.stukalov.staffairlines.pro.PointType
@@ -60,80 +62,12 @@ class ResultFragment : Fragment() {
             DirectResultAdapter(view.context, GlobalStuff.ExtResult!!)
         direct_lv.setAdapter(resultadapter)
 
-        /*val strmode = getArguments()?.getString("PointMode")
-        val PointMode: PointType = if (strmode == "Origin")
-        {
-            PointType.Origin
+        direct_lv.setOnItemClickListener{parent, view, position, id ->
+            var fl = parent.getItemAtPosition(position) as Flight
+
+            GlobalStuff.OneResult = fl
+            GlobalStuff.navController.navigate(R.id.result_one)
         }
-        else
-        {
-            PointType.Destination
-        }
-
-        try {
-
-            val sel_point_text = view.findViewById<EditText>(R.id.selpointtext)
-            sel_point_text.addTextChangedListener(object : TextWatcher {
-
-                override fun afterTextChanged(s: Editable) {}
-
-                override fun beforeTextChanged(
-                    s: CharSequence, start: Int,
-                    count: Int, after: Int) {}
-
-                override fun onTextChanged(
-                    s: CharSequence, start: Int,
-                    before: Int, count: Int) {
-                    val text = sel_point_text.text.toString().uppercase()
-                    if (!text.isNullOrEmpty())
-                    {
-                        //var tmpLoc = StaffAirlines().Locations
-                        val tmpLoc = GlobalStuff.Locations
-                        //val tmpLoc2 = tmpLoc.filter { it.Name_en.contains("Moscow") }
-
-                        var tmp = tmpLoc.asSequence().filter { !it.Name_en.isNullOrEmpty() && it.Name_en.uppercase().contains(text) }.take(20).toMutableList()
-
-                        if (text.length == 3) {
-                            val liata = tmpLoc.asSequence().filter { it.Code == text }.take(1).firstOrNull();
-                            if (liata != null)
-                            {
-                                tmp.add(0, liata)
-                            }
-                        }
-
-                        //GlobalStuff.tmppointlist = ArrayList(tmp)
-
-                        if (tmp.count() > 0) {
-                            pointlistadapter =
-                                SelPointAdapter(view.context, ArrayList(tmp))
-                            points_lv.setAdapter(pointlistadapter)
-                        }
-                    }
-                }
-            })
-
-            sel_point_text.requestFocus()
-            // open the soft keyboard
-            val imm = GlobalStuff.activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.showSoftInput(sel_point_text, InputMethodManager.SHOW_IMPLICIT)
-
-            points_lv.setOnItemClickListener{parent, view, position, id ->
-                var point = parent.getItemAtPosition(position) as Location
-                if (PointMode == PointType.Origin) {
-                    GlobalStuff.OriginPoint = SelectedPoint(point.Id, point.NameWithCountry, point.Code, PointMode, point.Name_country)
-                }
-                else
-                {
-                    GlobalStuff.DestinationPoint = SelectedPoint(point.Id, point.NameWithCountry, point.Code, PointMode, point.Name_country)
-                }
-
-                GlobalStuff.navController.navigateUp()
-             }
-        }
-        catch (e: Exception)
-        {
-            val stre = e.message + "..." + e.stackTrace
-        }*/
     }
 
     override fun onStart() {

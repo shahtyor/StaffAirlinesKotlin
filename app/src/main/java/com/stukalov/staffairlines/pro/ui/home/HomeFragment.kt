@@ -18,6 +18,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.graphics.Color
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -108,6 +110,12 @@ class HomeFragment : Fragment() {
         btPlusBut =  view.findViewById(R.id.plusbut)
         tbCntPass = view.findViewById(R.id.cntpass)
         btDate = view.findViewById(R.id.datebutton)
+
+        try {
+            GlobalStuff.navView.setVisibility(View.VISIBLE)
+        } catch (ex: Exception)
+        {
+        }
 
         SetSelPoint()
         if (GlobalStuff.SearchDT == null) {
@@ -413,6 +421,8 @@ class HomeFragment : Fragment() {
 
             val spin_layout = view.findViewById<FrameLayout>(R.id.spinner_home)
             spin_layout.isVisible = true
+            GlobalStuff.navView.visibility = View.GONE
+
             SetDisable(false)
 
             lifecycleScope.launch {
@@ -466,6 +476,7 @@ class HomeFragment : Fragment() {
                 {
                     SetDisable(true)
                     spin_layout.isVisible = false
+                    GlobalStuff.navView.visibility = View.VISIBLE
                     var serr: String = ""
                     if (GlobalStuff.ExtResult == null)
                     {

@@ -11,7 +11,9 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ListView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.stukalov.staffairlines.pro.GlobalStuff
@@ -52,6 +54,8 @@ class SelPointFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val points_lv: ListView = view.findViewById<ListView>(R.id.pointlistview)
+
+        GlobalStuff.navView.visibility = View.GONE
 
         val strmode = getArguments()?.getString("PointMode")
         val PointMode: PointType = if (strmode == "Origin")
@@ -105,7 +109,7 @@ class SelPointFragment : Fragment() {
                 }
             })
 
-            //sel_point_text.requestFocus()
+            sel_point_text.requestFocus()
             // open the soft keyboard
             val imm = GlobalStuff.activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.showSoftInput(sel_point_text, InputMethodManager.SHOW_IMPLICIT)
@@ -121,6 +125,7 @@ class SelPointFragment : Fragment() {
                 }
 
                 GlobalStuff.navController.navigateUp()
+                GlobalStuff.navView.isVisible = true
              }
         }
         catch (e: Exception)
