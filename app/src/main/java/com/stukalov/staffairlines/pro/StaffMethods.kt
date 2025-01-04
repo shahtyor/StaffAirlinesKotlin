@@ -19,6 +19,7 @@ import java.io.IOException
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Arrays
+import java.util.concurrent.TimeUnit
 
 
 class StaffMethods {
@@ -33,7 +34,10 @@ class StaffMethods {
             .header("Authorization", Credentials.basic("sae2", "ISTbetweenVAR1999"))
         val newRequest = builder.build()
         chain.proceed(newRequest)
-    }.build()
+        }.connectTimeout(10, TimeUnit.SECONDS)
+        .writeTimeout(10, TimeUnit.SECONDS)
+        .readTimeout(120, TimeUnit.SECONDS)
+        .build()
 
     fun ExtendedSearch(origin: String, destination: String, date: LocalDate, list: String, GetTransfer: Boolean, ntype: GetNonDirectType, pax: Int, currency: String, lang: String, country: String, token: String = "void token", sa: Boolean = true, ver: String = "1.0", ac: String = "--"): String
     {

@@ -220,22 +220,23 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/spinner_home"
-        android:translationZ="2dp"
-        android:background="@color/sa_transparent"
-        android:visibility="invisible"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@drawable/overlay_back"
+        android:elevation="4dp"
+        android:translationZ="4dp"
+        android:visibility="gone">
 
         <ProgressBar
             android:id="@+id/loading_spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:indeterminateTintMode="src_atop"
+            android:layout_gravity="center_vertical|center_horizontal"
             android:indeterminateTint="@color/staff_blue"
-            android:layout_marginStart="180dp"
-            android:layout_gravity="center_vertical" />
-    </LinearLayout>
+            android:indeterminateTintMode="src_atop" />
+
+    </FrameLayout>
 
  </androidx.constraintlayout.widget.ConstraintLayout>

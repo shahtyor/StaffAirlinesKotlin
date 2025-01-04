@@ -52,7 +52,8 @@ class ResultFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        (activity as AppCompatActivity).supportActionBar?.title = "Example 1"
+        val title = arguments?.getString("result_title")
+        (activity as AppCompatActivity).supportActionBar?.title = title
 
         val direct_lv: ListView = view.findViewById<ListView>(R.id.directlistview)
         resultadapter =

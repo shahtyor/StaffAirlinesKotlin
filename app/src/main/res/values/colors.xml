@@ -16,5 +16,6 @@
     <color name="sa_green">#92C55A</color>
     <color name="sa_yellow">#F9AA33</color>
     <color name="sa_red">#FF643B</color>
-    <color name="sa_transparent">#00FFFFFF</color>
+    <color name="sa_transparent_overlay">#3329B6F6</color>
+    <color name="sa_full_transparent">#00FFFFFF</color>
 </resources>

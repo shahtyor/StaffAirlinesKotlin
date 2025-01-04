@@ -11,9 +11,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.DatePicker
+import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.graphics.Color
 import androidx.core.view.isVisible
@@ -378,17 +380,44 @@ class HomeFragment : Fragment() {
         newFragment.show(GlobalStuff.supportFragManager,"datePicker")
     }
 
+    fun SetDisable(on: Boolean)
+    {
+        if (on)
+        {
+            btMinusBut.isEnabled = true
+            btPlusBut.isEnabled = true
+            tbOrigin.isEnabled = true
+            tbDestination.isEnabled = true
+            tbSearchDT.isEnabled = true
+            btDate.isEnabled = true
+            btReplace.isEnabled = true
+            btSearch.isEnabled = true
+        }
+        else
+        {
+            btMinusBut.isEnabled = false
+            btPlusBut.isEnabled = false
+            tbOrigin.isEnabled = false
+            tbDestination.isEnabled = false
+            tbSearchDT.isEnabled = false
+            btDate.isEnabled = false
+            btReplace.isEnabled = false
+            btSearch.isEnabled = false
+        }
+    }
+
     fun search_click(view: View) {
         val SM: StaffMethods = StaffMethods()
 
         if (GlobalStuff.OriginPoint != null && GlobalStuff.DestinationPoint != null) {
 
-            val spin_layout = view.findViewById<LinearLayout>(R.id.spinner_home)
+            val spin_layout = view.findViewById<FrameLayout>(R.id.spinner_home)
             spin_layout.isVisible = true
+            SetDisable(false)
 
             lifecycleScope.launch {
-                val jsonloc = withContext(Dispatchers.IO) {
-                    var result = SM.ExtendedSearch(
+                val result = withContext(Dispatchers.IO) {
+                    SM.ExtendedSearch(
                         GlobalStuff.OriginPoint!!.Code,
                         GlobalStuff.DestinationPoint!!.Code,
                         GlobalStuff.SearchDT!!,
@@ -404,15 +433,46 @@ class HomeFragment : Fragment() {
                         "3.0",
                         "--"
                     )
-                    if (result == "OK") {
-                        if (GlobalStuff.ExtResult != null) {
-                            Handler(Looper.getMainLooper()).postDelayed({
-                                val bundle = Bundle()
-                                bundle.putString("keyDashBoard", "No")
-                                GlobalStuff.navController.navigate(R.id.resultlayout, bundle)
-                            }, 1000)
+
+                    /*Handler(Looper.getMainLooper()).postDelayed({
+                        if (result == "OK" && GlobalStuff.ExtResult != null) {
+                            val bundle = Bundle()
+                            val formatter0 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                            bundle.putString(
+                                "result_title",
+                                GlobalStuff.OriginPoint!!.Code + " - " + GlobalStuff.DestinationPoint!!.Code + ", " + GlobalStuff.SearchDT!!.format(
+                                    formatter0
+                                )
+                            )
+                            bundle.putString("keyDashBoard", "No")
+                            GlobalStuff.navController.navigate(R.id.resultlayout, bundle)
                         }
+                    }, 1000)*/
+                }
+
+                if (result == "OK" && GlobalStuff.ExtResult != null) {
+                    val bundle = Bundle()
+                    val formatter0 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                    bundle.putString(
+                        "result_title",
+                        GlobalStuff.OriginPoint!!.Code + " - " + GlobalStuff.DestinationPoint!!.Code + ", " + GlobalStuff.SearchDT!!.format(
+                            formatter0
+                        )
+                    )
+                    bundle.putString("keyDashBoard", "No")
+                    GlobalStuff.navController.navigate(R.id.resultlayout, bundle)
+                }
+                else
+                {
+                    SetDisable(true)
+                    spin_layout.isVisible = false
+                    var serr: String = ""
+                    if (GlobalStuff.ExtResult == null)
+                    {
+                        serr = " , er=null"
                     }
+                    val toast = Toast.makeText(context, result + serr, Toast.LENGTH_LONG)
+                    toast.show()
                 }
             }
         }

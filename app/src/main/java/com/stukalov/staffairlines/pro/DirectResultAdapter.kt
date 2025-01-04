@@ -1,5 +1,6 @@
 package com.stukalov.staffairlines.pro
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,7 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import java.util.Locale
 
 
@@ -52,6 +54,7 @@ class DirectResultAdapter(private val context: Context, private val ExtResult: E
         return 0
     }
 
+    @SuppressLint("ResourceAsColor")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var convertView = convertView
         val holder: ViewHolder
@@ -62,16 +65,17 @@ class DirectResultAdapter(private val context: Context, private val ExtResult: E
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             convertView = inflater.inflate(R.layout.item_directlist, null, true)
 
-            holder.ivaclogo = convertView.findViewById(R.id.aclogo) as ImageView
-            holder.tvacname = convertView!!.findViewById(R.id.acname) as TextView
-            holder.tvtimedep = convertView.findViewById(R.id.timedep) as TextView
-            holder.tvdeppoint = convertView.findViewById(R.id.deppoint) as TextView
-            holder.ivplanepic = convertView.findViewById(R.id.planepic) as ImageView
-            holder.tvdurtext = convertView.findViewById(R.id.durtext) as TextView
-            holder.tvtimearr = convertView.findViewById(R.id.timearr) as TextView
-            holder.tvarrpoint = convertView.findViewById(R.id.arrpoint) as TextView
-            holder.tvcntrat = convertView.findViewById(R.id.cntrating) as TextView
-            holder.flframelay = convertView.findViewById(R.id.RatingFrame) as FrameLayout
+            holder.ivaclogo = convertView.findViewById(R.id.aclogo)
+            holder.tvacname = convertView!!.findViewById(R.id.acname)
+            holder.tvtimedep = convertView.findViewById(R.id.timedep)
+            holder.tvdeppoint = convertView.findViewById(R.id.deppoint)
+            holder.ivplanepic = convertView.findViewById(R.id.planepic)
+            holder.tvdurtext = convertView.findViewById(R.id.durtext)
+            holder.tvtimearr = convertView.findViewById(R.id.timearr)
+            holder.tvarrpoint = convertView.findViewById(R.id.arrpoint)
+            holder.tvcntrat = convertView.findViewById(R.id.cntrating)
+            holder.flframelay = convertView.findViewById(R.id.RatingFrame)
+            holder.tvnextday = convertView.findViewById(R.id.nextDay)
 
             convertView.tag = holder
         } else {
@@ -86,6 +90,7 @@ class DirectResultAdapter(private val context: Context, private val ExtResult: E
         val deptime = arrdep[1].substring(0, 5)
         val arrarr = f.ArrivalDateTime.split("T")
         val arrtime = arrarr[1].substring(0, 5)
+        val arrday  = arrarr[0].split("-")[2].toInt()
         var orig = f.Origin
         if (!f.DepartureTerminal.isNullOrEmpty())
         {
@@ -116,6 +121,13 @@ class DirectResultAdapter(private val context: Context, private val ExtResult: E
             MarkBack = R.drawable.round_box_red
         }
 
+        var nextDayVis: Int = ContextCompat.getColor(context, R.color.sa_full_transparent)
+        val dom = GlobalStuff.SearchDT?.dayOfMonth
+        if (dom != arrday)
+        {
+            nextDayVis = ContextCompat.getColor(context, R.color.black)
+        }
+
         holder.ivaclogo!!.setImageResource(identifier)
         holder.tvacname!!.setText(f.MarketingName)
         holder.tvtimedep!!.setText(deptime)
@@ -128,6 +140,7 @@ class DirectResultAdapter(private val context: Context, private val ExtResult: E
         holder.tvcntrat!!.setTextColor(MarkColor)
         holder.tvcntrat!!.setBackgroundResource(MarkBack)
         holder.flframelay!!.setBackgroundColor(MarkColor)
+        holder.tvnextday!!.setTextColor(nextDayVis)
 
         return convertView
     }
@@ -143,6 +156,7 @@ class DirectResultAdapter(private val context: Context, private val ExtResult: E
         var tvarrpoint: TextView? = null
         var tvcntrat: TextView? = null
         var flframelay: FrameLayout? = null
+        var tvnextday: TextView? = null
     }
 
     fun GetTimeAsHM2(minutes: Int): String {
