@@ -11,10 +11,17 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 
 class DirectResultAdapter(private val context: Context, private val ExtResult: ExtendedResult) : BaseAdapter() {
+
+    var CurDate: LocalDate = LocalDate.now().minusYears(5)
+    var CurPosition: Int = -100
+    var MaxPosition: Int = -100
 
     override fun getViewTypeCount(): Int {
         val count: Int
@@ -56,93 +63,117 @@ class DirectResultAdapter(private val context: Context, private val ExtResult: E
 
     @SuppressLint("ResourceAsColor")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        var convertView = convertView
-        val holder: ViewHolder
+        if (CurPosition < position && MaxPosition < position) {
+            CurPosition = position
+            if (MaxPosition < position)
+            {
+                MaxPosition = position
+            }
 
-        if (convertView == null) {
-            holder = ViewHolder()
-            val inflater = context
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            convertView = inflater.inflate(R.layout.item_directlist, null, true)
+            var convertView = convertView
+            val holder: ViewHolder
 
-            holder.ivaclogo = convertView.findViewById(R.id.aclogo)
-            holder.tvacname = convertView!!.findViewById(R.id.acname)
-            holder.tvtimedep = convertView.findViewById(R.id.timedep)
-            holder.tvdeppoint = convertView.findViewById(R.id.deppoint)
-            holder.ivplanepic = convertView.findViewById(R.id.planepic)
-            holder.tvdurtext = convertView.findViewById(R.id.durtext)
-            holder.tvtimearr = convertView.findViewById(R.id.timearr)
-            holder.tvarrpoint = convertView.findViewById(R.id.arrpoint)
-            holder.tvcntrat = convertView.findViewById(R.id.cntrating)
-            holder.flframelay = convertView.findViewById(R.id.RatingFrame)
-            holder.tvnextday = convertView.findViewById(R.id.nextDay)
+            if (convertView == null) {
+                holder = ViewHolder()
+                val inflater = context
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+                convertView = inflater.inflate(R.layout.item_directlist, null, true)
 
-            convertView.tag = holder
-        } else {
-            // the getTag returns the viewHolder object set as a tag to the view
-            holder = convertView.tag as ViewHolder
-        }
+                holder.ivaclogo = convertView.findViewById(R.id.aclogo)
+                holder.tvacname = convertView!!.findViewById(R.id.acname)
+                holder.tvtimedep = convertView.findViewById(R.id.timedep)
+                holder.tvdeppoint = convertView.findViewById(R.id.deppoint)
+                holder.ivplanepic = convertView.findViewById(R.id.planepic)
+                holder.tvdurtext = convertView.findViewById(R.id.durtext)
+                holder.tvtimearr = convertView.findViewById(R.id.timearr)
+                holder.tvarrpoint = convertView.findViewById(R.id.arrpoint)
+                holder.tvcntrat = convertView.findViewById(R.id.cntrating)
+                holder.flframelay = convertView.findViewById(R.id.RatingFrame)
+                holder.tvnextday = convertView.findViewById(R.id.nextDay)
+                holder.tvdateoneres = convertView.findViewById(R.id.date_for_result)
 
-        val f = ExtResult.DirectRes[position]
+                convertView.tag = holder
+            } else {
+                // the getTag returns the viewHolder object set as a tag to the view
+                holder = convertView.tag as ViewHolder
+            }
 
-        val mc = "_" + f.MarketingCarrier.toLowerCase(Locale.ENGLISH)
-        val arrdep = f.DepartureDateTime.split("T")
-        val deptime = arrdep[1].substring(0, 5)
-        val arrarr = f.ArrivalDateTime.split("T")
-        val arrtime = arrarr[1].substring(0, 5)
-        val arrday  = arrarr[0].split("-")[2].toInt()
-        var orig = f.Origin
-        if (!f.DepartureTerminal.isNullOrEmpty())
+            val f = ExtResult.DirectRes[position]
+
+            /*if (position == 0)
         {
-            orig = orig + " (" + f.DepartureTerminal + ")"
-        }
-        var dest = f.Destination
-        if (!f.ArrivalTerminal.isNullOrEmpty())
-        {
-            dest = dest + " (" + f.ArrivalTerminal + ")"
+            CurDate = f.DepDateTime.toLocalDate()
+        }*/
+
+            val mc = "_" + f.MarketingCarrier.toLowerCase(Locale.ENGLISH)
+            val arrdep = f.DepartureDateTime.split("T")
+            val deptime = arrdep[1].substring(0, 5)
+            val arrarr = f.ArrivalDateTime.split("T")
+            val arrtime = arrarr[1].substring(0, 5)
+            val arrday = arrarr[0].split("-")[2].toInt()
+            var orig = f.Origin
+            if (!f.DepartureTerminal.isNullOrEmpty()) {
+                orig = orig + " (" + f.DepartureTerminal + ")"
+            }
+            var dest = f.Destination
+            if (!f.ArrivalTerminal.isNullOrEmpty()) {
+                dest = dest + " (" + f.ArrivalTerminal + ")"
+            }
+
+            val identifier =
+                GlobalStuff.StaffRes.getIdentifier(mc, "drawable", "com.stukalov.staffairlines.pro")
+            val durt = GetTimeAsHM2(f.Duration)
+
+            var MarkColor: Int = 0
+            var MarkBack: Int = 0
+            if (f.RatingType == RType.Good) {
+                MarkColor = ContextCompat.getColor(context, R.color.sa_green)
+                MarkBack = R.drawable.round_box_green
+            } else if (f.RatingType == RType.Medium) {
+                MarkColor = ContextCompat.getColor(context, R.color.sa_yellow)
+                MarkBack = R.drawable.round_box_yellow
+            } else {
+                MarkColor = ContextCompat.getColor(context, R.color.sa_red)
+                MarkBack = R.drawable.round_box_red
+            }
+
+            var nextDayVis: Int = ContextCompat.getColor(context, R.color.sa_full_transparent)
+            val dom = GlobalStuff.SearchDT?.dayOfMonth
+            if (dom != arrday) {
+                nextDayVis = ContextCompat.getColor(context, R.color.black)
+            }
+
+            var step = position
+            var visdate = View.GONE
+            if (f.DepDateTime.toLocalDate() == CurDate) {
+                visdate = View.GONE
+            } else {
+                CurDate = f.DepDateTime.toLocalDate()
+                visdate = View.VISIBLE
+            }
+
+            val sdf = DateTimeFormatter.ofPattern("DD MMMM, yyyy")
+
+            holder.ivaclogo!!.setImageResource(identifier)
+            holder.tvacname!!.setText(f.MarketingName)
+            holder.tvtimedep!!.setText(deptime)
+            holder.tvdeppoint!!.setText(orig)
+            holder.ivplanepic!!.setImageResource(R.drawable.plane1)
+            holder.tvdurtext!!.setText(durt)
+            holder.tvtimearr!!.setText(arrtime)
+            holder.tvarrpoint!!.setText(dest)
+            holder.tvcntrat!!.setText(f.AllPlaces)
+            holder.tvcntrat!!.setTextColor(MarkColor)
+            holder.tvcntrat!!.setBackgroundResource(MarkBack)
+            holder.flframelay!!.setBackgroundColor(MarkColor)
+            holder.tvnextday!!.setTextColor(nextDayVis)
+            holder.tvdateoneres!!.setText(sdf.format(f.DepDateTime))
+            holder.tvdateoneres!!.visibility = visdate
+
+            return convertView
         }
 
-        val identifier = GlobalStuff.StaffRes.getIdentifier(mc, "drawable", "com.stukalov.staffairlines.pro")
-        val durt = GetTimeAsHM2(f.Duration)
-
-
-        var MarkColor: Int = 0
-        var MarkBack: Int = 0
-        if (f.RatingType == RType.Green) {
-            MarkColor = ContextCompat.getColor(context, R.color.sa_green)
-            MarkBack = R.drawable.round_box_green
-        }
-        else if (f.RatingType == RType.Yellow) {
-            MarkColor = ContextCompat.getColor(context, R.color.sa_yellow)
-            MarkBack = R.drawable.round_box_yellow
-        }
-        else {
-            MarkColor = ContextCompat.getColor(context, R.color.sa_red)
-            MarkBack = R.drawable.round_box_red
-        }
-
-        var nextDayVis: Int = ContextCompat.getColor(context, R.color.sa_full_transparent)
-        val dom = GlobalStuff.SearchDT?.dayOfMonth
-        if (dom != arrday)
-        {
-            nextDayVis = ContextCompat.getColor(context, R.color.black)
-        }
-
-        holder.ivaclogo!!.setImageResource(identifier)
-        holder.tvacname!!.setText(f.MarketingName)
-        holder.tvtimedep!!.setText(deptime)
-        holder.tvdeppoint!!.setText(orig)
-        holder.ivplanepic!!.setImageResource(R.drawable.plane1)
-        holder.tvdurtext!!.setText(durt)
-        holder.tvtimearr!!.setText(arrtime)
-        holder.tvarrpoint!!.setText(dest)
-        holder.tvcntrat!!.setText(f.AllPlaces)
-        holder.tvcntrat!!.setTextColor(MarkColor)
-        holder.tvcntrat!!.setBackgroundResource(MarkBack)
-        holder.flframelay!!.setBackgroundColor(MarkColor)
-        holder.tvnextday!!.setTextColor(nextDayVis)
-
-        return convertView
+        return convertView!!
     }
 
     private inner class ViewHolder {
@@ -157,6 +188,7 @@ class DirectResultAdapter(private val context: Context, private val ExtResult: E
         var tvcntrat: TextView? = null
         var flframelay: FrameLayout? = null
         var tvnextday: TextView? = null
+        var tvdateoneres: TextView? = null
     }
 
     fun GetTimeAsHM2(minutes: Int): String {

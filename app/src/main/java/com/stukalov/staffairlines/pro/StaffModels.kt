@@ -2,11 +2,16 @@ package com.stukalov.staffairlines.pro
 
 import com.google.gson.annotations.SerializedName
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 class StaffModels
 {
 
 }
+
+val secondFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH)
 
 enum class PointType {
     Origin, Destination
@@ -21,9 +26,9 @@ enum class GetNonDirectType(val value: Int)
 
 enum class RType(val value: Int)
 {
-    Red(1),
-    Yellow(2),
-    Green(3);
+    Bad(1),
+    Medium(2),
+    Good(3);
 
     companion object {
         fun fromInt(value: Int) = RType.values().first { it.value == value }
@@ -167,6 +172,12 @@ data class Flight(
 {
     val RatingType: RType
         get() = RType.fromInt(Rating)
+
+    val DepDateTime: LocalDateTime
+        get() = LocalDateTime.parse(DepartureDateTime, secondFormatter)
+
+    val ArrDateTime: LocalDateTime
+        get() = LocalDateTime.parse(ArrivalDateTime, secondFormatter)
 }
 
 data class PlaceInfo(

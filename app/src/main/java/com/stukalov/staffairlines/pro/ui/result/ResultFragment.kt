@@ -58,8 +58,9 @@ class ResultFragment : Fragment() {
         (activity as AppCompatActivity).supportActionBar?.title = title
 
         val direct_lv: ListView = view.findViewById<ListView>(R.id.directlistview)
-        resultadapter =
-            DirectResultAdapter(view.context, GlobalStuff.ExtResult!!)
+
+        resultadapter = DirectResultAdapter(view.context, GlobalStuff.ExtResult!!)
+
         direct_lv.setAdapter(resultadapter)
 
         direct_lv.setOnItemClickListener{parent, view, position, id ->

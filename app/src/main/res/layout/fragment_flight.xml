@@ -10,62 +10,275 @@
     tools:context=".ui.flight.FlightFragment">
 
     <LinearLayout
-        android:orientation="vertical"
-        android:padding="20dp"
-        android:layout_margin="0dp"
-        app:flow_verticalAlign="top"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:ignore="MissingConstraints">
+        android:layout_margin="0dp"
+        android:orientation="vertical"
+        android:padding="20dp"
+        app:flow_verticalAlign="top"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="0dp"
             android:orientation="horizontal"
             android:padding="0dp"
-            android:layout_margin="0dp"
-            tools:ignore="MissingConstraint"
-            >
+            tools:ignore="MissingConstraint">
 
             <ImageView
                 android:id="@+id/aclogo_one"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginLeft="0dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginRight="0dp" />
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="0dp"
+                android:layout_marginEnd="20dp"
+                android:gravity="center"
+                android:src="@drawable/_af"
+                tools:ignore="ContentDescription" />
 
             <TextView
                 android:id="@+id/acname_one"
-                android:layout_width="match_parent"
+                android:layout_width="210dp"
                 android:layout_height="match_parent"
-                android:textAlignment="textStart"
-                android:gravity="center"
-                android:textSize="16sp"
                 android:layout_margin="0dp"
+                android:gravity="center_vertical"
                 android:padding="0dp"
-                android:textColor="@color/black">
-            </TextView>
+                android:textColor="@color/black"
+                android:textSize="18sp" />
 
-            <ImageView
-                android:src="@drawable/bell"
-                android:layout_width="match_parent"
-                android:layout_height="22dp"
-                 />
+            <ImageButton
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:background="@color/staff_blue"
+                android:layout_margin="0dp"
+                android:layout_gravity="center"
+                android:src="@drawable/subscribe"
+                tools:ignore="ContentDescription" />
 
             <TextView
-                android:text="5"
-                android:textColor="@color/staff_blue"
-                android:textSize="16sp"
-                android:background="@color/white"
                 android:id="@+id/lbSubLost"
-                android:layout_height="34dp"
-                android:layout_width="wrap_content"
-                />
-
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:background="@color/staff_blue"
+                android:gravity="center"
+                android:layout_marginStart="1dp"
+                android:text="5"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:textSize="26sp" />
 
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/numflight_one"
+                android:layout_gravity="center"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                />
+
+            <ImageButton
+                android:src="@drawable/favoff"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:scaleType="fitCenter"
+                android:background="@color/white"
+                android:padding="0dp"
+                android:layout_marginStart="20dp"
+                tools:ignore="ContentDescription" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/engine_one"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/timedep_one"
+                    android:textSize="18sp"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/datedep_one"
+                    android:textSize="16sp"
+                    android:textColor="@color/black"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/namedep_one"
+                android:layout_width="wrap_content"
+                android:layout_marginStart="20dp"
+                android:textAlignment="textStart"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="@string/label_in_flight"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+
+            <TextView
+                android:id="@+id/duration_one"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:layout_marginStart="50dp"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/timearr_one"
+                    android:textSize="18sp"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/datearr_one"
+                    android:textSize="16sp"
+                    android:textColor="@color/black"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/namearr_one"
+                android:layout_width="wrap_content"
+                android:layout_marginStart="20dp"
+                android:textAlignment="textStart"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="@string/label_status_current"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+
+            <TextView
+                android:id="@+id/rating_one"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginStart="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+
+        <TextView
+            android:text="@string/label_classes_available"
+            android:layout_marginTop="10dp"
+            android:textSize="14sp"
+            android:textColor="@color/black"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/classes_one"
+            android:textSize="18sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/flyzed_one"
+            android:textSize="18sp"
+            android:layout_marginTop="20dp"
+            android:textColor="@color/staff_blue"
+            android:textAlignment="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/btSearch_one"
+            android:layout_width="300dp"
+            android:layout_height="50dp"
+            style="@style/NotTintedButton"
+            android:text="@string/label_new_search"
+            android:onClick="search_click_one"
+            android:textSize="20sp"
+            android:layout_marginTop="20dp"
+            android:layout_gravity="center_horizontal"
+            android:shadowColor="@color/staff_blue"
+            android:textColor="@color/white"
+            android:background="@drawable/search_button_on"
+            />
 
     </LinearLayout>
 

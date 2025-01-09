@@ -23,7 +23,8 @@
             android:layout_marginLeft="80dp"
             android:layout_marginTop="25dp"
             android:layout_marginRight="80dp"
-            android:src="@drawable/sa" />
+            android:src="@drawable/sa"
+            tools:ignore="ContentDescription" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -35,7 +36,7 @@
                 android:id="@+id/datepicktv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="30dp"
+                android:layout_marginStart="30dp"
                 android:layout_marginTop="7dp"
                 android:layout_weight="9.0"
                 android:minWidth="300dp"
@@ -51,10 +52,11 @@
                 android:background="@color/white"
                 android:minWidth="30dp"
                 android:minHeight="30dp"
-                android:layout_marginRight="20dp"
+                android:layout_marginEnd="20dp"
                 android:scaleType="fitCenter"
                 android:onClick="datebutton_click"
-                android:src="@drawable/cal" />
+                android:src="@drawable/cal"
+                tools:ignore="ContentDescription" />
 
         </LinearLayout>
 
@@ -62,7 +64,8 @@
             android:layout_marginTop="5dp"
             android:layout_width="match_parent"
             android:background="@color/lightgray"
-            android:layout_height="1px" />
+            android:layout_height="1px"
+            tools:ignore="ContentDescription" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -81,11 +84,11 @@
                     android:id="@+id/origin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Origin city or airport"
+                    android:text="@string/label_origin_cuty"
                     android:textSize="15sp"
                     android:minHeight="20dp"
                     android:textColor="@color/text_gray"
-                    android:layout_marginLeft="30dp"
+                    android:layout_marginStart="30dp"
                     android:layout_marginTop="20dp"
                     android:onClick="origin_click"
                     />
@@ -94,17 +97,18 @@
                     android:layout_marginTop="5dp"
                     android:layout_width="match_parent"
                     android:background="@color/lightgray"
-                    android:layout_height="1dp" />
+                    android:layout_height="1dp"
+                    tools:ignore="ContentDescription" />
 
                 <TextView
                     android:id="@+id/destination"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Destination city or airport"
+                    android:text="@string/label_destination_city"
                     android:textSize="15sp"
                     android:minHeight="20dp"
                     android:textColor="@color/text_gray"
-                    android:layout_marginLeft="30dp"
+                    android:layout_marginStart="30dp"
                     android:layout_marginTop="30dp"
                     android:onClick="destination_click"
                     />
@@ -115,14 +119,15 @@
                 android:id="@+id/btReplace"
                 android:layout_width="wrap_content"
                 android:layout_height="101dp"
-                android:layout_marginRight="20dp"
+                android:layout_marginStart="20dp"
                 android:layout_weight="1.0"
                 android:background="@color/white"
                 android:scaleType="fitCenter"
                 android:paddingRight="5dp"
                 android:paddingLeft="5dp"
                 android:onClick="btReplace_click"
-                android:src="@drawable/arr" />
+                android:src="@drawable/arr"
+                tools:ignore="ContentDescription" />
 
         </LinearLayout>
 
@@ -130,7 +135,8 @@
             android:layout_marginTop="5dp"
             android:layout_width="match_parent"
             android:background="@color/lightgray"
-            android:layout_height="1dp" />
+            android:layout_height="1dp"
+            tools:ignore="ContentDescription" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -141,13 +147,13 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
-                android:text="Passengers"
+                android:text="@string/label_passengers"
                 android:textColor="@color/black"
                 android:textSize="15sp"
                 android:gravity="center_vertical"
-                android:layout_marginLeft="30dp"
+                android:layout_marginStart="30dp"
                 android:layout_marginTop="5dp"
-                android:layout_marginRight="40dp"
+                android:layout_marginEnd="40dp"
                 />
 
             <ImageButton
@@ -159,18 +165,7 @@
                 style="@style/NotTintedButton"
                 android:layout_marginTop="10dp"
                 android:onClick="minusbut_click"
-                />
-
-            <!--<Button
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginTop="10dp"
-                android:text="-"
-                android:textSize="20sp"
-                android:textColor="@color/staff_blue"
-                android:background="@drawable/minus_button_on"
-                style="@style/NotTintedButton"
-                />-->
+                tools:ignore="ContentDescription" />
 
             <TextView
                 android:id="@+id/cntpass"
@@ -192,7 +187,7 @@
                 android:background="@drawable/plus_button_on"
                 android:layout_marginTop="10dp"
                 android:onClick="plusbut_click"
-                />
+                tools:ignore="ContentDescription" />
 
         </LinearLayout>
 
@@ -201,11 +196,11 @@
             android:layout_width="300dp"
             android:layout_height="50dp"
             style="@style/NotTintedButton"
-            android:text="SEARCH"
+            android:text="@string/label_search"
             android:onClick="search_click"
             android:textSize="20sp"
             android:layout_marginTop="50dp"
-            android:layout_marginLeft="55dp"
+            android:layout_marginStart="55dp"
             android:shadowColor="@color/white"
             android:textColor="@color/staff_blue"
             android:outlineSpotShadowColor="@color/white"
