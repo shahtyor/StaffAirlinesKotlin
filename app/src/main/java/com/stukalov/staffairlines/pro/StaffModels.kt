@@ -1,6 +1,8 @@
 package com.stukalov.staffairlines.pro
 
 import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -66,7 +68,7 @@ data class SelectedPoint(
     var PType: PointType,
     var CountryName: String)
 
-data class Flight(
+class Flight(
     /// <summary>
     /// Код аэропорта вылета
     /// </summary>
@@ -179,6 +181,12 @@ data class Flight(
     val ArrDateTime: LocalDateTime
         get() = LocalDateTime.parse(ArrivalDateTime, secondFormatter)
 }
+
+class FlightWithPax(
+    var Fl: Flight,
+    var pax: Int,
+    var Dt: Long
+)
 
 data class PlaceInfo(
     var EconomyPlaces: Int?,

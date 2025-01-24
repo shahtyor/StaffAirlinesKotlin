@@ -9,7 +9,9 @@ import android.view.textclassifier.ConversationActions
 import android.widget.ListView
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import com.stukalov.staffairlines.pro.ui.result.ResultFragment
+import kotlinx.serialization.json.Json
 import okhttp3.ConnectionSpec
 import okhttp3.Credentials
 import okhttp3.OkHttpClient
@@ -26,6 +28,7 @@ class StaffMethods {
 
     val BaseUrl: String = "https://api.staffairlines.com:8033/api"
     var StaffApp = StaffAirlines()
+    val gson = Gson()
     val client = OkHttpClient().newBuilder().connectionSpecs(
         Arrays.asList(ConnectionSpec.MODERN_TLS, ConnectionSpec.COMPATIBLE_TLS)).addInterceptor { chain ->
         val originalRequest = chain.request()
@@ -122,5 +125,48 @@ class StaffMethods {
         }
 
         return Json
+    }
+
+    fun GetFavouritesString(): String
+    {
+        val astr = mutableListOf<String>()
+
+        GlobalStuff.FavoriteList.forEach {
+            val json = gson.toJson(it) //withDefaults.encodeToString(it)
+            astr.add(0, json)
+        }
+        val result = astr.joinToString("|")
+        return result
+    }
+
+    fun SaveFavorites()
+    {
+        val OneStr = GetFavouritesString()
+        val editor = GlobalStuff.prefs.edit()
+        editor.putString("favourites", OneStr).apply()
+    }
+
+    fun ReadFavorites()
+    {
+        val FlightType = object : TypeToken<FlightWithPax>() {}.type
+
+        GlobalStuff.FavoriteList.clear()
+
+        if (GlobalStuff.prefs.contains("favourites")) {
+            val result = GlobalStuff.prefs.getString("favourites", null)
+            val arrres = result!!.split("|")
+            arrres.forEach {
+                val Fl = gson.fromJson<FlightWithPax>(it, FlightType)
+                GlobalStuff.FavoriteList.add(0, Fl)
+            }
+        }
+    }
+
+    fun ExistInFavourites(F: Flight): Boolean
+    {
+        var result = false
+        val filt = GlobalStuff.FavoriteList.filter { it.Fl.DepartureDateTime == F.DepartureDateTime && it.Fl.FlightNumber == F.FlightNumber && it.Fl.MarketingCarrier == F.MarketingCarrier }
+        if (filt.size > 0) result = true
+        return result
     }
 }

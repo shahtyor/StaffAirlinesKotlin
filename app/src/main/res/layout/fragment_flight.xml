@@ -90,6 +90,7 @@
                 />
 
             <ImageButton
+                android:id="@+id/fav_one"
                 android:src="@drawable/favoff"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
@@ -97,6 +98,7 @@
                 android:background="@color/white"
                 android:padding="0dp"
                 android:layout_marginStart="20dp"
+                android:onClick="fav_click"
                 tools:ignore="ContentDescription" />
 
         </LinearLayout>

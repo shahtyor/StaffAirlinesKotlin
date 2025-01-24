@@ -20,184 +20,185 @@
             android:textSize="16sp"
             android:textColor="@color/black"
             android:layout_width="match_parent"
+            android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="5dp"
             android:layout_height="30dp" />
 
-            <LinearLayout
-                android:orientation="horizontal"
+        <LinearLayout
+            android:orientation="horizontal"
+            android:padding="0dp"
+            android:layout_margin="0dp"
+            app:flow_horizontalAlign="start"
+            android:layout_width="match_parent"
+            android:layout_height="65dp"
+            tools:ignore="MissingConstraints">
+
+            <FrameLayout
+                android:id="@+id/RatingFrame"
+                android:layout_width="17dp"
                 android:padding="0dp"
                 android:layout_margin="0dp"
-                app:flow_horizontalAlign="start"
-                android:layout_width="match_parent"
-                android:layout_height="65dp"
-                tools:ignore="MissingConstraints">
+                android:layout_height="match_parent">
+            </FrameLayout>
 
-                <FrameLayout
-                    android:id="@+id/RatingFrame"
-                    android:layout_width="17dp"
-                    android:padding="0dp"
-                    android:layout_margin="0dp"
-                    android:layout_height="match_parent">
-                </FrameLayout>
+            <LinearLayout
+                android:orientation="vertical"
+                android:padding="0dp"
+                android:layout_width="100dp"
+                android:layout_margin="0dp"
+                android:layout_height="match_parent">
 
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:padding="0dp"
-                    android:layout_width="100dp"
-                    android:layout_margin="0dp"
-                    android:layout_height="match_parent">
-
-                    <ImageView
-                        android:id="@+id/aclogo"
-                        android:layout_width="25dp"
-                        android:layout_height="25dp"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_marginLeft="0dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginRight="0dp"
-                        tools:ignore="ContentDescription" />
-
-                    <TextView
-                        android:id="@+id/acname"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:textAlignment="center"
-                        android:textSize="12sp"
-                        android:layout_margin="0dp"
-                        android:padding="0dp"
-                        android:layout_marginBottom="10dp"
-                        android:textColor="@color/black">
-                    </TextView>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:padding="0dp"
-                    android:layout_width="70dp"
-                    android:layout_height="match_parent">
-
-                    <TextView
-                        android:textSize="10sp"
-                        android:text="@string/next_day_label"
-                        android:textAlignment="textEnd"
-                        android:textColor="@color/sa_full_transparent"
-                        android:padding="0dp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                    </TextView>
-
-                    <TextView
-                        android:id="@+id/timedep"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="16sp"
-                        android:layout_marginStart="0dp"
-                        android:layout_marginTop="0dp"
-                        android:padding="0dp"
-                        android:textColor="@color/black">
-                    </TextView>
-
-                    <TextView
-                        android:id="@+id/deppoint"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="0dp"
-                        android:padding="0dp"
-                        android:textSize="16sp"
-                        android:textColor="@color/black">
-                    </TextView>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:paddingStart="0dp"
-                    android:paddingTop="10dp"
-                    android:paddingEnd="10dp"
-                    android:paddingBottom="0dp"
-                    android:layout_width="80dp"
-                    android:layout_height="match_parent">
-
-                    <ImageView
-                        android:id="@+id/planepic"
-                        android:layout_width="15dp"
-                        android:layout_height="15dp"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_marginLeft="0dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginRight="0dp"
-                        tools:ignore="ContentDescription" />
-
-                    <TextView
-                        android:id="@+id/durtext"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textAlignment="center"
-                        android:layout_margin="0dp"
-                        android:padding="0dp"
-                        android:textSize="12sp"
-                        android:textColor="@color/black">
-                    </TextView>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:padding="0dp"
-                    android:layout_width="70dp"
-                    android:layout_height="match_parent">
-
-                    <TextView
-                        android:id="@+id/nextDay"
-                        android:textSize="10sp"
-                        android:textColor="@color/black"
-                        android:text="@string/next_day_label"
-                        android:textAlignment="textEnd"
-                        android:padding="0dp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                    </TextView>
-
-                    <TextView
-                        android:id="@+id/timearr"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="16sp"
-                        android:layout_marginStart="0dp"
-                        android:layout_marginTop="0dp"
-                        android:padding="0dp"
-                        android:textColor="@color/black">
-                    </TextView>
-
-                    <TextView
-                        android:id="@+id/arrpoint"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="0dp"
-                        android:padding="0dp"
-                        android:textSize="16sp"
-                        android:textColor="@color/black">
-                    </TextView>
-
-                </LinearLayout>
+                <ImageView
+                    android:id="@+id/aclogo"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginRight="0dp"
+                    tools:ignore="ContentDescription" />
 
                 <TextView
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginStart="10dp"
-                    android:id="@+id/cntrating"
-                    android:textSize="12sp"
+                    android:id="@+id/acname"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:textAlignment="center"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:background="@drawable/round_box_green"
-                    android:layout_width="25sp"
-                    android:layout_height="25sp">
+                    android:textSize="12sp"
+                    android:layout_margin="0dp"
+                    android:padding="0dp"
+                    android:layout_marginBottom="10dp"
+                    android:textColor="@color/black">
                 </TextView>
 
             </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:padding="0dp"
+                android:layout_width="70dp"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:textSize="10sp"
+                    android:text="@string/next_day_label"
+                    android:textAlignment="textEnd"
+                    android:textColor="@color/sa_full_transparent"
+                    android:padding="0dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/timedep"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginTop="0dp"
+                    android:padding="0dp"
+                    android:textColor="@color/black">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/deppoint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="0dp"
+                    android:padding="0dp"
+                    android:textSize="16sp"
+                    android:textColor="@color/black">
+                </TextView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:paddingStart="0dp"
+                android:paddingTop="10dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="0dp"
+                android:layout_width="80dp"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/planepic"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginRight="0dp"
+                    tools:ignore="ContentDescription" />
+
+                <TextView
+                    android:id="@+id/durtext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:layout_margin="0dp"
+                    android:padding="0dp"
+                    android:textSize="12sp"
+                    android:textColor="@color/black">
+                </TextView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:padding="0dp"
+                android:layout_width="70dp"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/nextDay"
+                    android:textSize="10sp"
+                    android:textColor="@color/black"
+                    android:text="@string/next_day_label"
+                    android:textAlignment="textEnd"
+                    android:padding="0dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/timearr"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginTop="0dp"
+                    android:padding="0dp"
+                    android:textColor="@color/black">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/arrpoint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="0dp"
+                    android:padding="0dp"
+                    android:textSize="16sp"
+                    android:textColor="@color/black">
+                </TextView>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginStart="10dp"
+                android:id="@+id/cntrating"
+                android:textSize="12sp"
+                android:textAlignment="center"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:background="@drawable/round_box_green"
+                android:layout_width="25sp"
+                android:layout_height="25sp">
+            </TextView>
+
+        </LinearLayout>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

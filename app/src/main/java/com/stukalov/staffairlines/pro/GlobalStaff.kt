@@ -2,6 +2,7 @@ package com.stukalov.staffairlines.pro
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.SharedPreferences
 import android.content.res.Resources
 import android.widget.ArrayAdapter
 import android.widget.FrameLayout
@@ -17,14 +18,17 @@ import java.time.LocalDate
         lateinit var navController: NavController
         lateinit var navView: BottomNavigationView
         lateinit var Locations: List<Location>
+        var FavoriteList = mutableListOf<FlightWithPax>()
         lateinit var activity: Context
         var OriginPoint: SelectedPoint? = null
         var DestinationPoint: SelectedPoint? = null
         var SearchDT: LocalDate? = null
+        var Pax: Int = 1
         lateinit var dtSearch: TextView
         var ExtResult: ExtendedResult? = null
         var OneResult: Flight? = null
         lateinit var StaffRes: Resources
         lateinit var supportFragManager: androidx.fragment.app.FragmentManager
+        lateinit var prefs: SharedPreferences
     }
 //}

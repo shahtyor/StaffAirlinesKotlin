@@ -2,6 +2,7 @@ package com.stukalov.staffairlines.pro
 
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -64,7 +65,7 @@ class MainActivity : AppCompatActivity() {
         // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications
+                R.id.navigation_home, R.id.navigation_favourites, R.id.navigation_notifications
             )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -81,6 +82,9 @@ class MainActivity : AppCompatActivity() {
         GlobalStuff.navView = navView
         GlobalStuff.StaffRes = resources
         GlobalStuff.supportFragManager = supportFragmentManager
+        GlobalStuff.prefs = getSharedPreferences("settings", Context.MODE_PRIVATE)
+
+        SM.ReadFavorites()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

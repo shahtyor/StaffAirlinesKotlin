@@ -10,18 +10,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import com.stukalov.staffairlines.pro.FlightWithPax
 import com.stukalov.staffairlines.pro.GlobalStuff
 import com.stukalov.staffairlines.pro.R
 import com.stukalov.staffairlines.pro.RType
+import com.stukalov.staffairlines.pro.StaffMethods
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
 
 class FlightFragment : Fragment() {
+
+    val SM: StaffMethods = StaffMethods()
 
     companion object {
         fun newInstance() = FlightFragment()
@@ -64,15 +69,21 @@ class FlightFragment : Fragment() {
         val oclasses = view.findViewById<TextView>(R.id.classes_one)
         val oflyzed = view.findViewById<TextView>(R.id.flyzed_one)
         val osearch = view.findViewById<Button>(R.id.btSearch_one)
+        val ofav = view.findViewById<ImageButton>(R.id.fav_one)
 
         osearch.setOnClickListener()
         {
             search_click_one(view)
         }
 
+        ofav.setOnClickListener()
+        {
+            fav_click(view)
+        }
+
         var f = GlobalStuff.OneResult!!
 
-        val mc = "_" + f.MarketingCarrier.toLowerCase(Locale.ENGLISH)
+        val mc = "_" + f.MarketingCarrier.lowercase(Locale.ENGLISH)
         val identifier = GlobalStuff.StaffRes.getIdentifier(mc, "drawable", "com.stukalov.staffairlines.pro")
 
         var OriginNameExt = f.DepartureName + " (" + f.Origin + ")"
@@ -145,6 +156,13 @@ class FlightFragment : Fragment() {
         orat.setText(f.RatingType.name + ", " + f.AllPlaces + " seats")
         oclasses.setText(Html.fromHtml(strclass))
         oflyzed.setText(Html.fromHtml(strflyzed))
+
+        if (SM.ExistInFavourites(f)) {
+            ofav.setImageResource(R.drawable.favon)
+        }
+        else {
+            ofav.setImageResource(R.drawable.favoff)
+        }
     }
 
     fun GetTimeAsHM2(minutes: Int): String {
@@ -155,5 +173,29 @@ class FlightFragment : Fragment() {
 
     fun search_click_one(view: View) {
         GlobalStuff.navController.navigate(R.id.navigation_home)
+    }
+
+    fun fav_click(view: View) {
+        val ofav = view.findViewById<ImageButton>(R.id.fav_one)
+
+        val FWP = FlightWithPax(
+            GlobalStuff.OneResult!!,
+            GlobalStuff.Pax,
+            GlobalStuff.SearchDT!!.toEpochDay()
+        )
+
+        if (SM.ExistInFavourites(GlobalStuff.OneResult!!))
+        {
+            val filt = GlobalStuff.FavoriteList.filter { it.Fl.DepartureDateTime == GlobalStuff.OneResult!!.DepartureDateTime && it.Fl.FlightNumber == GlobalStuff.OneResult!!.FlightNumber && it.Fl.MarketingCarrier == GlobalStuff.OneResult!!.MarketingCarrier }
+            GlobalStuff.FavoriteList.remove(filt[0])
+
+            ofav.setImageResource(R.drawable.favoff)
+        }
+        else {
+            GlobalStuff.FavoriteList.add(0, FWP)
+
+            ofav.setImageResource(R.drawable.favon)
+        }
+        SM.SaveFavorites()
     }
 }

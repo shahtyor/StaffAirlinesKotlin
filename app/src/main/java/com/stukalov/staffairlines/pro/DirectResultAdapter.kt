@@ -105,7 +105,7 @@ class DirectResultAdapter(private val context: Context, private val ExtResult: E
             CurDate = f.DepDateTime.toLocalDate()
         }*/
 
-            val mc = "_" + f.MarketingCarrier.toLowerCase(Locale.ENGLISH)
+            val mc = "_" + f.MarketingCarrier.lowercase(Locale.ENGLISH)
             val arrdep = f.DepartureDateTime.split("T")
             val deptime = arrdep[1].substring(0, 5)
             val arrarr = f.ArrivalDateTime.split("T")
