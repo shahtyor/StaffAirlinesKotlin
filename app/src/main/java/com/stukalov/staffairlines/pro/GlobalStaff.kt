@@ -26,6 +26,7 @@ import java.time.LocalDate
         var Pax: Int = 1
         lateinit var dtSearch: TextView
         var ExtResult: ExtendedResult? = null
+        var FlInfo: FlightInfo? = null
         var OneResult: Flight? = null
         lateinit var StaffRes: Resources
         lateinit var supportFragManager: androidx.fragment.app.FragmentManager

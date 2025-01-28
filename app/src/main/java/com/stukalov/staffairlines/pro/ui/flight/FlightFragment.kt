@@ -13,6 +13,7 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.stukalov.staffairlines.pro.FlightWithPax
 import com.stukalov.staffairlines.pro.GlobalStuff
@@ -20,6 +21,8 @@ import com.stukalov.staffairlines.pro.R
 import com.stukalov.staffairlines.pro.RType
 import com.stukalov.staffairlines.pro.StaffMethods
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
@@ -82,6 +85,10 @@ class FlightFragment : Fragment() {
         }
 
         var f = GlobalStuff.OneResult!!
+
+        val formatter0 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val title = f.Origin + " - " + f.Destination + ", " + f.DepDateTime.format(formatter0)
+        (activity as AppCompatActivity).supportActionBar?.title = title
 
         val mc = "_" + f.MarketingCarrier.lowercase(Locale.ENGLISH)
         val identifier = GlobalStuff.StaffRes.getIdentifier(mc, "drawable", "com.stukalov.staffairlines.pro")
@@ -181,7 +188,7 @@ class FlightFragment : Fragment() {
         val FWP = FlightWithPax(
             GlobalStuff.OneResult!!,
             GlobalStuff.Pax,
-            GlobalStuff.SearchDT!!.toEpochDay()
+            LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)
         )
 
         if (SM.ExistInFavourites(GlobalStuff.OneResult!!))

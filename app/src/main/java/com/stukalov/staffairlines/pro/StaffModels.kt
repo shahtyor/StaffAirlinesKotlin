@@ -188,6 +188,28 @@ class FlightWithPax(
     var Dt: Long
 )
 
+class FlightInfo(
+    var Flight: Flight,
+    var Alert: String
+)
+
+class HistoryElement
+(
+    var Origin: String,
+    var Destination: String,
+    var OriginId: String,
+    var DestinationId: String,
+    var OriginName: String,
+    var DestinationName: String,
+    var SearchDate: Long,
+    var Pax: Int,
+    public string StringDate
+    {
+        get { return SearchDate.ToString("dd-MM-yyyy"); }
+        set { }
+    }
+)
+
 data class PlaceInfo(
     var EconomyPlaces: Int?,
     var BusinessPlaces: Int?,

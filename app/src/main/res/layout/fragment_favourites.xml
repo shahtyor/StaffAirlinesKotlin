@@ -4,19 +4,61 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingTop="40dp"
     tools:context=".ui.favourites.FavouritesFragment">
 
-    <TextView
-        android:id="@+id/text_dashboard"
+    <LinearLayout
+        android:background="@color/white"
+        android:isScrollContainer="true"
+        android:orientation="vertical"
+        android:padding="0dp"
+        android:layout_margin="0dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="match_parent">
+
+        <TextView
+            android:text="Tap to flight for update status."
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginStart="20dp"
+            tools:ignore="MissingConstraints" />
+
+        <ListView
+            android:id="@+id/favlistview"
+            android:isScrollContainer="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="0dp"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:layout_marginTop="10dp"
+            tools:listitem="@layout/item_directlist"
+            />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/spinner_favour"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:background="@drawable/overlay_back"
+        android:elevation="4dp"
+        android:translationZ="4dp"
+        android:visibility="gone"
+        tools:ignore="MissingConstraints">
+
+        <ProgressBar
+            android:id="@+id/loading_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:indeterminateTint="@color/staff_blue"
+            android:indeterminateTintMode="src_atop" />
+
+    </FrameLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

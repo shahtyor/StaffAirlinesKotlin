@@ -19,6 +19,7 @@ import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Arrays
 import java.util.concurrent.TimeUnit
@@ -47,7 +48,7 @@ class StaffMethods {
         var res: String = ""
         try
         {
-            var formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
             val Uri = BaseUrl + "/amadeus/ExtendedSearch?origin=" + origin + "&destination=" + destination + "&date=" + date.format(formatter) + "&list=" + list + "&GetTransfer=" + GetTransfer.toString() + "&GetNonDirect=" + ntype.toString() + "&pax=" + pax + "&token=" + token + "&sa=" + sa.toString() + "&ver=" + ver + "&ac=" + ac + "&currency=" + currency + "&lang=" + lang + "&country=" + country;
             val request = Request.Builder().url(Uri).build()
 
@@ -64,6 +65,42 @@ class StaffMethods {
                 {
                     //direct_lv.setAdapter(resultadapter)
                 }
+
+                return "OK"
+            }
+            catch (e: Exception)
+            {
+                res = e.message + "..." + e.stackTrace
+            }
+        }
+        catch (ex: Exception)
+        {
+            res = ex.message + "..." + ex.stackTrace
+        }
+        return res
+    }
+
+    fun GetFlightInfo(origin: String, destination: String, date: LocalDateTime, pax: Int, aircompany: String, number: String, token: String = "void token", id_user: String = "common ticketapi user"): String
+    {
+        var res: String = ""
+        try
+        {
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+            val formatterLong = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+            val strdate = date.format(formatter)
+            val strnow = LocalDateTime.now().format(formatterLong)
+            val Uri: String = BaseUrl + "/amadeus/GetFlightInfo?origin=" + origin + "&destination=" + destination + "&date=" + strdate + "&pax=" + pax + "&aircompany=" + aircompany + "&number=" + number + "&now=" + strnow + "&token=" + token + "&id_user=" + id_user;
+            val request = Request.Builder().url(Uri).build()
+
+            val Json = RequestJson(client, request)
+
+            val FlightData: FlightInfo
+            val gson = Gson()
+
+            try
+            {
+                FlightData = gson.fromJson(Json, FlightInfo::class.java)
+                GlobalStuff.FlInfo = FlightData
 
                 return "OK"
             }
@@ -146,6 +183,12 @@ class StaffMethods {
         editor.putString("favourites", OneStr).apply()
     }
 
+    fun SaveVoidFavourites()
+    {
+        val editor = GlobalStuff.prefs.edit()
+        editor.remove("favourites").apply()
+    }
+
     fun ReadFavorites()
     {
         val FlightType = object : TypeToken<FlightWithPax>() {}.type
@@ -157,7 +200,9 @@ class StaffMethods {
             val arrres = result!!.split("|")
             arrres.forEach {
                 val Fl = gson.fromJson<FlightWithPax>(it, FlightType)
-                GlobalStuff.FavoriteList.add(0, Fl)
+                if (Fl != null) {
+                    GlobalStuff.FavoriteList.add(0, Fl)
+                }
             }
         }
     }

@@ -18,10 +18,10 @@
                 tools:layout="@layout/fragment_favourites" />
 
             <fragment
-                android:id="@+id/navigation_notifications"
-                android:name="com.stukalov.staffairlines.pro.ui.notifications.NotificationsFragment"
-                android:label="@string/title_notifications"
-                tools:layout="@layout/fragment_notifications" />
+                android:id="@+id/navigation_history"
+                android:name="com.stukalov.staffairlines.pro.ui.history.HistoryFragment"
+                android:label="Search history"
+                tools:layout="@layout/fragment_history" />
 
             <fragment
                 android:id="@+id/sel_point"
