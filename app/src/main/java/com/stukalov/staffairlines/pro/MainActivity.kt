@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.PointMode
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentContainerView
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
@@ -65,16 +66,20 @@ class MainActivity : AppCompatActivity() {
         // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.navigation_home, R.id.navigation_favourites, R.id.navigation_history
+                R.id.navigation_home, R.id.navigation_favourites, R.id.navigation_history, R.id.navigation_settings
             )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
         val SM: StaffMethods = StaffMethods()
-        var jsonloc: String = ""
+
         lifecycleScope.launch {
             val jsonloc = withContext(Dispatchers.IO) { SM.LoadLocations() }
+        }
+
+        lifecycleScope.launch {
+            val jsonair = withContext(Dispatchers.IO) { SM.LoadAirlines() }
         }
 
         GlobalStuff.activity = this.baseContext
@@ -85,7 +90,10 @@ class MainActivity : AppCompatActivity() {
         GlobalStuff.prefs = getSharedPreferences("settings", Context.MODE_PRIVATE)
 
         //SM.SaveVoidFavourites()
+        SM.GetOwnAC()
+        SM.ReadPermit()
         SM.ReadFavorites()
+        SM.ReadHistory()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

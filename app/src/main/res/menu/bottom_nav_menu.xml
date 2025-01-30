@@ -16,4 +16,9 @@
         android:icon="@drawable/history2"
         android:title="History" />
 
+    <item
+        android:id="@+id/navigation_settings"
+        android:icon="@drawable/settings"
+        android:title="Settings" />
+
 </menu>

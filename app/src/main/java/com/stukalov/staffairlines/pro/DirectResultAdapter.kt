@@ -152,7 +152,7 @@ class DirectResultAdapter(private val context: Context, private val ExtResult: E
                 visdate = View.VISIBLE
             }
 
-            val sdf = DateTimeFormatter.ofPattern("DD MMMM, yyyy")
+            val sdf = DateTimeFormatter.ofPattern("dd MMMM, yyyy")
 
             holder.ivaclogo!!.setImageResource(identifier)
             holder.tvacname!!.setText(f.MarketingName)

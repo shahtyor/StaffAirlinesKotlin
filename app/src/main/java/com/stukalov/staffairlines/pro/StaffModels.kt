@@ -202,12 +202,23 @@ class HistoryElement
     var OriginName: String,
     var DestinationName: String,
     var SearchDate: Long,
-    var Pax: Int,
-    public string StringDate
-    {
-        get { return SearchDate.ToString("dd-MM-yyyy"); }
-        set { }
-    }
+    var Pax: Int
+)
+
+class Airline0
+(
+    @SerializedName("code")
+    var Code: String,
+    @SerializedName("airline")
+    var Airline: String
+)
+
+class PermittedAC
+(
+    @SerializedName("code")
+    var Code: String,
+    @SerializedName("permit")
+    var Permit: String
 )
 
 data class PlaceInfo(

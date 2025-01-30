@@ -18,7 +18,10 @@ import java.time.LocalDate
         lateinit var navController: NavController
         lateinit var navView: BottomNavigationView
         lateinit var Locations: List<Location>
+        var Airlines: List<Airline0> = listOf()
+        var Permitted: List<PermittedAC> = listOf()
         var FavoriteList = mutableListOf<FlightWithPax>()
+        var HistoryList = mutableListOf<HistoryElement>()
         lateinit var activity: Context
         var OriginPoint: SelectedPoint? = null
         var DestinationPoint: SelectedPoint? = null
@@ -28,6 +31,7 @@ import java.time.LocalDate
         var ExtResult: ExtendedResult? = null
         var FlInfo: FlightInfo? = null
         var OneResult: Flight? = null
+        var OwnAC: Airline0? = null
         lateinit var StaffRes: Resources
         lateinit var supportFragManager: androidx.fragment.app.FragmentManager
         lateinit var prefs: SharedPreferences

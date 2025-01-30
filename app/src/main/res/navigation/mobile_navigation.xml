@@ -24,10 +24,28 @@
                 tools:layout="@layout/fragment_history" />
 
             <fragment
+                android:id="@+id/navigation_settings"
+                android:name="com.stukalov.staffairlines.pro.ui.setting.SettingFragment"
+                android:label="Settings"
+                tools:layout="@layout/fragment_setting" />
+
+            <fragment
                 android:id="@+id/sel_point"
                 android:name="com.stukalov.staffairlines.pro.ui.sel_point.SelPointFragment"
                 android:label="Select point"
                 tools:layout="@layout/fragment_sel_point" />
+
+            <fragment
+                android:id="@+id/sel_ac_frag"
+                android:name="com.stukalov.staffairlines.pro.ui.sel_ac.SelACFragment"
+                android:label="Work airline"
+                tools:layout="@layout/fragment_sel_ac" />
+
+            <fragment
+                android:id="@+id/show_permitt_frag"
+                android:name="com.stukalov.staffairlines.pro.ui.sel_ac.ShowPermittFragment"
+                android:label="Permitted Airlines"
+                tools:layout="@layout/fragment_permitted_ac" />
 
             <fragment
                 android:id="@+id/resultlayout"

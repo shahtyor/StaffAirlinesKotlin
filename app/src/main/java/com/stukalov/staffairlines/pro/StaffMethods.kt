@@ -1,6 +1,7 @@
 package com.stukalov.staffairlines.pro
 
 import android.app.Application
+import android.net.http.NetworkException
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -143,14 +144,75 @@ class StaffMethods {
         return Json
     }
 
+    fun LoadAirlines(): String
+    {
+        var Json: String = ""
+
+        val request = Request.Builder()
+            .url(BaseUrl + "/airlines?lang=en")
+            .build()
+
+        Json = RequestJson(client, request)
+
+        val AirData: Array<Airline0>
+        val gson = Gson()
+        try {
+            AirData = gson.fromJson(Json, Array<Airline0>::class.java)
+            GlobalStuff.Airlines = AirData.toList()
+        }
+        catch (e: Exception)
+        {
+            val stre = e.message + "..." + e.stackTrace
+        }
+        return Json
+    }
+
+    fun GetPermittedAC(code: String): String
+    {
+        var Json: String = ""
+
+        val request = Request.Builder()
+            .url(BaseUrl + "/permitted_ac?code=" + code)
+            .build()
+
+        Json = RequestJson(client, request)
+
+        val AirData: Array<PermittedAC>
+        val gson = Gson()
+        try {
+            AirData = gson.fromJson(Json, Array<PermittedAC>::class.java)
+
+            var tmp: MutableList<PermittedAC> = mutableListOf()
+            AirData.forEach { it0 ->
+                val air = GlobalStuff.Airlines.filter { it -> it.Code == it0.Permit }
+                if (air.size >= 1) {
+                    val air0 = air.first()
+                    val perm = PermittedAC(air0.Code, air0.Airline)
+                    tmp.add(0, perm)
+                }
+            }
+
+            GlobalStuff.Permitted = tmp.toList()
+
+            SavePermitted()
+        }
+        catch (e: Exception)
+        {
+            val stre = e.message + "..." + e.stackTrace
+        }
+        return Json
+    }
+
     fun RequestJson(client: OkHttpClient, request: Request): String {
         var Json: String = ""
 
         try {
             client.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) {
-                    throw IOException("Запрос к серверу не был успешен:" +
-                            " ${response.code} ${response.message}")
+                    throw IOException(
+                        "Запрос к серверу не был успешен:" +
+                                " ${response.code} ${response.message}"
+                    )
                 }
                 // вывод тела ответа
                 Json = response.body!!.string()
@@ -211,6 +273,116 @@ class StaffMethods {
     {
         var result = false
         val filt = GlobalStuff.FavoriteList.filter { it.Fl.DepartureDateTime == F.DepartureDateTime && it.Fl.FlightNumber == F.FlightNumber && it.Fl.MarketingCarrier == F.MarketingCarrier }
+        if (filt.size > 0) result = true
+        return result
+    }
+
+    fun SaveOwnAC()
+    {
+        val ac = GlobalStuff.OwnAC
+        val json = gson.toJson(ac)
+        val editor = GlobalStuff.prefs.edit()
+        editor.putString("ownac", json).apply()
+    }
+
+    fun GetOwnAC()
+    {
+        val AirlineType = object : TypeToken<Airline0>() {}.type
+        if (GlobalStuff.prefs.contains("ownac")) {
+            val json = GlobalStuff.prefs.getString("ownac", null)
+            val Air = gson.fromJson<Airline0>(json, AirlineType)
+            if (Air != null) {
+                    GlobalStuff.OwnAC = Air
+            }
+        }
+    }
+
+    fun GetPermittedString(): String
+    {
+        val astr = mutableListOf<String>()
+
+        GlobalStuff.Permitted.forEach {
+            val json = gson.toJson(it)
+            astr.add(0, json)
+        }
+        val result = astr.joinToString("|")
+        return result
+    }
+
+    fun SavePermitted()
+    {
+        val OneStr = GetPermittedString()
+        val editor = GlobalStuff.prefs.edit()
+        editor.putString("permitted", OneStr).apply()
+    }
+
+    fun ReadPermit()
+    {
+        val PermittedType = object : TypeToken<PermittedAC>() {}.type
+
+        var tmp: MutableList<PermittedAC> = mutableListOf()
+
+        if (GlobalStuff.prefs.contains("permitted")) {
+            val result = GlobalStuff.prefs.getString("permitted", null)
+            val arrres = result!!.split("|")
+            arrres.forEach {
+                val Perm = gson.fromJson<PermittedAC>(it, PermittedType)
+                if (Perm != null) {
+                    tmp.add(0, Perm)
+                }
+            }
+
+            GlobalStuff.Permitted = tmp.toList()
+        }
+    }
+
+    fun GetHistoryString(): String
+    {
+        val astr = mutableListOf<String>()
+
+        GlobalStuff.HistoryList.forEach {
+            val json = gson.toJson(it)
+            astr.add(0, json)
+        }
+        val result = astr.joinToString("|")
+        return result
+    }
+
+    fun SaveHistory()
+    {
+        val OneStr = GetHistoryString()
+        val editor = GlobalStuff.prefs.edit()
+        editor.putString("history", OneStr).apply()
+    }
+
+    fun SaveVoidHistory()
+    {
+        val editor = GlobalStuff.prefs.edit()
+        editor.remove("history").apply()
+    }
+
+    fun ReadHistory()
+    {
+        val HistoryType = object : TypeToken<HistoryElement>() {}.type
+
+        GlobalStuff.HistoryList.clear()
+
+        if (GlobalStuff.prefs.contains("history")) {
+            val result = GlobalStuff.prefs.getString("history", null)
+            val arrres = result!!.split("|")
+            arrres.forEach {
+                val HE = gson.fromJson<HistoryElement>(it, HistoryType)
+                if (HE != null) {
+                    GlobalStuff.HistoryList.add(0, HE)
+                }
+            }
+        }
+    }
+
+    fun ExistInHistory(H: HistoryElement): Boolean
+    {
+        var result = false
+        val filt = GlobalStuff.HistoryList.filter { it.OriginId == H.OriginId && it.DestinationId == H.DestinationId && it.SearchDate == H.SearchDate && it.Pax ==  H.Pax }
         if (filt.size > 0) result = true
         return result
     }

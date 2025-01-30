@@ -29,6 +29,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.stukalov.staffairlines.pro.ExtendedResult
 import com.stukalov.staffairlines.pro.GetNonDirectType
 import com.stukalov.staffairlines.pro.GlobalStuff
+import com.stukalov.staffairlines.pro.HistoryElement
 import com.stukalov.staffairlines.pro.MainActivity
 import com.stukalov.staffairlines.pro.PointType
 import com.stukalov.staffairlines.pro.R
@@ -37,6 +38,7 @@ import com.stukalov.staffairlines.pro.StaffMethods
 import com.stukalov.staffairlines.pro.databinding.FragmentHomeBinding
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
@@ -71,6 +73,7 @@ class HomeFragment : Fragment() {
     lateinit var btPlusBut: ImageButton
     lateinit var tbCntPass: TextView
     lateinit var btDate: ImageButton
+    val SM: StaffMethods = StaffMethods()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -279,12 +282,27 @@ class HomeFragment : Fragment() {
             //SelectPage = null;
             //GlobalStuff.SelPoint = null;
         }
+        tbCntPass.setText(GlobalStuff.Pax.toString())
+        val formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy")
+        if (GlobalStuff.SearchDT == null)
+        {
+            GlobalStuff.SearchDT = LocalDate.now()
+        }
+        val text = GlobalStuff.SearchDT!!.format(formatter)
+        tbSearchDT.setText(text)
     }
 
 
     override fun onResume() {
         super.onResume()
         (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
+
+        if (GlobalStuff.OwnAC == null)
+        {
+            val bundle = Bundle()
+            bundle.putString("SelACMode", "home")
+            GlobalStuff.navController.navigate(R.id.sel_ac_frag, bundle)
+        }
     }
 
     override fun onStop() {
@@ -328,6 +346,7 @@ class HomeFragment : Fragment() {
             btMinusBut.setBackgroundResource(R.drawable.minus_button_off)
             btMinusBut.setImageResource(R.drawable.minus_blue)
         }
+        GlobalStuff.Pax = cnt
     }
 
     fun plusbut_click(view: View)
@@ -360,6 +379,7 @@ class HomeFragment : Fragment() {
             btMinusBut.setBackgroundResource(R.drawable.minus_button_off)
             btMinusBut.setImageResource(R.drawable.minus_blue)
         }
+        GlobalStuff.Pax = cnt
     }
 
     fun origin_click(view: View) {
@@ -414,8 +434,23 @@ class HomeFragment : Fragment() {
         }
     }
 
+    fun add_to_history(Origin: String, Destination: String, OriginId: String, DestinationId: String, OriginName: String, DestinationName: String, SearchDt: Long, Pax: Int)
+    {
+        val item: HistoryElement = HistoryElement(Origin, Destination, OriginId, DestinationId, OriginName, DestinationName, SearchDt, Pax)
+        val exist = SM.ExistInHistory(item)
+        if (!exist)
+        {
+            GlobalStuff.HistoryList.add(0, item)
+            if (GlobalStuff.HistoryList.size > 30)
+            {
+                GlobalStuff.HistoryList.removeAt(30)
+            }
+            SM.SaveHistory()
+        }
+    }
+
     fun search_click(view: View) {
-        val SM: StaffMethods = StaffMethods()
+        //val SM: StaffMethods = StaffMethods()
 
         if (GlobalStuff.OriginPoint != null && GlobalStuff.DestinationPoint != null) {
 
@@ -424,6 +459,9 @@ class HomeFragment : Fragment() {
             GlobalStuff.navView.visibility = View.GONE
 
             SetDisable(false)
+            val OP = GlobalStuff.OriginPoint
+            val DP = GlobalStuff.DestinationPoint
+            add_to_history(OP!!.Code, DP!!.Code, OP.Id.toString(), DP.Id.toString(), OP.Name, DP.Name, GlobalStuff.SearchDT!!.toEpochDay(), tbCntPass.text.toString().toInt())
 
             lifecycleScope.launch {
                 val result = withContext(Dispatchers.IO) {

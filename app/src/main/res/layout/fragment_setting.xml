@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="50dp"
+    tools:context=".ui.setting.SettingFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:padding="20dp"
+        android:orientation="vertical"
+        android:layout_marginTop="50dp"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="General"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            tools:ignore="MissingConstraints" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Your airline"
+            android:layout_marginTop="30dp"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            tools:ignore="MissingConstraints" />
+
+        <TextView
+            android:id="@+id/setting_yourac"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cobalt Air (CO)"
+            android:textColor="@color/text_gray"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:background="@color/lightgray"
+            android:layout_height="1px"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/setting_permitted"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Permitted airlines"
+            android:layout_marginTop="30dp"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:background="@color/lightgray"
+            android:layout_height="1px"
+            tools:ignore="ContentDescription" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,35 +6,48 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     android:id="@+id/selpoint"
-    tools:context=".ui.sel_point.SelACFragment">
+    tools:context=".ui.sel_ac.SelACFragment">
 
     <LinearLayout
         android:background="@color/white"
         android:isScrollContainer="true"
         android:orientation="vertical"
+        android:padding="0dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="20dp"
+            android:text="Please choose airline you work for. This step is required to go further."
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            />
+
         <EditText
-            android:id="@+id/selpointtext"
-            android:layout_marginTop="50dp"
+            android:id="@+id/selactext"
+            android:layout_marginTop="10dp"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
+            android:layout_marginBottom="20dp"
             android:layout_width="match_parent"
             android:textSize="15sp"
-            android:hint="Name of airport/city or IATA code"
+            android:hint="Search airline"
             android:textColorHint="@color/hint_text"
             android:textColor="@color/black"
             android:layout_height="40dp" />
 
             <ListView
-                android:id="@+id/pointlistview"
+                android:id="@+id/aclistview"
                 android:isScrollContainer="true"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                tools:listitem="@layout/item_pointlist"
+                android:layout_marginLeft="0dp"
+                android:layout_marginRight="0dp"
+                tools:listitem="@layout/item_aclist"
                 />
 
     </LinearLayout>
