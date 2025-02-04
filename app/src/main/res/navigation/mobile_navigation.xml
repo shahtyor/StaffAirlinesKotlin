@@ -48,10 +48,22 @@
                 tools:layout="@layout/fragment_permitted_ac" />
 
             <fragment
+                android:id="@+id/show_zed_frag"
+                android:name="com.stukalov.staffairlines.pro.ui.zed.ZedFragment"
+                android:label="Back"
+                tools:layout="@layout/fragment_zed" />
+
+            <fragment
                 android:id="@+id/resultlayout"
                 android:name="com.stukalov.staffairlines.pro.ui.result.ResultFragment"
                 android:label="Back to search"
                 tools:layout="@layout/fragment_result" />
+
+            <fragment
+                android:id="@+id/transferlayout"
+                android:name="com.stukalov.staffairlines.pro.ui.result.TransferFragment"
+                android:label="Back"
+                tools:layout="@layout/fragment_transfer" />
 
             <fragment
                 android:id="@+id/result_one"

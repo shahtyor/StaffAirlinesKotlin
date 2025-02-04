@@ -15,11 +15,15 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import com.stukalov.staffairlines.pro.FlightWithPax
 import com.stukalov.staffairlines.pro.GlobalStuff
 import com.stukalov.staffairlines.pro.R
 import com.stukalov.staffairlines.pro.RType
 import com.stukalov.staffairlines.pro.StaffMethods
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -82,6 +86,11 @@ class FlightFragment : Fragment() {
         ofav.setOnClickListener()
         {
             fav_click(view)
+        }
+
+        oflyzed.setOnClickListener()
+        {
+            flyzed_click(view)
         }
 
         var f = GlobalStuff.OneResult!!
@@ -182,27 +191,38 @@ class FlightFragment : Fragment() {
         GlobalStuff.navController.navigate(R.id.navigation_home)
     }
 
+    fun flyzed_click(view: View) {
+        val bundle = Bundle()
+        bundle.putString(
+            "zed_href", "http://www.flyzed.info/" + GlobalStuff.OneResult!!.MarketingCarrier + "#index"
+            )
+        GlobalStuff.navController.navigate(R.id.show_zed_frag, bundle)
+    }
+
     fun fav_click(view: View) {
         val ofav = view.findViewById<ImageButton>(R.id.fav_one)
 
-        val FWP = FlightWithPax(
-            GlobalStuff.OneResult!!,
-            GlobalStuff.Pax,
-            LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)
-        )
+        lifecycleScope.launch {
 
-        if (SM.ExistInFavourites(GlobalStuff.OneResult!!))
-        {
-            val filt = GlobalStuff.FavoriteList.filter { it.Fl.DepartureDateTime == GlobalStuff.OneResult!!.DepartureDateTime && it.Fl.FlightNumber == GlobalStuff.OneResult!!.FlightNumber && it.Fl.MarketingCarrier == GlobalStuff.OneResult!!.MarketingCarrier }
-            GlobalStuff.FavoriteList.remove(filt[0])
+            val FWP = FlightWithPax(
+                GlobalStuff.OneResult!!,
+                GlobalStuff.Pax,
+                LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)
+            )
 
-            ofav.setImageResource(R.drawable.favoff)
+            if (SM.ExistInFavourites(GlobalStuff.OneResult!!))
+            {
+                val filt = GlobalStuff.FavoriteList.filter { it.Fl.DepartureDateTime == GlobalStuff.OneResult!!.DepartureDateTime && it.Fl.FlightNumber == GlobalStuff.OneResult!!.FlightNumber && it.Fl.MarketingCarrier == GlobalStuff.OneResult!!.MarketingCarrier }
+                GlobalStuff.FavoriteList.remove(filt[0])
+
+                ofav.setImageResource(R.drawable.favoff)
+            }
+            else {
+                GlobalStuff.FavoriteList.add(0, FWP)
+
+                ofav.setImageResource(R.drawable.favon)
+            }
+            SM.SaveFavorites()
         }
-        else {
-            GlobalStuff.FavoriteList.add(0, FWP)
-
-            ofav.setImageResource(R.drawable.favon)
-        }
-        SM.SaveFavorites()
     }
 }

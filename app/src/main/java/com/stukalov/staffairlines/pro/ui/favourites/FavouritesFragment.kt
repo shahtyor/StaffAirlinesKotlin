@@ -25,6 +25,8 @@ import com.stukalov.staffairlines.pro.databinding.FragmentFavouritesBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 class FavouritesFragment : Fragment() {
@@ -89,6 +91,15 @@ class FavouritesFragment : Fragment() {
 
                 if (result == "OK" && GlobalStuff.FlInfo != null) {
                     GlobalStuff.navView.visibility = View.GONE
+
+                    val filt = GlobalStuff.FavoriteList.filter { it.Fl.DepartureDateTime == fl.Fl.DepartureDateTime && it.Fl.FlightNumber == fl.Fl.FlightNumber && it.Fl.MarketingCarrier == fl.Fl.MarketingCarrier }
+                    if (filt.size > 0)
+                    {
+                        var Fav = filt[0]
+                        Fav.Dt = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)
+                        SM.SaveFavorites()
+                    }
+
                     GlobalStuff.OneResult = GlobalStuff.FlInfo?.Flight
                     GlobalStuff.navController.navigate(R.id.result_one)
                 }

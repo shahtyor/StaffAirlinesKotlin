@@ -301,7 +301,20 @@ class HomeFragment : Fragment() {
         {
             val bundle = Bundle()
             bundle.putString("SelACMode", "home")
-            GlobalStuff.navController.navigate(R.id.sel_ac_frag, bundle)
+
+            if (GlobalStuff.Airlines.size > 0)
+            {
+                GlobalStuff.navController.navigate(R.id.sel_ac_frag, bundle)
+            }
+            else {
+                lifecycleScope.launch {
+                    val jsonair = withContext(Dispatchers.IO) { SM.LoadAirlines() }
+
+                    if (jsonair.isNotEmpty() && GlobalStuff.Airlines.size > 0) {
+                        GlobalStuff.navController.navigate(R.id.sel_ac_frag, bundle)
+                    }
+                }
+            }
         }
     }
 
@@ -450,7 +463,6 @@ class HomeFragment : Fragment() {
     }
 
     fun search_click(view: View) {
-        //val SM: StaffMethods = StaffMethods()
 
         if (GlobalStuff.OriginPoint != null && GlobalStuff.DestinationPoint != null) {
 
@@ -463,16 +475,18 @@ class HomeFragment : Fragment() {
             val DP = GlobalStuff.DestinationPoint
             add_to_history(OP!!.Code, DP!!.Code, OP.Id.toString(), DP.Id.toString(), OP.Name, DP.Name, GlobalStuff.SearchDT!!.toEpochDay(), tbCntPass.text.toString().toInt())
 
+            val permlist = SM.GetStringPermitt()
+
             lifecycleScope.launch {
                 val result = withContext(Dispatchers.IO) {
                     SM.ExtendedSearch(
                         GlobalStuff.OriginPoint!!.Code,
                         GlobalStuff.DestinationPoint!!.Code,
                         GlobalStuff.SearchDT!!,
-                        "",
+                        permlist,
                         false,
-                        GetNonDirectType.Off,
-                        1,
+                        GetNonDirectType.off,
+                        GlobalStuff.Pax,
                         "USD",
                         "EN",
                         "USA",

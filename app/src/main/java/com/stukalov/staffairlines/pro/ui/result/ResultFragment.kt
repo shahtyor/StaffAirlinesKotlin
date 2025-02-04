@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -58,16 +59,21 @@ class ResultFragment : Fragment() {
         (activity as AppCompatActivity).supportActionBar?.title = title
 
         val direct_lv: ListView = view.findViewById<ListView>(R.id.directlistview)
+        val tabTransfers = view.findViewById<LinearLayout>(R.id.TabTransfers)
 
         resultadapter = DirectResultAdapter(view.context, GlobalStuff.ExtResult!!)
 
         direct_lv.setAdapter(resultadapter)
 
         direct_lv.setOnItemClickListener{parent, view, position, id ->
-            var fl = parent.getItemAtPosition(position) as Flight
+            val fl = parent.getItemAtPosition(position) as Flight
 
             GlobalStuff.OneResult = fl
             GlobalStuff.navController.navigate(R.id.result_one)
+        }
+
+        tabTransfers.setOnClickListener { view ->
+            GlobalStuff.navController.navigate(R.id.transferlayout, Bundle())
         }
     }
 

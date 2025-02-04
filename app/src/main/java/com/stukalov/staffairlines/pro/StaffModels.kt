@@ -21,9 +21,9 @@ enum class PointType {
 
 enum class GetNonDirectType(val value: Int)
 {
-    Off(0),
-    On(1),
-    Auto(2)
+    off(0),
+    on(1),
+    auto(2)
 }
 
 enum class RType(val value: Int)
@@ -221,6 +221,18 @@ class PermittedAC
     var Permit: String
 )
 
+class CurDateTime
+(
+    var Time: LocalDateTime,
+    var TimeServer: LocalDateTime
+)
+
+class CurDateTimeString
+(
+    var Time: String,
+    var TimeServer: String
+)
+
 data class PlaceInfo(
     var EconomyPlaces: Int?,
     var BusinessPlaces: Int?,
@@ -245,8 +257,8 @@ data class TransferPoint(
     /// </summary>
     var Origin: String,
     var Name: String,
-    var City: String,
-    var CityName: String,
+    var City: String?,
+    var CityName: String?,
     var Country: String,
     var CountryName: String,
     var Distance: Int?
@@ -261,8 +273,8 @@ data class NonDirectResult(
     var RedCount: Int,
     var YellowCount: Int,
     var GreenCount: Int,
-    var FirstFlightTransfer: LocalDate,
-    var LastFlightTransfer: LocalDate,
+    var FirstFlightTransfer: String,
+    var LastFlightTransfer: String,
     var AirportsOrigin: List<TransferPoint>,
     var AirportsDestination: List<TransferPoint>,
     var Log: String,
@@ -278,7 +290,7 @@ data class ExtendedResult(
     var AirportsDestination: List<TransferPoint>,
     var ResultTransferPoints: List<TransferPoint>,
     var Log: String,
-    var Alert: String
+    var Alert: String?
 )
 
 

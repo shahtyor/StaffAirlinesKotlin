@@ -98,77 +98,78 @@ class DirectResultAdapter(private val context: Context, private val ExtResult: E
                 holder = convertView.tag as ViewHolder
             }
 
-            val f = ExtResult.DirectRes[position]
+            if (ExtResult.DirectRes.size > 0) {
+                val f = ExtResult.DirectRes[position]
 
-            /*if (position == 0)
-        {
-            CurDate = f.DepDateTime.toLocalDate()
-        }*/
+                val mc = "_" + f.MarketingCarrier.lowercase(Locale.ENGLISH)
+                val arrdep = f.DepartureDateTime.split("T")
+                val deptime = arrdep[1].substring(0, 5)
+                val arrarr = f.ArrivalDateTime.split("T")
+                val arrtime = arrarr[1].substring(0, 5)
+                val arrday = arrarr[0].split("-")[2].toInt()
+                var orig = f.Origin
+                if (!f.DepartureTerminal.isNullOrEmpty()) {
+                    orig = orig + " (" + f.DepartureTerminal + ")"
+                }
+                var dest = f.Destination
+                if (!f.ArrivalTerminal.isNullOrEmpty()) {
+                    dest = dest + " (" + f.ArrivalTerminal + ")"
+                }
 
-            val mc = "_" + f.MarketingCarrier.lowercase(Locale.ENGLISH)
-            val arrdep = f.DepartureDateTime.split("T")
-            val deptime = arrdep[1].substring(0, 5)
-            val arrarr = f.ArrivalDateTime.split("T")
-            val arrtime = arrarr[1].substring(0, 5)
-            val arrday = arrarr[0].split("-")[2].toInt()
-            var orig = f.Origin
-            if (!f.DepartureTerminal.isNullOrEmpty()) {
-                orig = orig + " (" + f.DepartureTerminal + ")"
+                val identifier =
+                    GlobalStuff.StaffRes.getIdentifier(
+                        mc,
+                        "drawable",
+                        "com.stukalov.staffairlines.pro"
+                    )
+                val durt = GetTimeAsHM2(f.Duration)
+
+                var MarkColor: Int = 0
+                var MarkBack: Int = 0
+                if (f.RatingType == RType.Good) {
+                    MarkColor = ContextCompat.getColor(context, R.color.sa_green)
+                    MarkBack = R.drawable.round_box_green
+                } else if (f.RatingType == RType.Medium) {
+                    MarkColor = ContextCompat.getColor(context, R.color.sa_yellow)
+                    MarkBack = R.drawable.round_box_yellow
+                } else {
+                    MarkColor = ContextCompat.getColor(context, R.color.sa_red)
+                    MarkBack = R.drawable.round_box_red
+                }
+
+                var nextDayVis: Int = ContextCompat.getColor(context, R.color.sa_full_transparent)
+                val dom = GlobalStuff.SearchDT?.dayOfMonth
+                if (dom != arrday) {
+                    nextDayVis = ContextCompat.getColor(context, R.color.black)
+                }
+
+                var step = position
+                var visdate = View.GONE
+                if (f.DepDateTime.toLocalDate() == CurDate) {
+                    visdate = View.GONE
+                } else {
+                    CurDate = f.DepDateTime.toLocalDate()
+                    visdate = View.VISIBLE
+                }
+
+                val sdf = DateTimeFormatter.ofPattern("dd MMMM, yyyy")
+
+                holder.ivaclogo!!.setImageResource(identifier)
+                holder.tvacname!!.setText(f.MarketingName)
+                holder.tvtimedep!!.setText(deptime)
+                holder.tvdeppoint!!.setText(orig)
+                holder.ivplanepic!!.setImageResource(R.drawable.plane1)
+                holder.tvdurtext!!.setText(durt)
+                holder.tvtimearr!!.setText(arrtime)
+                holder.tvarrpoint!!.setText(dest)
+                holder.tvcntrat!!.setText(f.AllPlaces)
+                holder.tvcntrat!!.setTextColor(MarkColor)
+                holder.tvcntrat!!.setBackgroundResource(MarkBack)
+                holder.flframelay!!.setBackgroundColor(MarkColor)
+                holder.tvnextday!!.setTextColor(nextDayVis)
+                holder.tvdateoneres!!.setText(sdf.format(f.DepDateTime))
+                holder.tvdateoneres!!.visibility = visdate
             }
-            var dest = f.Destination
-            if (!f.ArrivalTerminal.isNullOrEmpty()) {
-                dest = dest + " (" + f.ArrivalTerminal + ")"
-            }
-
-            val identifier =
-                GlobalStuff.StaffRes.getIdentifier(mc, "drawable", "com.stukalov.staffairlines.pro")
-            val durt = GetTimeAsHM2(f.Duration)
-
-            var MarkColor: Int = 0
-            var MarkBack: Int = 0
-            if (f.RatingType == RType.Good) {
-                MarkColor = ContextCompat.getColor(context, R.color.sa_green)
-                MarkBack = R.drawable.round_box_green
-            } else if (f.RatingType == RType.Medium) {
-                MarkColor = ContextCompat.getColor(context, R.color.sa_yellow)
-                MarkBack = R.drawable.round_box_yellow
-            } else {
-                MarkColor = ContextCompat.getColor(context, R.color.sa_red)
-                MarkBack = R.drawable.round_box_red
-            }
-
-            var nextDayVis: Int = ContextCompat.getColor(context, R.color.sa_full_transparent)
-            val dom = GlobalStuff.SearchDT?.dayOfMonth
-            if (dom != arrday) {
-                nextDayVis = ContextCompat.getColor(context, R.color.black)
-            }
-
-            var step = position
-            var visdate = View.GONE
-            if (f.DepDateTime.toLocalDate() == CurDate) {
-                visdate = View.GONE
-            } else {
-                CurDate = f.DepDateTime.toLocalDate()
-                visdate = View.VISIBLE
-            }
-
-            val sdf = DateTimeFormatter.ofPattern("dd MMMM, yyyy")
-
-            holder.ivaclogo!!.setImageResource(identifier)
-            holder.tvacname!!.setText(f.MarketingName)
-            holder.tvtimedep!!.setText(deptime)
-            holder.tvdeppoint!!.setText(orig)
-            holder.ivplanepic!!.setImageResource(R.drawable.plane1)
-            holder.tvdurtext!!.setText(durt)
-            holder.tvtimearr!!.setText(arrtime)
-            holder.tvarrpoint!!.setText(dest)
-            holder.tvcntrat!!.setText(f.AllPlaces)
-            holder.tvcntrat!!.setTextColor(MarkColor)
-            holder.tvcntrat!!.setBackgroundResource(MarkBack)
-            holder.flframelay!!.setBackgroundColor(MarkColor)
-            holder.tvnextday!!.setTextColor(nextDayVis)
-            holder.tvdateoneres!!.setText(sdf.format(f.DepDateTime))
-            holder.tvdateoneres!!.visibility = visdate
 
             return convertView
         }

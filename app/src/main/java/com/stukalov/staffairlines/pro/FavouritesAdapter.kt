@@ -130,7 +130,7 @@ class FavouritesAdapter(private val context: Context, private val FavResult: Lis
 
                 var SeatsAndRating = true
                 val HoursBeforeDeparture =
-                    Duration.between(f.DepDateTime, LocalDateTime.now()).toHours()
+                    Duration.between(LocalDateTime.now(), f.DepDateTime).toHours()
                 var SaveTime: Int = 0
                 if (HoursBeforeDeparture <= 24) {
                     SaveTime = 5
@@ -178,7 +178,7 @@ class FavouritesAdapter(private val context: Context, private val FavResult: Lis
                     visdate = View.VISIBLE
                 }
 
-                val sdf = DateTimeFormatter.ofPattern("DD MMMM, yyyy")
+                val sdf = DateTimeFormatter.ofPattern("dd MMMM, yyyy")
 
                 holder.ivaclogo!!.setImageResource(identifier)
                 holder.tvacname!!.setText(f.MarketingName)

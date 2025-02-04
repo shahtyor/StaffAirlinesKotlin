@@ -36,6 +36,7 @@ class SelACFragment : Fragment() {
     var strmode: String? = null
     lateinit var ac_lv: ListView
     lateinit var cont: Context
+    val SM: StaffMethods = StaffMethods()
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -57,8 +58,7 @@ class SelACFragment : Fragment() {
         return root
     }
 
-    fun GetData(text: String): MutableList<Airline0>
-    {
+    fun GetData(text: String): MutableList<Airline0> {
         val tmpLoc = GlobalStuff.Airlines
         var tmp = tmpLoc.toMutableList()
 
@@ -74,11 +74,8 @@ class SelACFragment : Fragment() {
             if (liata != null) {
                 tmp.add(0, liata)
             }
-        }
-        else
-        {
-            if (text.isNotEmpty())
-            {
+        } else {
+            if (text.isNotEmpty()) {
                 tmp = tmpLoc.asSequence().filter {
                     it.Airline.uppercase().contains(text)
                 }.take(20).toMutableList()
@@ -166,7 +163,6 @@ class SelACFragment : Fragment() {
         dialog.cancel()
 
         GlobalStuff.OwnAC = ac
-        val SM: StaffMethods = StaffMethods()
         SM.SaveOwnAC()
 
         lifecycleScope.launch {

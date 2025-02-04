@@ -14,7 +14,7 @@
     <string name="label_in_flight">In flight</string>
     <string name="label_status_current">Status (current):</string>
     <string name="label_classes_available">Classes available</string>
-    <string name="label_flyzed">FlyZED info for</string>
+    <string name="label_flyzed">FlyZED useful info for</string>
     <string name="label_search">SEARCH</string>
     <string name="label_new_search">NEW SEARCH</string>
     <string name="label_origin_cuty">Origin city or airport</string>

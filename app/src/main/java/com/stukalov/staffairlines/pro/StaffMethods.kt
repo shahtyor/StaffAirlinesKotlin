@@ -1,30 +1,24 @@
 package com.stukalov.staffairlines.pro
 
-import android.app.Application
-import android.net.http.NetworkException
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.view.View
-import android.view.textclassifier.ConversationActions
-import android.widget.ListView
+import androidx.lifecycle.LifecycleCoroutineScope
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-import com.stukalov.staffairlines.pro.ui.result.ResultFragment
-import kotlinx.serialization.json.Json
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.ConnectionSpec
 import okhttp3.Credentials
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.Response
 import java.io.IOException
+import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Arrays
 import java.util.concurrent.TimeUnit
-
 
 class StaffMethods {
 
@@ -41,7 +35,7 @@ class StaffMethods {
         chain.proceed(newRequest)
         }.connectTimeout(10, TimeUnit.SECONDS)
         .writeTimeout(10, TimeUnit.SECONDS)
-        .readTimeout(120, TimeUnit.SECONDS)
+        .readTimeout(180, TimeUnit.SECONDS)
         .build()
 
     fun ExtendedSearch(origin: String, destination: String, date: LocalDate, list: String, GetTransfer: Boolean, ntype: GetNonDirectType, pax: Int, currency: String, lang: String, country: String, token: String = "void token", sa: Boolean = true, ver: String = "1.0", ac: String = "--"): String
@@ -61,11 +55,6 @@ class StaffMethods {
             try {
                 ExtData = gson.fromJson(Json, ExtendedResult::class.java)
                 GlobalStuff.ExtResult = ExtData
-
-                if (GlobalStuff.ExtResult != null && GlobalStuff.ExtResult?.DirectRes?.count()!! > 0)
-                {
-                    //direct_lv.setAdapter(resultadapter)
-                }
 
                 return "OK"
             }
@@ -203,6 +192,31 @@ class StaffMethods {
         return Json
     }
 
+    fun GetCurrentTimeIATA(code: String): CurDateTime
+    {
+        var Json: String = ""
+
+        val request = Request.Builder()
+            .url(BaseUrl + "/amadeus/GetCurrentTimeIATA?iata=" + code)
+            .build()
+
+        Json = RequestJson(client, request)
+
+        var TimeData: CurDateTime = CurDateTime(LocalDateTime.now(), LocalDateTime.now())
+        val gson = Gson()
+        try {
+            val TimeDataString = gson.fromJson(Json, CurDateTimeString::class.java)
+            val dt1 = LocalDateTime.parse(TimeDataString.Time.split("+")[0])
+            val dt2 = LocalDateTime.parse(TimeDataString.TimeServer.split("+")[0])
+            TimeData = CurDateTime(dt1, dt2)
+        }
+        catch (e: Exception)
+        {
+            val stre = e.message + "..." + e.stackTrace
+        }
+        return TimeData
+    }
+
     fun RequestJson(client: OkHttpClient, request: Request): String {
         var Json: String = ""
 
@@ -231,8 +245,10 @@ class StaffMethods {
         val astr = mutableListOf<String>()
 
         GlobalStuff.FavoriteList.forEach {
-            val json = gson.toJson(it) //withDefaults.encodeToString(it)
-            astr.add(0, json)
+            if (Duration.between(LocalDateTime.now(), it.Fl.DepDateTime).toHours() <= 24) {
+                val json = gson.toJson(it) //withDefaults.encodeToString(it)
+                astr.add(0, json)
+            }
         }
         val result = astr.joinToString("|")
         return result
@@ -263,7 +279,11 @@ class StaffMethods {
             arrres.forEach {
                 val Fl = gson.fromJson<FlightWithPax>(it, FlightType)
                 if (Fl != null) {
-                    GlobalStuff.FavoriteList.add(0, Fl)
+                    val dura = Duration.between(Fl.Fl.DepDateTime, LocalDateTime.now()).toHours()
+                    if (dura <= 24) {
+
+                        GlobalStuff.FavoriteList.add(0, Fl)
+                    }
                 }
             }
         }
@@ -334,6 +354,12 @@ class StaffMethods {
 
             GlobalStuff.Permitted = tmp.toList()
         }
+    }
+
+    fun GetStringPermitt(): String
+    {
+        val res = GlobalStuff.Permitted.joinToString ("-") { it.Code }
+        return res
     }
 
     fun GetHistoryString(): String
