@@ -78,17 +78,18 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="9.0"
                 android:orientation="vertical"
-                >
+                tools:ignore="InefficientWeight">
 
                 <TextView
                     android:id="@+id/origin"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/label_origin_cuty"
                     android:textSize="15sp"
                     android:minHeight="20dp"
                     android:textColor="@color/text_gray"
                     android:layout_marginStart="30dp"
+                    android:layout_marginEnd="20dp"
                     android:layout_marginTop="20dp"
                     android:onClick="origin_click"
                     />
@@ -109,6 +110,7 @@
                     android:minHeight="20dp"
                     android:textColor="@color/text_gray"
                     android:layout_marginStart="30dp"
+                    android:layout_marginEnd="20dp"
                     android:layout_marginTop="30dp"
                     android:onClick="destination_click"
                     />
@@ -117,14 +119,15 @@
 
             <ImageButton
                 android:id="@+id/btReplace"
-                android:layout_width="wrap_content"
-                android:layout_height="101dp"
-                android:layout_marginStart="20dp"
-                android:layout_weight="1.0"
-                android:background="@color/white"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:minWidth="40dp"
+                android:minHeight="40dp"
                 android:scaleType="fitCenter"
-                android:paddingRight="5dp"
-                android:paddingLeft="5dp"
+                android:background="@color/white"
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="10dp"
+                android:layout_gravity="center"
                 android:onClick="btReplace_click"
                 android:src="@drawable/arr"
                 tools:ignore="ContentDescription" />

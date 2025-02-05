@@ -233,6 +233,12 @@ class CurDateTimeString
     var TimeServer: String
 )
 
+class TransferDetails
+(
+    var tp: List<TransferPoint>,
+    var ndr: List<NonDirectResult>,
+)
+
 data class PlaceInfo(
     var EconomyPlaces: Int?,
     var BusinessPlaces: Int?,

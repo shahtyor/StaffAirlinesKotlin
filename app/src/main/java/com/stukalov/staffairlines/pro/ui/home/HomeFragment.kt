@@ -499,13 +499,6 @@ class HomeFragment : Fragment() {
 
                 if (result == "OK" && GlobalStuff.ExtResult != null) {
                     val bundle = Bundle()
-                    val formatter0 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                    bundle.putString(
-                        "result_title",
-                        GlobalStuff.OriginPoint!!.Code + " - " + GlobalStuff.DestinationPoint!!.Code + ", " + GlobalStuff.SearchDT!!.format(
-                            formatter0
-                        )
-                    )
                     bundle.putString("keyDashBoard", "No")
                     GlobalStuff.navController.navigate(R.id.resultlayout, bundle)
                 }

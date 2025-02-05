@@ -56,19 +56,19 @@
             <fragment
                 android:id="@+id/resultlayout"
                 android:name="com.stukalov.staffairlines.pro.ui.result.ResultFragment"
-                android:label="Back to search"
+                android:label=""
                 tools:layout="@layout/fragment_result" />
 
             <fragment
                 android:id="@+id/transferlayout"
                 android:name="com.stukalov.staffairlines.pro.ui.result.TransferFragment"
-                android:label="Back"
+                android:label=""
                 tools:layout="@layout/fragment_transfer" />
 
             <fragment
                 android:id="@+id/result_one"
                 android:name="com.stukalov.staffairlines.pro.ui.flight.FlightFragment"
-                android:label="Flight"
+                android:label=""
                 tools:layout="@layout/fragment_flight" />
 
         </navigation>

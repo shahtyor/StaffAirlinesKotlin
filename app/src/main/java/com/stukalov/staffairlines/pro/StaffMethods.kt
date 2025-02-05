@@ -106,6 +106,61 @@ class StaffMethods {
         return res
     }
 
+    fun GetNonDirectFlights(origin: String, destination: String, change: String, date: LocalDate, list: String, pax: Int, currency: String, lang: String, token: String = "void token", ver: String = "1.0", id_user: String = "common ticketapi user"): String
+    {
+        var res: String = ""
+        try
+        {
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+            val Uri: String = BaseUrl + "/amadeus/GetNonDirectFlights?origin=" + origin + "&destination=" + destination + "&change=" + change + "&date=" + date.format(formatter) + "&list=" + list + "&pax=" + pax + "&token=" + token + "&ver=" + ver + "&currency=" + currency + "&lang=" + lang + "&id_user=" + id_user;
+
+            val request = Request.Builder().url(Uri).build()
+
+            val Json = RequestJson(client, request)
+
+            val nonDirect: NonDirectResult
+            val gson = Gson()
+
+            try
+            {
+                nonDirect = gson.fromJson(Json, NonDirectResult::class.java)
+
+                val ExtRes = GlobalStuff.ExtResult
+                if (ExtRes != null)
+                {
+                    var NonDirRes: MutableList<NonDirectResult> = mutableListOf()
+                    if (ExtRes.NonDirectRes != null && ExtRes.NonDirectRes.isNotEmpty())
+                    {
+                        NonDirRes = ExtRes.NonDirectRes.toMutableList()
+                    }
+
+                    var NonRes: NonDirectResult = NonDirRes.filter { it -> it.Transfer == change }.first()
+                    if (NonRes == null)
+                    {
+                        NonDirRes.add(0, nonDirect)
+                    }
+                    else
+                    {
+                        NonRes = nonDirect
+                    }
+
+                    ExtRes.NonDirectRes = NonDirRes.toList()
+                }
+
+                return "OK"
+            }
+            catch (e: Exception)
+            {
+                res = e.message + "..." + e.stackTrace
+            }
+        }
+        catch (ex: Exception)
+        {
+            res = ex.message + "..." + ex.stackTrace
+        }
+        return res
+    }
+
     fun LoadLocations(): String {
 
         var Json: String = ""

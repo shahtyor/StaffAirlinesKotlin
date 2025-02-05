@@ -18,7 +18,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 
-class TransferResultAdapter(private val context: Context, private val ExtResult: ExtendedResult) : BaseAdapter() {
+class TransferResultAdapter(private val context: Context, private val tp: List<TransferPoint>, private val ndr: List<NonDirectResult>) : BaseAdapter() {
 
     var CurDate: LocalDate = LocalDate.now().minusYears(5)
     var CurPosition: Int = -100
@@ -26,7 +26,7 @@ class TransferResultAdapter(private val context: Context, private val ExtResult:
 
     override fun getViewTypeCount(): Int {
         val count: Int
-        count = if (ExtResult.NonDirectRes.size > 0) {
+        count = if (tp.size > 0) {
             getCount()
         } else {
             1
@@ -46,8 +46,8 @@ class TransferResultAdapter(private val context: Context, private val ExtResult:
 
     override fun getCount(): Int {
         val count: Int
-        count = if (ExtResult.NonDirectRes.size > 0) {
-            ExtResult.NonDirectRes.size
+        count = if (tp.size > 0) {
+            tp.size
         } else {
             1
         }
@@ -55,7 +55,7 @@ class TransferResultAdapter(private val context: Context, private val ExtResult:
     }
 
     override fun getItem(position: Int): Any {
-        return ExtResult.NonDirectRes[position]
+        return tp[position]
     }
 
     override fun getItemId(position: Int): Long {
@@ -89,18 +89,19 @@ class TransferResultAdapter(private val context: Context, private val ExtResult:
                 holder = convertView.tag as ViewHolder
             }
 
-            val tr = ExtResult.NonDirectRes[position]
+            val tr = tp[position]
 
-            var trname = tr.Transfer
-            val filt = GlobalStuff.Locations.filter { it -> it.Code == trname }
-            if (filt.size > 0)
-            {
-                val loc = filt[0]
-                trname = loc.Name_en + " (" + loc.Code + "), " + loc.Name_country
+            var trname = tr.Name + " (" + tr.Origin + "), " + tr.CountryName
+            var trseats = ""
+
+            if (ndr.size > 0) {
+                val filt = ndr.filter { it -> it.Transfer == tr.Origin }
+                if (filt.size > 0) {
+                    val ndrone = filt[0]
+                    trseats =
+                        "<font color='#92C55A'>" + ndrone.GreenCount + "</font>&nbsp;<font color='#F9AA33'>" + ndrone.YellowCount + "</font>&nbsp;<font color='#FF643B'>" + ndrone.RedCount + "</font>"
+                }
             }
-
-            var trseats = "<font color='#92C55A'>" + tr.GreenCount + "</font>&nbsp;<font color='#F9AA33'>" + tr.YellowCount + "</font>&nbsp;<font color='#FF643B'>" + tr.RedCount + "</font>"
-
 
             holder.tvTransName?.setText(trname)
             holder.tvTransSeats?.setText(Html.fromHtml(trseats))

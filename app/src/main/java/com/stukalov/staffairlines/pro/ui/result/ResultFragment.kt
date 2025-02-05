@@ -25,6 +25,7 @@ import com.stukalov.staffairlines.pro.PointType
 import com.stukalov.staffairlines.pro.R
 import com.stukalov.staffairlines.pro.SelectedPoint
 import com.stukalov.staffairlines.pro.databinding.FragmentResultBinding
+import java.time.format.DateTimeFormatter
 
 
 class ResultFragment : Fragment() {
@@ -55,8 +56,9 @@ class ResultFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val title = arguments?.getString("result_title")
-        (activity as AppCompatActivity).supportActionBar?.title = title
+        val formatter0 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val result_title = GlobalStuff.OriginPoint!!.Code + " - " + GlobalStuff.DestinationPoint!!.Code + ", " + GlobalStuff.SearchDT!!.format(formatter0)
+        (activity as AppCompatActivity).supportActionBar?.title = result_title
 
         val direct_lv: ListView = view.findViewById<ListView>(R.id.directlistview)
         val tabTransfers = view.findViewById<LinearLayout>(R.id.TabTransfers)
