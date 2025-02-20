@@ -26,10 +26,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.stukalov.staffairlines.pro.databinding.ActivityMainBinding
+import com.stukalov.staffairlines.pro.ui.MainFragment
 import com.stukalov.staffairlines.pro.ui.home.DatePickerFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -56,10 +58,11 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        var StaffApp = StaffAirlines()
+        //var StaffApp = StaffAirlines()
 
         navController = findNavController(R.id.nav_host_fragment_activity_main)
-        GlobalStuff.navController = navController
+
+        //GlobalStuff.navController = navController
 
         navView = binding.navView
 
@@ -68,14 +71,12 @@ class MainActivity : AppCompatActivity() {
         getSupportActionBar()?.setBackgroundDrawable(cd)
         getSupportActionBar()?.setDisplayHomeAsUpEnabled(true)
 
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.navigation_home, R.id.navigation_favourites, R.id.navigation_history, R.id.navigation_settings
             )
         )
-        setupActionBarWithNavController(navController, appBarConfiguration)
+        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
         val SM: StaffMethods = StaffMethods()
@@ -89,17 +90,23 @@ class MainActivity : AppCompatActivity() {
         }
 
         GlobalStuff.activity = this.baseContext
+        //GlobalStuff.mActivity = this
+
         GlobalStuff.navController = navController
         GlobalStuff.navView = navView
         GlobalStuff.StaffRes = resources
         GlobalStuff.supportFragManager = supportFragmentManager
         GlobalStuff.prefs = getSharedPreferences("settings", Context.MODE_PRIVATE)
 
+        //navController.navigate(R.id.main_fragment)
+
         //SM.SaveVoidFavourites()
         SM.GetOwnAC()
         SM.ReadPermit()
         SM.ReadFavorites()
         SM.ReadHistory()
+
+        //GlobalStuff.navController.navigate(R.id.main_fragment)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

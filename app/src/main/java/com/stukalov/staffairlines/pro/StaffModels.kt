@@ -37,6 +37,11 @@ enum class RType(val value: Int)
     }
 }
 
+enum class ResultType
+{
+    Direct, First, Second, Final
+}
+
 data class Location(
     @SerializedName("id")
     var Id: Int,
@@ -272,7 +277,9 @@ data class TransferPoint(
 
 data class NonDirectResult(
     var Transfer: String,
+    @SerializedName("to_airport_transfer")
     var To_airport_transfer: List<Flight>,
+    @SerializedName("from_airport_transfer")
     var From_airport_transfer: List<Flight>,
     var ToTransferInfo: AviasalesInfo,
     var FromTransferInfo: AviasalesInfo,

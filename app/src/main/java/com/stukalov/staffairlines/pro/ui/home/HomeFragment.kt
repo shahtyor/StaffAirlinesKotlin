@@ -33,6 +33,7 @@ import com.stukalov.staffairlines.pro.HistoryElement
 import com.stukalov.staffairlines.pro.MainActivity
 import com.stukalov.staffairlines.pro.PointType
 import com.stukalov.staffairlines.pro.R
+import com.stukalov.staffairlines.pro.ResultType
 import com.stukalov.staffairlines.pro.SelectedPoint
 import com.stukalov.staffairlines.pro.StaffMethods
 import com.stukalov.staffairlines.pro.databinding.FragmentHomeBinding
@@ -498,9 +499,9 @@ class HomeFragment : Fragment() {
                 }
 
                 if (result == "OK" && GlobalStuff.ExtResult != null) {
-                    val bundle = Bundle()
-                    bundle.putString("keyDashBoard", "No")
-                    GlobalStuff.navController.navigate(R.id.resultlayout, bundle)
+                    GlobalStuff.ResType = ResultType.Direct
+                    GlobalStuff.BackResType = null
+                    GlobalStuff.navController.navigate(R.id.resultlayout, Bundle())
                 }
                 else
                 {

@@ -18,6 +18,7 @@
         android:layout_height="match_parent">
 
         <LinearLayout
+            android:id="@+id/ResultsTab"
             android:baselineAligned="false"
             android:orientation="horizontal"
             android:layout_width="match_parent"
@@ -71,17 +72,273 @@
 
         </LinearLayout>
 
-            <ListView
-                android:id="@+id/directlistview"
-                android:isScrollContainer="true"
+        <LinearLayout
+            android:id="@+id/llFirstSegment"
+            android:orientation="vertical"
+            android:background="@color/white"
+            android:layout_width="match_parent"
+            android:padding="0dp"
+            android:layout_margin="0dp"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/firstResultInfo"
+                android:text="Your FIRST FLIGHT"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginBottom="20dp"
+                android:textSize="14sp"
+                android:textColor="@color/black"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="0dp"
-                android:layout_marginLeft="2dp"
-                android:layout_marginRight="2dp"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/first_date_for_result"
+                android:textSize="16sp"
+                android:textColor="@color/black"
+                android:layout_width="match_parent"
+                android:layout_marginStart="20dp"
                 android:layout_marginTop="10dp"
-                tools:listitem="@layout/item_directlist"
-                />
+                android:layout_marginBottom="5dp"
+                android:layout_height="30dp" />
+
+            <LinearLayout
+                android:id="@+id/llFirstLayout"
+                android:orientation="horizontal"
+                android:padding="0dp"
+                android:layout_margin="0dp"
+                app:flow_horizontalAlign="start"
+                android:layout_width="match_parent"
+                android:layout_height="65dp"
+                tools:ignore="MissingConstraints">
+
+                <FrameLayout
+                    android:id="@+id/firstRatingFrame"
+                    android:layout_width="17dp"
+                    android:padding="0dp"
+                    android:layout_margin="0dp"
+                    android:layout_height="match_parent">
+                </FrameLayout>
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:padding="0dp"
+                    android:layout_width="100dp"
+                    android:layout_margin="0dp"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/firstaclogo"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginLeft="0dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginRight="0dp"
+                        tools:ignore="ContentDescription" />
+
+                    <TextView
+                        android:id="@+id/firstacname"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:textAlignment="center"
+                        android:textSize="12sp"
+                        android:layout_margin="0dp"
+                        android:padding="0dp"
+                        android:layout_marginBottom="10dp"
+                        android:textColor="@color/black">
+                    </TextView>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:padding="0dp"
+                    android:layout_width="70dp"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:textSize="10sp"
+                        android:text="@string/next_day_label"
+                        android:textAlignment="textEnd"
+                        android:textColor="@color/sa_full_transparent"
+                        android:padding="0dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                    </TextView>
+
+                    <TextView
+                        android:id="@+id/firsttimedep"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:layout_marginStart="0dp"
+                        android:layout_marginTop="0dp"
+                        android:padding="0dp"
+                        android:textColor="@color/black">
+                    </TextView>
+
+                    <TextView
+                        android:id="@+id/firstdeppoint"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="0dp"
+                        android:padding="0dp"
+                        android:textSize="16sp"
+                        android:textColor="@color/black">
+                    </TextView>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:paddingStart="0dp"
+                    android:paddingTop="10dp"
+                    android:paddingEnd="10dp"
+                    android:paddingBottom="0dp"
+                    android:layout_width="80dp"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/firstplanepic"
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginLeft="0dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginRight="0dp"
+                        tools:ignore="ContentDescription" />
+
+                    <TextView
+                        android:id="@+id/firstdurtext"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="center"
+                        android:layout_margin="0dp"
+                        android:padding="0dp"
+                        android:textSize="12sp"
+                        android:textColor="@color/black">
+                    </TextView>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:padding="0dp"
+                    android:layout_width="70dp"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/firstnextDay"
+                        android:textSize="10sp"
+                        android:textColor="@color/sa_full_transparent"
+                        android:text="@string/next_day_label"
+                        android:textAlignment="textEnd"
+                        android:padding="0dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                    </TextView>
+
+                    <TextView
+                        android:id="@+id/firsttimearr"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:layout_marginStart="0dp"
+                        android:layout_marginTop="0dp"
+                        android:padding="0dp"
+                        android:textColor="@color/black">
+                    </TextView>
+
+                    <TextView
+                        android:id="@+id/firstarrpoint"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="0dp"
+                        android:padding="0dp"
+                        android:textSize="16sp"
+                        android:textColor="@color/black">
+                    </TextView>
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginStart="10dp"
+                    android:id="@+id/firstcntrating"
+                    android:textSize="12sp"
+                    android:textAlignment="center"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:background="@drawable/round_box_white"
+                    android:layout_width="25sp"
+                    android:layout_height="25sp">
+                </TextView>
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvResultInfo"
+            android:text="Choose a FIRST FLIGHT"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="20dp"
+            android:textSize="14sp"
+            android:textColor="@color/black"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:id="@+id/llWaitInfoFinal"
+            android:orientation="horizontal"
+            android:padding="0dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginBottom="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:src="@drawable/clock0"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_width="16dp"
+                android:layout_height="16dp" />
+
+            <TextView
+                android:id="@+id/tvWaitInfoFinal"
+                android:textSize="14sp"
+                android:textColor="@color/black"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/directlistview"
+            android:isScrollContainer="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="0dp"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:layout_marginTop="10dp"
+            tools:listitem="@layout/item_directlist" />
+
+        <Button
+            android:id="@+id/btFinalNew"
+            android:layout_width="300dp"
+            android:layout_height="50dp"
+            style="@style/NotTintedButton"
+            android:text="@string/label_new_search"
+            android:textSize="20sp"
+            android:layout_marginTop="100dp"
+            android:layout_gravity="center_horizontal"
+            android:shadowColor="@color/staff_blue"
+            android:textColor="@color/white"
+            android:background="@drawable/search_button_on"
+            />
 
     </LinearLayout>
 

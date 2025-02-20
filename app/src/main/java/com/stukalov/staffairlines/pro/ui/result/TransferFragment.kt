@@ -18,6 +18,7 @@ import com.stukalov.staffairlines.pro.GetNonDirectType
 import com.stukalov.staffairlines.pro.GlobalStuff
 import com.stukalov.staffairlines.pro.NonDirectResult
 import com.stukalov.staffairlines.pro.R
+import com.stukalov.staffairlines.pro.ResultType
 import com.stukalov.staffairlines.pro.StaffMethods
 import com.stukalov.staffairlines.pro.TransferDetails
 import com.stukalov.staffairlines.pro.TransferPoint
@@ -65,7 +66,7 @@ class TransferFragment : Fragment() {
         val tabDirect = view.findViewById<LinearLayout>(R.id.TabDirect)
         val spin_layout = view.findViewById<FrameLayout>(R.id.spinner_transfer)
 
-        val tdet = GetTransferDetails()
+        var tdet = GetTransferDetails()
 
         if (tdet.tp.isNotEmpty()) {
             tvinfo.setText("Choose a city to get a list of transfer flights")
@@ -83,7 +84,12 @@ class TransferFragment : Fragment() {
                 val NonDirRes = ExtRes.NonDirectRes
                 if (NonDirRes != null && NonDirRes.isNotEmpty())
                 {
-                    val NonRes = NonDirRes.filter { it -> it.Transfer == trans.Origin }.first()
+                    var NonRes: NonDirectResult? = null
+                    val NonResList = NonDirRes.filter { it -> it.Transfer == trans.Origin }
+                    if (NonResList.isNotEmpty())
+                    {
+                        NonRes = NonResList[0]
+                    }
                     if (NonRes != null)
                     {
                         reqtodo = false
@@ -94,6 +100,8 @@ class TransferFragment : Fragment() {
             if (reqtodo)
             {
                 //запрос
+                spin_layout.isVisible = true
+
                 val permlist = SM.GetStringPermitt()
                 lifecycleScope.launch {
                     val result = withContext(Dispatchers.IO) {
@@ -113,13 +121,19 @@ class TransferFragment : Fragment() {
 
                     if (result == "OK") {
 
+                        tdet = GetTransferDetails()
                         if (tdet.tp.isNotEmpty()) {
 
                             spin_layout.isVisible = false
                             tvinfo.setText("Choose a city to get a list of transfer flights")
                             transferadapter = TransferResultAdapter(vView.context, tdet.tp, tdet.ndr)
                             transfer_lv.setAdapter(transferadapter)
+
+                            GlobalStuff.ResType = ResultType.First
+                            GlobalStuff.ChangePoint = trans.Origin
+                            GlobalStuff.navController.navigate(R.id.resultlayout, Bundle())
                         }
+                        spin_layout.isVisible = false
                     }
                     else
                     {
@@ -129,7 +143,10 @@ class TransferFragment : Fragment() {
             }
             else
             {
-                //детализация
+                //переход на детализацию
+                GlobalStuff.ResType = ResultType.First
+                GlobalStuff.ChangePoint = trans.Origin
+                GlobalStuff.navController.navigate(R.id.resultlayout, Bundle())
             }
         }
 

@@ -57,7 +57,8 @@ class FavouritesFragment : Fragment() {
 
         val SM: StaffMethods = StaffMethods()
 
-        GlobalStuff.navView.setVisibility(View.VISIBLE)
+        //GlobalStuff.navView.setVisibility(View.VISIBLE)
+        GlobalStuff.navView.visibility = View.VISIBLE
 
         //val title = arguments?.getString("result_title")
         //(activity as AppCompatActivity).supportActionBar?.title = title

@@ -20,6 +20,7 @@ import com.stukalov.staffairlines.pro.FlightWithPax
 import com.stukalov.staffairlines.pro.GlobalStuff
 import com.stukalov.staffairlines.pro.R
 import com.stukalov.staffairlines.pro.RType
+import com.stukalov.staffairlines.pro.ResultType
 import com.stukalov.staffairlines.pro.StaffMethods
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -77,6 +78,24 @@ class FlightFragment : Fragment() {
         val oflyzed = view.findViewById<TextView>(R.id.flyzed_one)
         val osearch = view.findViewById<Button>(R.id.btSearch_one)
         val ofav = view.findViewById<ImageButton>(R.id.fav_one)
+
+        if (GlobalStuff.BackResType != null)
+        {
+            GlobalStuff.ResType = GlobalStuff.BackResType!!
+        }
+
+        if (GlobalStuff.ResType == ResultType.First)
+        {
+            GlobalStuff.BackResType = ResultType.First
+        }
+        else if (GlobalStuff.ResType == ResultType.Second)
+        {
+            GlobalStuff.BackResType = ResultType.Second
+        }
+        else if (GlobalStuff.ResType == ResultType.Final)
+        {
+            GlobalStuff.BackResType = ResultType.Final
+        }
 
         osearch.setOnClickListener()
         {
@@ -159,6 +178,26 @@ class FlightFragment : Fragment() {
 
         val strflyzed = "<u>" + GlobalStuff.activity.getString(R.string.label_flyzed) + " " + f.MarketingName + "</u>"
 
+        if (GlobalStuff.ResType == ResultType.Direct)
+        {
+            osearch.setText("NEW SEARCH")
+        }
+        else
+        {
+            osearch.setText("SELECT FLIGHT")
+        }
+
+        val actionbut = getArguments()?.getString("ActionButton")
+
+        if (GlobalStuff.ResType == ResultType.Final || actionbut == "no")
+        {
+            osearch.visibility = View.GONE
+        }
+        else
+        {
+            osearch.visibility = View.VISIBLE
+        }
+
         otimedep.setText(sstdep)
         odatedep.setText(ssddep)
         onamedep.setText(OriginNameExt)
@@ -188,7 +227,24 @@ class FlightFragment : Fragment() {
     }
 
     fun search_click_one(view: View) {
-        GlobalStuff.navController.navigate(R.id.navigation_home)
+        if (GlobalStuff.ResType == ResultType.Direct) {
+            GlobalStuff.BackResType = null
+            GlobalStuff.navController.navigate(R.id.navigation_home)    //Переход на начало поиска
+        }
+        else if (GlobalStuff.ResType == ResultType.First)
+        {
+            GlobalStuff.FirstSegment = GlobalStuff.OneResult!!
+            GlobalStuff.ResType = ResultType.Second
+            GlobalStuff.BackResType = null
+            GlobalStuff.navController.navigate(R.id.resultlayout)     //Переходим к выбору второго сегмента
+        }
+        else if (GlobalStuff.ResType == ResultType.Second)
+        {
+            GlobalStuff.SecondSegment = GlobalStuff.OneResult!!
+            GlobalStuff.ResType = ResultType.Final
+            GlobalStuff.BackResType = null
+            GlobalStuff.navController.navigate(R.id.resultlayout)     //Переходим к показу полета с пересадкой
+        }
     }
 
     fun flyzed_click(view: View) {

@@ -71,4 +71,10 @@
                 android:label=""
                 tools:layout="@layout/fragment_flight" />
 
+            <fragment
+                android:id="@+id/main_fragment"
+                android:name="com.stukalov.staffairlines.pro.ui.MainFragment"
+                android:label=""
+                tools:layout="@layout/fragment_main" />
+
         </navigation>

@@ -134,7 +134,13 @@ class StaffMethods {
                         NonDirRes = ExtRes.NonDirectRes.toMutableList()
                     }
 
-                    var NonRes: NonDirectResult = NonDirRes.filter { it -> it.Transfer == change }.first()
+                    var NonRes: NonDirectResult? = null
+                    var NonResList = NonDirRes.filter { it -> it.Transfer == change }
+                    if (NonResList.isNotEmpty())
+                    {
+                        NonRes = NonResList[0]
+                    }
+
                     if (NonRes == null)
                     {
                         NonDirRes.add(0, nonDirect)

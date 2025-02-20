@@ -8,16 +8,17 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
+import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 
-class DirectResultAdapter(private val context: Context, private val ExtResult: ExtendedResult) : BaseAdapter() {
+class DirectResultAdapter(private val context: Context, private val Res: List<Flight>) : BaseAdapter() {
 
     var CurDate: LocalDate = LocalDate.now().minusYears(5)
     var CurPosition: Int = -100
@@ -25,7 +26,7 @@ class DirectResultAdapter(private val context: Context, private val ExtResult: E
 
     override fun getViewTypeCount(): Int {
         val count: Int
-        count = if (ExtResult.DirectRes.size > 0) {
+        count = if (Res.size > 0) {
             getCount()
         } else {
             1
@@ -45,8 +46,8 @@ class DirectResultAdapter(private val context: Context, private val ExtResult: E
 
     override fun getCount(): Int {
         val count: Int
-        count = if (ExtResult.DirectRes.size > 0) {
-            ExtResult.DirectRes.size
+        count = if (Res.size > 0) {
+            Res.size
         } else {
             1
         }
@@ -54,7 +55,7 @@ class DirectResultAdapter(private val context: Context, private val ExtResult: E
     }
 
     override fun getItem(position: Int): Any {
-        return ExtResult.DirectRes[position]
+        return Res[position]
     }
 
     override fun getItemId(position: Int): Long {
@@ -91,6 +92,9 @@ class DirectResultAdapter(private val context: Context, private val ExtResult: E
                 holder.flframelay = convertView.findViewById(R.id.RatingFrame)
                 holder.tvnextday = convertView.findViewById(R.id.nextDay)
                 holder.tvdateoneres = convertView.findViewById(R.id.date_for_result)
+                holder.llWaitInfo = convertView.findViewById(R.id.llWaitInfo)
+                holder.tvWaitInfo = convertView.findViewById(R.id.tvWaitInfo)
+                holder.llFlightLayout  = convertView.findViewById(R.id.llFlightLayout)
 
                 convertView.tag = holder
             } else {
@@ -98,12 +102,13 @@ class DirectResultAdapter(private val context: Context, private val ExtResult: E
                 holder = convertView.tag as ViewHolder
             }
 
-            if (ExtResult.DirectRes.size > 0) {
-                val f = ExtResult.DirectRes[position]
+            if (Res.size > 0) {
+                val f = Res[position]
 
                 val mc = "_" + f.MarketingCarrier.lowercase(Locale.ENGLISH)
                 val arrdep = f.DepartureDateTime.split("T")
                 val deptime = arrdep[1].substring(0, 5)
+                val depday = arrdep[0].split("-")[2].toInt()
                 val arrarr = f.ArrivalDateTime.split("T")
                 val arrtime = arrarr[1].substring(0, 5)
                 val arrday = arrarr[0].split("-")[2].toInt()
@@ -114,6 +119,14 @@ class DirectResultAdapter(private val context: Context, private val ExtResult: E
                 var dest = f.Destination
                 if (!f.ArrivalTerminal.isNullOrEmpty()) {
                     dest = dest + " (" + f.ArrivalTerminal + ")"
+                }
+
+                var waittext = ""
+                var llheight = 0
+                if (GlobalStuff.FirstSegment != null) {
+                    var waittime = Duration.between(GlobalStuff.FirstSegment!!.ArrDateTime, f.DepDateTime).toMinutes().toInt()
+                    waittext = "Waiting time " + GetTimeAsHM2(waittime)
+                    llheight = 40
                 }
 
                 val identifier =
@@ -138,9 +151,14 @@ class DirectResultAdapter(private val context: Context, private val ExtResult: E
                 }
 
                 var nextDayVis: Int = ContextCompat.getColor(context, R.color.sa_full_transparent)
-                val dom = GlobalStuff.SearchDT?.dayOfMonth
-                if (dom != arrday) {
+                if (depday != arrday) {
                     nextDayVis = ContextCompat.getColor(context, R.color.black)
+                }
+
+                var waitvis = View.GONE
+                if (GlobalStuff.ResType == ResultType.Second)
+                {
+                    waitvis = View.VISIBLE
                 }
 
                 var step = position
@@ -169,6 +187,11 @@ class DirectResultAdapter(private val context: Context, private val ExtResult: E
                 holder.tvnextday!!.setTextColor(nextDayVis)
                 holder.tvdateoneres!!.setText(sdf.format(f.DepDateTime))
                 holder.tvdateoneres!!.visibility = visdate
+                holder.llWaitInfo!!.visibility = waitvis
+                holder.tvWaitInfo!!.setText(waittext)
+                val params = holder.llFlightLayout!!.getLayoutParams()
+                params.height = params.height + llheight
+                holder.llFlightLayout!!.setLayoutParams(params)
             }
 
             return convertView
@@ -190,6 +213,9 @@ class DirectResultAdapter(private val context: Context, private val ExtResult: E
         var flframelay: FrameLayout? = null
         var tvnextday: TextView? = null
         var tvdateoneres: TextView? = null
+        var llWaitInfo: LinearLayout? = null
+        var tvWaitInfo: TextView? = null
+        var llFlightLayout: LinearLayout? = null
     }
 
     fun GetTimeAsHM2(minutes: Int): String {

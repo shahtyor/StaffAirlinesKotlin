@@ -11,6 +11,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.FragmentContainerView
 import androidx.navigation.NavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.stukalov.staffairlines.pro.databinding.ActivityMainBinding
 import java.time.LocalDate
 
     @SuppressLint("StaticFieldLeak")
@@ -23,14 +24,21 @@ import java.time.LocalDate
         var FavoriteList = mutableListOf<FlightWithPax>()
         var HistoryList = mutableListOf<HistoryElement>()
         lateinit var activity: Context
+        lateinit var mActivity: MainActivity
+        lateinit var binding: ActivityMainBinding
         var OriginPoint: SelectedPoint? = null
         var DestinationPoint: SelectedPoint? = null
+        var ChangePoint: String? = null
         var SearchDT: LocalDate? = null
         var Pax: Int = 1
         lateinit var dtSearch: TextView
         var ExtResult: ExtendedResult? = null
+        lateinit var ResType: ResultType
+        var BackResType: ResultType? = null
         var FlInfo: FlightInfo? = null
         var OneResult: Flight? = null
+        var FirstSegment: Flight? = null
+        var SecondSegment: Flight? = null
         var OwnAC: Airline0? = null
         lateinit var StaffRes: Resources
         lateinit var supportFragManager: androidx.fragment.app.FragmentManager

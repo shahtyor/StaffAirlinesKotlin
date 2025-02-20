@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -94,6 +95,7 @@ class FavouritesAdapter(private val context: Context, private val FavResult: Lis
                 holder.flframelay = convertView.findViewById(R.id.RatingFrame)
                 holder.tvnextday = convertView.findViewById(R.id.nextDay)
                 holder.tvdateoneres = convertView.findViewById(R.id.date_for_result)
+                holder.llWaitInfo = convertView.findViewById(R.id.llWaitInfo)
 
                 convertView.tag = holder
             } else {
@@ -195,8 +197,10 @@ class FavouritesAdapter(private val context: Context, private val FavResult: Lis
                 holder.tvnextday!!.setTextColor(nextDayVis)
                 holder.tvdateoneres!!.setText(sdf.format(f.DepDateTime))
                 holder.tvdateoneres!!.visibility = visdate
+                holder.llWaitInfo!!.visibility = View.GONE
             }
 
+            holder.llWaitInfo!!.visibility = View.GONE
             return convertView
         }
 
@@ -216,6 +220,7 @@ class FavouritesAdapter(private val context: Context, private val FavResult: Lis
         var flframelay: FrameLayout? = null
         var tvnextday: TextView? = null
         var tvdateoneres: TextView? = null
+        var llWaitInfo: LinearLayout? = null
     }
 
     fun GetTimeAsHM2(minutes: Int): String {
