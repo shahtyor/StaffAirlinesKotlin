@@ -77,4 +77,11 @@
                 android:label=""
                 tools:layout="@layout/fragment_main" />
 
+            <fragment
+                android:id="@+id/carousel_frag"
+                android:name="com.stukalov.staffairlines.pro.ui.carousel.CarouselFragment"
+                android:label=""
+                tools:layout="@layout/fragment_carousel"
+                />
+
         </navigation>

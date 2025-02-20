@@ -169,7 +169,14 @@ class SelACFragment : Fragment() {
             val jsonperm = withContext(Dispatchers.IO) { SM.GetPermittedAC(GlobalStuff.OwnAC!!.Code) }
         }
 
-        GlobalStuff.navController.navigateUp()
+        if (strmode == "home")
+        {
+            GlobalStuff.navController.navigate(R.id.navigation_home, Bundle())
+        }
+        else
+        {
+            GlobalStuff.navController.navigateUp()
+        }
         GlobalStuff.navView.isVisible = true
     }
 

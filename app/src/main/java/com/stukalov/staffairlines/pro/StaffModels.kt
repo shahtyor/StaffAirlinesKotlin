@@ -1,5 +1,6 @@
 package com.stukalov.staffairlines.pro
 
+import android.text.Spanned
 import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -242,6 +243,13 @@ class TransferDetails
 (
     var tp: List<TransferPoint>,
     var ndr: List<NonDirectResult>,
+)
+
+class CarouselData
+(
+    var title: String,
+    var image: String,
+    var desc: Spanned
 )
 
 data class PlaceInfo(

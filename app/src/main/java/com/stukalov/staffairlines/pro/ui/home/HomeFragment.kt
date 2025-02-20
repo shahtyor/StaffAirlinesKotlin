@@ -300,7 +300,8 @@ class HomeFragment : Fragment() {
 
         if (GlobalStuff.OwnAC == null)
         {
-            val bundle = Bundle()
+            GlobalStuff.navController.navigate(R.id.carousel_frag, Bundle())
+            /*val bundle = Bundle()
             bundle.putString("SelACMode", "home")
 
             if (GlobalStuff.Airlines.size > 0)
@@ -315,7 +316,7 @@ class HomeFragment : Fragment() {
                         GlobalStuff.navController.navigate(R.id.sel_ac_frag, bundle)
                     }
                 }
-            }
+            }*/
         }
     }
 
