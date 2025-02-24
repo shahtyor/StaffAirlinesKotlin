@@ -119,16 +119,15 @@
 
             <ImageButton
                 android:id="@+id/btReplace"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:minWidth="40dp"
-                android:minHeight="40dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:minWidth="30dp"
+                android:minHeight="30dp"
                 android:scaleType="fitCenter"
                 android:background="@color/white"
                 android:layout_marginEnd="20dp"
                 android:layout_marginStart="10dp"
                 android:layout_gravity="center"
-                android:onClick="btReplace_click"
                 android:src="@drawable/arr"
                 tools:ignore="ContentDescription" />
 
@@ -167,7 +166,6 @@
                 android:background="@drawable/minus_button_off"
                 style="@style/NotTintedButton"
                 android:layout_marginTop="10dp"
-                android:onClick="minusbut_click"
                 tools:ignore="ContentDescription" />
 
             <TextView
@@ -179,7 +177,7 @@
                 android:textColor="@color/black"
                 android:textSize="20sp"
                 android:background="@drawable/border_top_bottom"
-                android:layout_marginTop="7dp"
+                android:layout_marginTop="20px"
                 />
 
             <ImageButton
@@ -189,7 +187,6 @@
                 android:src="@drawable/plus_white"
                 android:background="@drawable/plus_button_on"
                 android:layout_marginTop="10dp"
-                android:onClick="plusbut_click"
                 tools:ignore="ContentDescription" />
 
         </LinearLayout>
@@ -200,7 +197,6 @@
             android:layout_height="50dp"
             style="@style/NotTintedButton"
             android:text="@string/label_search"
-            android:onClick="search_click"
             android:textSize="20sp"
             android:layout_marginTop="50dp"
             android:layout_marginStart="55dp"
