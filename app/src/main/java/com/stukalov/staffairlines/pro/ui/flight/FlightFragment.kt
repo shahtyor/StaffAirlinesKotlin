@@ -212,7 +212,13 @@ class FlightFragment : Fragment() {
         oclasses.setText(Html.fromHtml(strclass))
         oflyzed.setText(Html.fromHtml(strflyzed))
 
-        if (SM.ExistInFavourites(f)) {
+        /*if (SM.ExistInFavourites(f)) {
+            ofav.setImageResource(R.drawable.favon)
+        }
+        else {
+            ofav.setImageResource(R.drawable.favoff)
+        }*/
+        if (f.InFav) {
             ofav.setImageResource(R.drawable.favon)
         }
         else {

@@ -1,38 +1,43 @@
 package com.stukalov.staffairlines.pro.ui.result
 
+import android.app.AlertDialog
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.RectF
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import android.widget.Button
-import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.ListView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.stukalov.staffairlines.pro.DirectResultAdapter
 import com.stukalov.staffairlines.pro.Flight
+import com.stukalov.staffairlines.pro.FlightWithPax
 import com.stukalov.staffairlines.pro.GlobalStuff
-import com.stukalov.staffairlines.pro.Location
 import com.stukalov.staffairlines.pro.NonDirectResult
-import com.stukalov.staffairlines.pro.PointType
 import com.stukalov.staffairlines.pro.R
 import com.stukalov.staffairlines.pro.RType
 import com.stukalov.staffairlines.pro.ResultType
-import com.stukalov.staffairlines.pro.SelectedPoint
+import com.stukalov.staffairlines.pro.StaffMethods
 import com.stukalov.staffairlines.pro.databinding.FragmentResultBinding
+import kotlinx.coroutines.launch
 import java.time.Duration
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -40,7 +45,11 @@ import java.util.Locale
 class ResultFragment : Fragment() {
 
     private var _binding: FragmentResultBinding? = null
-    lateinit var resultadapter: DirectResultAdapter
+    private var resultadapter: DirectResultAdapter? = null
+    private var direct_lv: RecyclerView? = null
+    private val p = Paint()
+    private lateinit var myContext: Context
+    val SM: StaffMethods = StaffMethods()
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -57,8 +66,6 @@ class ResultFragment : Fragment() {
         _binding = FragmentResultBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        //val textView: TextView = binding.selpointtext
-
         return root
     }
 
@@ -68,8 +75,9 @@ class ResultFragment : Fragment() {
         val formatter0 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val result_title = GlobalStuff.OriginPoint!!.Code + " - " + GlobalStuff.DestinationPoint!!.Code + ", " + GlobalStuff.SearchDT!!.format(formatter0)
         (activity as AppCompatActivity).supportActionBar?.title = result_title
+        myContext = view.context
 
-        val direct_lv: ListView = view.findViewById<ListView>(R.id.directlistview)
+        direct_lv = view.findViewById<RecyclerView>(R.id.directlistview)
         val tabTransfers = view.findViewById<LinearLayout>(R.id.TabTransfers)
         val llResTab = view.findViewById<LinearLayout>(R.id.ResultsTab)
         val tvResInfo = view.findViewById<TextView>(R.id.tvResultInfo)
@@ -78,6 +86,10 @@ class ResultFragment : Fragment() {
         val btFinalNew = view.findViewById<Button>(R.id.btFinalNew)
         val llWaitInfoFinal = view.findViewById<LinearLayout>(R.id.llWaitInfoFinal)
         val tvWaitInfoFinal = view.findViewById<TextView>(R.id.tvWaitInfoFinal)
+
+        direct_lv!!.setHasFixedSize(true)
+        val layoutManager = LinearLayoutManager(view.context)
+        direct_lv!!.layoutManager = layoutManager
 
         if (GlobalStuff.BackResType != null)
         {
@@ -91,7 +103,8 @@ class ResultFragment : Fragment() {
             llFirstSegment.visibility = View.GONE
             btFinalNew.visibility = View.GONE
             llWaitInfoFinal.visibility = View.GONE
-            resultadapter = DirectResultAdapter(view.context, GlobalStuff.ExtResult!!.DirectRes)
+
+            resultadapter = DirectResultAdapter(GlobalStuff.ExtResult!!.DirectRes)
         }
         else if (GlobalStuff.ResType == ResultType.First) {
             GlobalStuff.BackResType = ResultType.First
@@ -103,7 +116,7 @@ class ResultFragment : Fragment() {
             val infotxt = "Choose a FIRST FLIGHT " + GlobalStuff.OriginPoint!!.Code + "-" + GlobalStuff.ChangePoint
             tvResInfo.setText(infotxt)
 
-            var ListRes: List<Flight> = listOf()
+            var ListRes: ArrayList<Flight> = arrayListOf()
             var NonRes: NonDirectResult? = null
             val ListNonDir = GlobalStuff.ExtResult!!.NonDirectRes!!.filter{ it -> it.Transfer == GlobalStuff.ChangePoint }
             if (ListNonDir != null && ListNonDir.isNotEmpty())
@@ -114,7 +127,7 @@ class ResultFragment : Fragment() {
             {
                 ListRes = NonRes.To_airport_transfer
             }
-            resultadapter = DirectResultAdapter(view.context, ListRes)
+            resultadapter = DirectResultAdapter(ListRes)
         }
         else if (GlobalStuff.ResType == ResultType.Second)
         {
@@ -130,9 +143,9 @@ class ResultFragment : Fragment() {
             llFirstLayout.setBackgroundColor(ContextCompat.getColor(GlobalStuff.activity, R.color.lightgray))
             InitFirstSegment(view)
 
-            var ListRes: List<Flight> = listOf()
+            var ListRes: ArrayList<Flight> = arrayListOf()
             var NonRes: NonDirectResult? = null
-            val ListNonDir = GlobalStuff.ExtResult!!.NonDirectRes!!.filter{ it -> it.Transfer == GlobalStuff.ChangePoint }
+            val ListNonDir = GlobalStuff.ExtResult!!.NonDirectRes.filter{ it -> it.Transfer == GlobalStuff.ChangePoint }
             if (ListNonDir != null && ListNonDir.isNotEmpty())
             {
                 NonRes = ListNonDir[0]
@@ -141,9 +154,9 @@ class ResultFragment : Fragment() {
             {
                 val depmints = GlobalStuff.FirstSegment!!.ArrDateTime.plusMinutes(80)
                 val depmaxts = GlobalStuff.FirstSegment!!.ArrDateTime.plusHours(24)
-                ListRes = NonRes.From_airport_transfer.filter{ it -> it.DepDateTime >= depmints && it.DepDateTime <= depmaxts }
+                ListRes = NonRes.From_airport_transfer.filter{ it -> it.DepDateTime >= depmints && it.DepDateTime <= depmaxts } as ArrayList<Flight>
             }
-            resultadapter = DirectResultAdapter(view.context, ListRes)
+            resultadapter = DirectResultAdapter(ListRes)
         }
         else if (GlobalStuff.ResType == ResultType.Final)
         {
@@ -165,18 +178,19 @@ class ResultFragment : Fragment() {
             llFirstLayout.setBackgroundColor(ContextCompat.getColor(GlobalStuff.activity, R.color.white))
             InitFirstSegment(view)
 
-            val ListRes: MutableList<Flight> = mutableListOf()
+            val ListRes: ArrayList<Flight> = arrayListOf()
             ListRes.add(0, GlobalStuff.SecondSegment!!)
 
-            resultadapter = DirectResultAdapter(view.context, ListRes.toList())
+            resultadapter = DirectResultAdapter(ListRes)
         }
 
-        direct_lv.setAdapter(resultadapter)
+        direct_lv!!.adapter = resultadapter
+        //resultadapter!!.notifyDataSetChanged()
+        initSwipe()
 
-        direct_lv.setOnItemClickListener{parent, view, position, id ->
-            val fl = parent.getItemAtPosition(position) as Flight
+        resultadapter!!.onItemClick = { F ->
 
-            GlobalStuff.OneResult = fl
+            GlobalStuff.OneResult = F
             GlobalStuff.BackResType = null
             GlobalStuff.navController.navigate(R.id.result_one)
         }
@@ -200,6 +214,100 @@ class ResultFragment : Fragment() {
             GlobalStuff.SecondSegment = null
             GlobalStuff.navController.navigate(R.id.navigation_home)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        direct_lv!!.adapter = resultadapter
+        initSwipe()
+    }
+
+    private fun initSwipe() {
+        val simpleItemTouchCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+
+            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                val f = resultadapter!!.getItem(position)
+
+                lifecycleScope.launch {
+
+                    val FWP = FlightWithPax(f, GlobalStuff.Pax, LocalDateTime.now().toEpochSecond(ZoneOffset.UTC))
+                    val jhg = "123"
+
+                    if (f.InFav) {
+                        val filt =
+                            GlobalStuff.FavoriteList.filter { it.Fl.DepartureDateTime == f.DepartureDateTime && it.Fl.FlightNumber == f.FlightNumber && it.Fl.MarketingCarrier == f.MarketingCarrier }
+                        GlobalStuff.FavoriteList.remove(filt[0])
+
+                        AlertDialog.Builder(myContext)
+                            .setTitle("Alert")
+                            .setMessage("Flight unset as your favorite!")
+                            .setNegativeButton("ok", { dialog, id -> dialog.cancel() })
+                            .show()
+
+                        //ofav.setImageResource(R.drawable.favoff)
+                    } else {
+                        GlobalStuff.FavoriteList.add(0, FWP)
+
+                        AlertDialog.Builder(myContext)
+                            .setTitle("Alert")
+                            .setMessage("Flight set as your favorite!")
+                            .setNegativeButton("ok", { dialog, id -> dialog.cancel() })
+                            .show()
+
+                        //ofav.setImageResource(R.drawable.favon)
+                    }
+                    SM.SaveFavorites()
+                    resultadapter!!.refreshAdapter()
+                }
+            }
+
+            override fun onChildDraw(c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean) {
+
+                val icon: Bitmap
+                if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+
+                    val itemView = viewHolder.itemView
+
+                    val itemFav = itemView.findViewById<TextView>(R.id.itemfav)
+                    if (itemFav.text == "true")
+                    {
+                        icon = BitmapFactory.decodeResource(resources, R.drawable.favon)
+                    }
+                    else
+                    {
+                        icon = BitmapFactory.decodeResource(resources, R.drawable.favoff)
+                    }
+
+                    val height = itemView.bottom.toFloat() - itemView.top.toFloat()
+                    val width = height / 3
+
+                    if (dX > 0) {
+                        p.color = Color.parseColor("#FFFFFF")
+                        val background = RectF(itemView.left.toFloat(), itemView.top.toFloat(), dX, itemView.bottom.toFloat())
+                        c.drawRect(background, p)
+                        //icon = BitmapFactory.decodeResource(resources, R.drawable.favoff)
+                        val icon_dest = RectF(itemView.left.toFloat() + width, itemView.top.toFloat() + width, itemView.left.toFloat() + 2 * width, itemView.bottom.toFloat() - width)
+                        c.drawBitmap(icon, null, icon_dest, p)
+                    } else {
+                        p.color = Color.parseColor("#FFFFFF")
+                        val background = RectF(itemView.right.toFloat() + dX, itemView.top.toFloat(), itemView.right.toFloat(), itemView.bottom.toFloat())
+                        c.drawRect(background, p)
+                        //icon = BitmapFactory.decodeResource(resources, R.drawable.favon)
+                        val icon_dest = RectF(itemView.right.toFloat() - 2 * width, itemView.top.toFloat() + width, itemView.right.toFloat() - width, itemView.bottom.toFloat() - width)
+                        c.drawBitmap(icon, null, icon_dest, p)
+                    }
+                }
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+            }
+        }
+        val itemTouchHelper = ItemTouchHelper(simpleItemTouchCallback)
+        itemTouchHelper.attachToRecyclerView(direct_lv)
     }
 
     fun InitFirstSegment(view: View)

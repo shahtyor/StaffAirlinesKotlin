@@ -1,49 +1,23 @@
 package com.stukalov.staffairlines.pro
 
 import android.annotation.SuppressLint
-import android.app.DatePickerDialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.MenuItem
-import android.view.View
-import android.widget.DatePicker
-import android.widget.FrameLayout
-import android.widget.ImageButton
-import android.widget.ListView
-import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.ui.graphics.PointMode
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.isVisible
-import androidx.fragment.app.FragmentContainerView
-import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.stukalov.staffairlines.pro.databinding.ActivityMainBinding
-import com.stukalov.staffairlines.pro.ui.MainFragment
-import com.stukalov.staffairlines.pro.ui.home.DatePickerFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.util.Calendar
-import java.text.SimpleDateFormat
-import java.time.Clock
-import java.time.ZoneId
-import java.time.ZoneOffset
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
 

@@ -2,12 +2,11 @@ package com.stukalov.staffairlines.pro
 
 import android.text.Spanned
 import com.google.gson.annotations.SerializedName
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import java.util.ArrayList
 
 class StaffModels
 {
@@ -15,6 +14,7 @@ class StaffModels
 }
 
 val secondFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH)
+val SM: StaffMethods = StaffMethods()
 
 enum class PointType {
     Origin, Destination
@@ -186,6 +186,8 @@ class Flight(
 
     val ArrDateTime: LocalDateTime
         get() = LocalDateTime.parse(ArrivalDateTime, secondFormatter)
+    val InFav: Boolean
+        get() = SM.ExistInFavourites(this)
 }
 
 class FlightWithPax(
@@ -286,9 +288,9 @@ data class TransferPoint(
 data class NonDirectResult(
     var Transfer: String,
     @SerializedName("to_airport_transfer")
-    var To_airport_transfer: List<Flight>,
+    var To_airport_transfer: ArrayList<Flight>,
     @SerializedName("from_airport_transfer")
-    var From_airport_transfer: List<Flight>,
+    var From_airport_transfer: ArrayList<Flight>,
     var ToTransferInfo: AviasalesInfo,
     var FromTransferInfo: AviasalesInfo,
     var RedCount: Int,
@@ -296,20 +298,20 @@ data class NonDirectResult(
     var GreenCount: Int,
     var FirstFlightTransfer: String,
     var LastFlightTransfer: String,
-    var AirportsOrigin: List<TransferPoint>,
-    var AirportsDestination: List<TransferPoint>,
+    var AirportsOrigin: ArrayList<TransferPoint>,
+    var AirportsDestination: ArrayList<TransferPoint>,
     var Log: String,
     var Alert: String
 )
 
 data class ExtendedResult(
-    var DirectRes: List<Flight>,
+    var DirectRes: ArrayList<Flight>,
     var DirectInfo: AviasalesInfo,
-    var TransferPoints: List<TransferPoint>,
-    var NonDirectRes: List<NonDirectResult>,
-    var AirportsOrigin: List<TransferPoint>,
-    var AirportsDestination: List<TransferPoint>,
-    var ResultTransferPoints: List<TransferPoint>,
+    var TransferPoints: ArrayList<TransferPoint>,
+    var NonDirectRes: ArrayList<NonDirectResult>,
+    var AirportsOrigin: ArrayList<TransferPoint>,
+    var AirportsDestination: ArrayList<TransferPoint>,
+    var ResultTransferPoints: ArrayList<TransferPoint>,
     var Log: String,
     var Alert: String?
 )

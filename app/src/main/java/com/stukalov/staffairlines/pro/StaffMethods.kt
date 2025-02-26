@@ -128,14 +128,14 @@ class StaffMethods {
                 val ExtRes = GlobalStuff.ExtResult
                 if (ExtRes != null)
                 {
-                    var NonDirRes: MutableList<NonDirectResult> = mutableListOf()
+                    var NonDirRes: ArrayList<NonDirectResult> = arrayListOf()
                     if (ExtRes.NonDirectRes != null && ExtRes.NonDirectRes.isNotEmpty())
                     {
-                        NonDirRes = ExtRes.NonDirectRes.toMutableList()
+                        NonDirRes = ExtRes.NonDirectRes
                     }
 
                     var NonRes: NonDirectResult? = null
-                    var NonResList = NonDirRes.filter { it -> it.Transfer == change }
+                    val NonResList = NonDirRes.filter { it -> it.Transfer == change }
                     if (NonResList.isNotEmpty())
                     {
                         NonRes = NonResList[0]
@@ -150,7 +150,7 @@ class StaffMethods {
                         NonRes = nonDirect
                     }
 
-                    ExtRes.NonDirectRes = NonDirRes.toList()
+                    ExtRes.NonDirectRes = NonDirRes
                 }
 
                 return "OK"
