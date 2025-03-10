@@ -1,0 +1,91 @@
+{
+  "project_info": {
+    "project_number": "661840568265",
+    "firebase_url": "https://staff-airlines-a356e.firebaseio.com",
+    "project_id": "staff-airlines-a356e",
+    "storage_bucket": "staff-airlines-a356e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:661840568265:android:38d4fb9f230a2e01735218",
+        "android_client_info": {
+          "package_name": "com.stukalov.staffairlines"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "661840568265-fbfv7v0abbb881cjboi69o4sv2g01onr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.stukalov.staffairlines",
+            "certificate_hash": "f4d6d10801e275559d56d588a8e4801f24240fc0"
+          }
+        },
+        {
+          "client_id": "661840568265-pechqshf9aos58s0q2kl0irseuvud7j3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4DTCI7Iv0yJglsRYLb4dcjyl3tjypTkE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "661840568265-pechqshf9aos58s0q2kl0irseuvud7j3.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "661840568265-lvfpvgu4g9t0dqnu77u66vgndehcfo87.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.StaffAirlines.SAE"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:661840568265:android:3a771e4d34c8c47b735218",
+        "android_client_info": {
+          "package_name": "com.stukalov.staffairlines.pro"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "661840568265-pechqshf9aos58s0q2kl0irseuvud7j3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4DTCI7Iv0yJglsRYLb4dcjyl3tjypTkE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "661840568265-pechqshf9aos58s0q2kl0irseuvud7j3.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "661840568265-lvfpvgu4g9t0dqnu77u66vgndehcfo87.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.StaffAirlines.SAE"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

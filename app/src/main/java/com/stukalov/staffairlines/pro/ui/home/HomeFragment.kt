@@ -1,32 +1,34 @@
 package com.stukalov.staffairlines.pro.ui.home
 
-import android.annotation.SuppressLint
-import android.app.DatePickerDialog
-import android.opengl.Visibility
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.DatePicker
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.ui.graphics.Color
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
-import com.stukalov.staffairlines.pro.ExtendedResult
+import androidx.transition.Visibility
+import com.adapty.Adapty
+import com.adapty.models.AdaptyPaywallProduct
+import com.adapty.ui.AdaptyPaywallInsets
+import com.adapty.ui.AdaptyPaywallInsets.Companion
+import com.adapty.ui.AdaptyUI
+import com.adapty.ui.listeners.AdaptyUiObserverModeHandler
+import com.adapty.ui.listeners.AdaptyUiPersonalizedOfferResolver
+import com.adapty.ui.listeners.AdaptyUiTagResolver
+import com.adapty.ui.listeners.AdaptyUiTimerResolver
+import com.adapty.utils.AdaptyResult
+import com.adapty.utils.seconds
+import com.stukalov.staffairlines.pro.AdaptyListener
 import com.stukalov.staffairlines.pro.GetNonDirectType
 import com.stukalov.staffairlines.pro.GlobalStuff
 import com.stukalov.staffairlines.pro.HistoryElement
@@ -34,25 +36,24 @@ import com.stukalov.staffairlines.pro.MainActivity
 import com.stukalov.staffairlines.pro.PointType
 import com.stukalov.staffairlines.pro.R
 import com.stukalov.staffairlines.pro.ResultType
-import com.stukalov.staffairlines.pro.SelectedPoint
 import com.stukalov.staffairlines.pro.StaffMethods
 import com.stukalov.staffairlines.pro.databinding.FragmentHomeBinding
-import kotlinx.coroutines.Deferred
+import com.stukalov.staffairlines.pro.ui.paywall.AdaptyController
+import com.stukalov.staffairlines.pro.ui.paywall.PaywallUiFragment
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.Calendar
-import java.util.Date
 
 
 class HomeFragment : Fragment() {
+
+    /*companion object {
+        fun HomeSetPLan() {
+            SetPlan()
+        }
+    }*/
 
     private var _binding: FragmentHomeBinding? = null
 
@@ -74,7 +75,14 @@ class HomeFragment : Fragment() {
     lateinit var btPlusBut: ImageButton
     lateinit var tbCntPass: TextView
     lateinit var btDate: ImageButton
+    lateinit var tvHomeTryPremium: TextView
+    lateinit var llHomeTryPremium: LinearLayout
+    lateinit var tvPremium: TextView
+    lateinit var tvFreePlan: TextView
+    lateinit var llPremiumPlan: LinearLayout
+    lateinit var spin_layout: FrameLayout
     val SM: StaffMethods = StaffMethods()
+    val AdControl: AdaptyController = AdaptyController()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -84,14 +92,10 @@ class HomeFragment : Fragment() {
         val homeViewModel =
             ViewModelProvider(this).get(HomeViewModel::class.java)
 
-        //(activity as MainActivity).supportActionBar?.title = ""
         (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
-
-        //mView=inflater.inflate(R.layout.fragment_home,container,false)
-        //val btReplace: ImageButton = mView.findViewById(R.id.btReplace)
 
         return root
     }
@@ -114,19 +118,29 @@ class HomeFragment : Fragment() {
         btPlusBut =  view.findViewById(R.id.plusbut)
         tbCntPass = view.findViewById(R.id.cntpass)
         btDate = view.findViewById(R.id.datebutton)
+        tvHomeTryPremium = view.findViewById(R.id.tvHomeTryPremium)
+        llHomeTryPremium = view.findViewById(R.id.llHomeTryPremium)
+        tvFreePlan = view.findViewById(R.id.tvFreePlan)
+        tvPremium = view.findViewById(R.id.tvPremium)
+        llPremiumPlan = view.findViewById(R.id.llPremiumPlan)
+        spin_layout = view.findViewById<FrameLayout>(R.id.spinner_home)
 
-        try {
-            GlobalStuff.navView.setVisibility(View.VISIBLE)
-        } catch (ex: Exception)
-        {
-        }
+        tvHomeTryPremium.setText(Html.fromHtml("<u>Try premium</u>"))
+        tvPremium.setText(Html.fromHtml("<u>Premium</u>"))
 
         SetSelPoint()
+
+        if (GlobalStuff.navView != null) {
+            GlobalStuff.navView!!.visibility = View.VISIBLE
+        }
+
         if (GlobalStuff.SearchDT == null) {
             GlobalStuff.SearchDT = LocalDate.now()
         }
         var formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy")
         tbSearchDT.text = GlobalStuff.SearchDT?.format(formatter)
+
+        SetPlan()
 
         btReplace.setOnClickListener {
             ReplacePoint()
@@ -159,6 +173,12 @@ class HomeFragment : Fragment() {
         btSearch.setOnClickListener {
             search_click(view)
         }
+
+        llHomeTryPremium.setOnClickListener {
+            paywall_try(view)
+        }
+
+        GlobalStuff.HF = this
     }
 
     /*fun SearchFun(SM: StaffMethods) = coroutineScope{
@@ -293,6 +313,23 @@ class HomeFragment : Fragment() {
         tbSearchDT.setText(text)
     }
 
+    fun SetPlan()
+    {
+        if (GlobalStuff.premiumAccess)
+        {
+            tvHomeTryPremium.visibility = View.GONE
+            llHomeTryPremium.visibility = View.GONE
+            llPremiumPlan.visibility = View.VISIBLE
+            tvFreePlan.visibility = View.GONE
+        }
+        else
+        {
+            tvHomeTryPremium.visibility = View.VISIBLE
+            llHomeTryPremium.visibility = View.VISIBLE
+            llPremiumPlan.visibility = View.GONE
+            tvFreePlan.visibility = View.VISIBLE
+        }
+    }
 
     override fun onResume() {
         super.onResume()
@@ -301,22 +338,6 @@ class HomeFragment : Fragment() {
         if (GlobalStuff.OwnAC == null)
         {
             GlobalStuff.navController.navigate(R.id.carousel_frag, Bundle())
-            /*val bundle = Bundle()
-            bundle.putString("SelACMode", "home")
-
-            if (GlobalStuff.Airlines.size > 0)
-            {
-                GlobalStuff.navController.navigate(R.id.sel_ac_frag, bundle)
-            }
-            else {
-                lifecycleScope.launch {
-                    val jsonair = withContext(Dispatchers.IO) { SM.LoadAirlines() }
-
-                    if (jsonair.isNotEmpty() && GlobalStuff.Airlines.size > 0) {
-                        GlobalStuff.navController.navigate(R.id.sel_ac_frag, bundle)
-                    }
-                }
-            }*/
         }
     }
 
@@ -464,58 +485,86 @@ class HomeFragment : Fragment() {
         }
     }
 
+    fun paywall_try(view: View) {
+
+        //val spin_layout = view.findViewById<FrameLayout>(R.id.spinner_home)
+        spin_layout.isVisible = true
+        GlobalStuff.navView!!.visibility = View.GONE
+
+        SetDisable(false)
+
+        AdControl.GetPaywallViewParams("test_main_action2")
+    }
+
     fun search_click(view: View) {
 
         if (GlobalStuff.OriginPoint != null && GlobalStuff.DestinationPoint != null) {
 
-            val spin_layout = view.findViewById<FrameLayout>(R.id.spinner_home)
-            spin_layout.isVisible = true
-            GlobalStuff.navView.visibility = View.GONE
+            if (GlobalStuff.SearchDT!!.isAfter(LocalDate.now()) && !GlobalStuff.premiumAccess)  // показываем пэйвол
+            {
+                spin_layout.isVisible = true
+                GlobalStuff.navView!!.visibility = View.GONE
 
-            SetDisable(false)
-            val OP = GlobalStuff.OriginPoint
-            val DP = GlobalStuff.DestinationPoint
-            add_to_history(OP!!.Code, DP!!.Code, OP.Id.toString(), DP.Id.toString(), OP.Name, DP.Name, GlobalStuff.SearchDT!!.toEpochDay(), tbCntPass.text.toString().toInt())
+                SetDisable(false)
 
-            val permlist = SM.GetStringPermitt()
+                AdControl.GetPaywallViewParams("test_main_action2")
+            }
+            else {
+                //val spin_layout = view.findViewById<FrameLayout>(R.id.spinner_home)
+                spin_layout.isVisible = true
+                GlobalStuff.navView!!.visibility = View.GONE
 
-            lifecycleScope.launch {
-                val result = withContext(Dispatchers.IO) {
-                    SM.ExtendedSearch(
-                        GlobalStuff.OriginPoint!!.Code,
-                        GlobalStuff.DestinationPoint!!.Code,
-                        GlobalStuff.SearchDT!!,
-                        permlist,
-                        false,
-                        GetNonDirectType.off,
-                        GlobalStuff.Pax,
-                        "USD",
-                        "EN",
-                        "USA",
-                        "",
-                        false,
-                        "3.0",
-                        "--"
-                    )
-                }
+                SetDisable(false)
+                val OP = GlobalStuff.OriginPoint
+                val DP = GlobalStuff.DestinationPoint
+                add_to_history(
+                    OP!!.Code,
+                    DP!!.Code,
+                    OP.Id.toString(),
+                    DP.Id.toString(),
+                    OP.Name,
+                    DP.Name,
+                    GlobalStuff.SearchDT!!.toEpochDay(),
+                    tbCntPass.text.toString().toInt()
+                )
 
-                if (result == "OK" && GlobalStuff.ExtResult != null) {
-                    GlobalStuff.ResType = ResultType.Direct
-                    GlobalStuff.BackResType = null
-                    GlobalStuff.navController.navigate(R.id.resultlayout, Bundle())
-                }
-                else
-                {
-                    SetDisable(true)
-                    spin_layout.isVisible = false
-                    GlobalStuff.navView.visibility = View.VISIBLE
-                    var serr: String = ""
-                    if (GlobalStuff.ExtResult == null)
-                    {
-                        serr = " , er=null"
+                val permlist = SM.GetStringPermitt()
+
+                lifecycleScope.launch {
+                    val result = withContext(Dispatchers.IO) {
+                        SM.ExtendedSearch(
+                            GlobalStuff.OriginPoint!!.Code,
+                            GlobalStuff.DestinationPoint!!.Code,
+                            GlobalStuff.SearchDT!!,
+                            permlist,
+                            false,
+                            GetNonDirectType.off,
+                            GlobalStuff.Pax,
+                            "USD",
+                            "EN",
+                            "USA",
+                            "",
+                            false,
+                            "3.0",
+                            "--"
+                        )
                     }
-                    val toast = Toast.makeText(context, result + serr, Toast.LENGTH_LONG)
-                    toast.show()
+
+                    if (result == "OK" && GlobalStuff.ExtResult != null) {
+                        GlobalStuff.ResType = ResultType.Direct
+                        GlobalStuff.BackResType = null
+                        GlobalStuff.navController.navigate(R.id.resultlayout, Bundle())
+                    } else {
+                        SetDisable(true)
+                        spin_layout.isVisible = false
+                        GlobalStuff.navView!!.visibility = View.VISIBLE
+                        var serr: String = ""
+                        if (GlobalStuff.ExtResult == null) {
+                            serr = " , er=null"
+                        }
+                        val toast = Toast.makeText(context, result + serr, Toast.LENGTH_LONG)
+                        toast.show()
+                    }
                 }
             }
         }

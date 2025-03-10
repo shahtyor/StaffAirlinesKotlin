@@ -90,7 +90,7 @@ class SelACFragment : Fragment() {
         ac_lv = view.findViewById<ListView>(R.id.aclistview)
         cont = view.context
 
-        GlobalStuff.navView.visibility = View.GONE
+        GlobalStuff.navView!!.visibility = View.GONE
 
         strmode = getArguments()?.getString("SelACMode")
 
@@ -177,7 +177,7 @@ class SelACFragment : Fragment() {
         {
             GlobalStuff.navController.navigateUp()
         }
-        GlobalStuff.navView.isVisible = true
+        GlobalStuff.navView!!.visibility = View.VISIBLE
     }
 
     override fun onStart() {

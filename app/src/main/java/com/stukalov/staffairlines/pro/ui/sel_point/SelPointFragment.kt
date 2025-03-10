@@ -55,7 +55,7 @@ class SelPointFragment : Fragment() {
 
         val points_lv: ListView = view.findViewById<ListView>(R.id.pointlistview)
 
-        GlobalStuff.navView.visibility = View.GONE
+        GlobalStuff.navView!!.visibility = View.GONE
 
         val strmode = getArguments()?.getString("PointMode")
         val PointMode: PointType = if (strmode == "Origin")
@@ -125,7 +125,7 @@ class SelPointFragment : Fragment() {
                 }
 
                 GlobalStuff.navController.navigateUp()
-                GlobalStuff.navView.isVisible = true
+                GlobalStuff.navView!!.visibility = View.VISIBLE
              }
         }
         catch (e: Exception)

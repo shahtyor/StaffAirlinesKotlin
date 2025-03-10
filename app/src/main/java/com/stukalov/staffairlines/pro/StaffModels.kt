@@ -252,6 +252,25 @@ class CarouselData
     var desc: Spanned
 )
 
+class Remain
+(
+    var token: String,
+    var count: Int
+)
+
+class SubscribeResult
+(
+    var before_push: Int,
+    var alert: String?
+)
+
+class SubscribeWithRemainResult
+(
+    var before_push: Int,
+    var alert: String?,
+    var remain: Int
+)
+
 data class PlaceInfo(
     var EconomyPlaces: Int?,
     var BusinessPlaces: Int?,

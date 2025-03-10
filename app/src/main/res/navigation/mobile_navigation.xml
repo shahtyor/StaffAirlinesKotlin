@@ -84,4 +84,11 @@
                 tools:layout="@layout/fragment_carousel"
                 />
 
+            <fragment
+                android:id="@+id/paywall_frag"
+                android:name="com.stukalov.staffairlines.pro.ui.paywall.PaywallUiFragment"
+                android:label=""
+                tools:layout="@layout/fragment_paywall_ui"
+                />
+
         </navigation>

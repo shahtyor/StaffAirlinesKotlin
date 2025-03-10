@@ -50,6 +50,7 @@
                 android:textSize="18sp" />
 
             <ImageButton
+                android:id="@+id/btSubscribe_one"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
                 android:background="@color/staff_blue"

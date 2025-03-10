@@ -1,49 +1,30 @@
 package com.stukalov.staffairlines.pro
 
 import android.annotation.SuppressLint
-import android.app.DatePickerDialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.MenuItem
-import android.view.View
-import android.widget.DatePicker
-import android.widget.FrameLayout
-import android.widget.ImageButton
-import android.widget.ListView
-import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.ui.graphics.PointMode
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.isVisible
-import androidx.fragment.app.FragmentContainerView
-import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.adapty.Adapty
+import com.adapty.models.AdaptyConfig
+import com.adapty.models.AdaptyProfile
+import com.adapty.utils.AdaptyLogLevel
+import com.adapty.utils.AdaptyResult
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.messaging.FirebaseMessaging
 import com.stukalov.staffairlines.pro.databinding.ActivityMainBinding
-import com.stukalov.staffairlines.pro.ui.MainFragment
-import com.stukalov.staffairlines.pro.ui.home.DatePickerFragment
+import com.stukalov.staffairlines.pro.ui.home.HomeFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.util.Calendar
-import java.text.SimpleDateFormat
-import java.time.Clock
-import java.time.ZoneId
-import java.time.ZoneOffset
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -54,6 +35,48 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("ResourceAsColor")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        Adapty.logLevel = AdaptyLogLevel.VERBOSE
+
+        GlobalStuff.Pax = 1
+
+        Adapty.activate(
+            applicationContext,
+            AdaptyConfig.Builder("public_live_acbEIggW.S6BV02NUN0hqnxiqZLGS")
+                .withObserverMode(true) //default false
+                .withCustomerUserId(null) //default null
+                .withIpAddressCollectionDisabled(false) //default false
+                .withAdIdCollectionDisabled(false) // default false
+                .build()
+        )
+
+        Adapty.getProfile { result ->
+            when (result) {
+                is AdaptyResult.Success -> {
+                    val profile = result.value
+                    GlobalStuff.AdaptyProfileID = profile.profileId
+                    val premium = profile.accessLevels["premium"]
+
+                    if (premium?.isActive == true)
+                    {
+                        GlobalStuff.premiumAccess = true
+                        GlobalStuff.subscriptionId = premium.vendorProductId
+                    }
+                    else
+                    {
+                        GlobalStuff.premiumAccess = false;
+                        GlobalStuff.subscriptionId = null;
+                    }
+                    if (GlobalStuff.HF != null) {
+                        GlobalStuff.HF!!.SetPlan()
+                    }
+                }
+                is AdaptyResult.Error -> {
+                    val error = result.error
+                    // handle the error
+                }
+            }
+        }
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -90,13 +113,34 @@ class MainActivity : AppCompatActivity() {
         }
 
         GlobalStuff.activity = this.baseContext
-        //GlobalStuff.mActivity = this
+        GlobalStuff.mActivity = this
 
         GlobalStuff.navController = navController
         GlobalStuff.navView = navView
         GlobalStuff.StaffRes = resources
         GlobalStuff.supportFragManager = supportFragmentManager
         GlobalStuff.prefs = getSharedPreferences("settings", Context.MODE_PRIVATE)
+
+        /*val fireinst = FirebaseMessaging.getInstance()
+        if (fireinst.token.isSuccessful)
+        {
+            val strt = fireinst.token.result
+        }*/
+
+        SM.GetAppToken()
+
+        if (GlobalStuff.Token.isNullOrEmpty()) {
+            lifecycleScope.launch {
+                val token = withContext(Dispatchers.IO) {
+                    FirebaseMessaging.getInstance().token
+                }
+
+                if (token.isSuccessful) {
+                    GlobalStuff.Token = token.result
+                    SM.SaveAppToken()
+                }
+            }
+        }
 
         //navController.navigate(R.id.main_fragment)
 
@@ -106,6 +150,18 @@ class MainActivity : AppCompatActivity() {
         SM.ReadFavorites()
         SM.ReadHistory()
 
+        if (GlobalStuff.Token.isNullOrEmpty())
+        {
+            SM.GetAppToken()
+        }
+
+        lifecycleScope.launch {
+            val rem = withContext(Dispatchers.IO) { SM.RemainSubscribe(GlobalStuff.Token!!) }
+
+            if (rem != null) {
+                GlobalStuff.Remain = rem.count
+            }
+        }
         //GlobalStuff.navController.navigate(R.id.main_fragment)
     }
 

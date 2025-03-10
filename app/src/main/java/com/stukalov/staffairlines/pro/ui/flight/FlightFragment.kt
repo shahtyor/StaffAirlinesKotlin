@@ -1,6 +1,9 @@
 package com.stukalov.staffairlines.pro.ui.flight
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
+import android.content.Context
+import android.content.DialogInterface
 import android.graphics.Color
 import androidx.fragment.app.viewModels
 import android.os.Bundle
@@ -16,6 +19,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import com.stukalov.staffairlines.pro.Airline0
 import com.stukalov.staffairlines.pro.FlightWithPax
 import com.stukalov.staffairlines.pro.GlobalStuff
 import com.stukalov.staffairlines.pro.R
@@ -34,6 +38,7 @@ import java.util.Locale
 
 class FlightFragment : Fragment() {
 
+    lateinit var olbsublost: TextView
     val SM: StaffMethods = StaffMethods()
 
     companion object {
@@ -78,6 +83,8 @@ class FlightFragment : Fragment() {
         val oflyzed = view.findViewById<TextView>(R.id.flyzed_one)
         val osearch = view.findViewById<Button>(R.id.btSearch_one)
         val ofav = view.findViewById<ImageButton>(R.id.fav_one)
+        val obtsubscr = view.findViewById<ImageButton>(R.id.btSubscribe_one)
+        olbsublost = view.findViewById<TextView>(R.id.lbSubLost)
 
         if (GlobalStuff.BackResType != null)
         {
@@ -110,6 +117,11 @@ class FlightFragment : Fragment() {
         oflyzed.setOnClickListener()
         {
             flyzed_click(view)
+        }
+
+        obtsubscr.setOnClickListener()
+        {
+            btSubscribe_Click(view)
         }
 
         var f = GlobalStuff.OneResult!!
@@ -146,6 +158,8 @@ class FlightFragment : Fragment() {
 
         onumfl.setText(f.MarketingCarrier + " " + f.FlightNumber)
         oengine.setText(f.EquipmentName)
+
+        olbsublost.setText(GlobalStuff.Remain.toString())
 
         val sstdep = stf.format(f.DepDateTime)
         val ssddep = sdf.format(f.DepDateTime) + ", " + f.DepDateTime.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
@@ -253,6 +267,65 @@ class FlightFragment : Fragment() {
             "zed_href", "http://www.flyzed.info/" + GlobalStuff.OneResult!!.MarketingCarrier + "#index"
             )
         GlobalStuff.navController.navigate(R.id.show_zed_frag, bundle)
+    }
+
+    fun btSubscribe_Click(view: View) {
+        AlertDialog.Builder(view.context)
+            .setTitle("")
+            .setMessage("Do you want to subscribe to this flight?")
+            .setPositiveButton("YES") { dialog, id -> NextStep(dialog, view.context) }
+            .setNegativeButton("NO") { dialog, id -> dialog.cancel() }
+            .show()
+    }
+
+    fun NextStep(dialog: DialogInterface, cont: Context) {
+        dialog.cancel()
+
+        if (GlobalStuff.Token.isNullOrEmpty()) {
+            AlertDialog.Builder(cont)
+                .setTitle("An error occured")
+                .setMessage("The token is not defined")
+                .setNegativeButton("OK") { dialog2, id -> dialog2.cancel() }
+                .show()
+        } else {
+            val f = GlobalStuff.OneResult!!
+            val flight = f.MarketingCarrier + f.FlightNumber
+
+            lifecycleScope.launch {
+                val subresult = withContext(Dispatchers.IO) {
+                    SM.CreateSubscribe(
+                        GlobalStuff.Token!!,
+                        flight,
+                        f.Origin,
+                        f.Destination,
+                        GlobalStuff.Pax,
+                        f.DepartureDateTime
+                    )
+                }
+
+                if (subresult.alert.isNullOrEmpty())
+                {
+                    val st = GetTimeAsHM2(subresult.before_push)
+
+                    AlertDialog.Builder(cont)
+                        .setTitle("Success")
+                        .setMessage("You've successfully subscribed to this flight. We will send you the first push with load info in " + st)
+                        .setNegativeButton("OK") { dialog3, id -> dialog3.cancel() }
+                        .show()
+
+                    GlobalStuff.Remain = subresult.remain
+                    olbsublost.setText(GlobalStuff.Remain.toString())
+                }
+                else
+                {
+                    AlertDialog.Builder(cont)
+                        .setTitle("An error occured")
+                        .setMessage(subresult.alert)
+                        .setNegativeButton("OK") { dialog4, id -> dialog4.cancel() }
+                        .show()
+                }
+            }
+        }
     }
 
     fun fav_click(view: View) {

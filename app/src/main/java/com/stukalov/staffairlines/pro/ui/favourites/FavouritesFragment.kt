@@ -58,7 +58,7 @@ class FavouritesFragment : Fragment() {
         val SM: StaffMethods = StaffMethods()
 
         //GlobalStuff.navView.setVisibility(View.VISIBLE)
-        GlobalStuff.navView.visibility = View.VISIBLE
+        GlobalStuff.navView!!.visibility = View.VISIBLE
 
         //val title = arguments?.getString("result_title")
         //(activity as AppCompatActivity).supportActionBar?.title = title
@@ -74,7 +74,7 @@ class FavouritesFragment : Fragment() {
         fav_lv.setOnItemClickListener {parent, view, position, id ->
 
             spin_layout.isVisible = true
-            GlobalStuff.navView.visibility = View.GONE
+            GlobalStuff.navView!!.visibility = View.GONE
 
             val fl = parent.getItemAtPosition(position) as FlightWithPax
 
@@ -91,7 +91,7 @@ class FavouritesFragment : Fragment() {
                 }
 
                 if (result == "OK" && GlobalStuff.FlInfo != null) {
-                    GlobalStuff.navView.visibility = View.GONE
+                    GlobalStuff.navView!!.visibility = View.GONE
 
                     val filt = GlobalStuff.FavoriteList.filter { it.Fl.DepartureDateTime == fl.Fl.DepartureDateTime && it.Fl.FlightNumber == fl.Fl.FlightNumber && it.Fl.MarketingCarrier == fl.Fl.MarketingCarrier }
                     if (filt.size > 0)
@@ -107,7 +107,7 @@ class FavouritesFragment : Fragment() {
                 else
                 {
                     spin_layout.isVisible = false
-                    GlobalStuff.navView.visibility = View.VISIBLE
+                    GlobalStuff.navView!!.visibility = View.VISIBLE
                     var serr: String = ""
                     if (GlobalStuff.ExtResult == null)
                     {

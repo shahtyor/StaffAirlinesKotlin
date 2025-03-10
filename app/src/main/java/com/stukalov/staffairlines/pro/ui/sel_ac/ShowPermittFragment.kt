@@ -52,7 +52,7 @@ class ShowPermittFragment : Fragment() {
 
         ac_lv = view.findViewById<ListView>(R.id.permittlistview)
 
-        GlobalStuff.navView.visibility = View.GONE
+        GlobalStuff.navView!!.visibility = View.GONE
 
         try {
 

@@ -33,7 +33,7 @@ class ZedFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        GlobalStuff.navView.setVisibility(View.GONE)
+        GlobalStuff.navView!!.visibility = View.GONE
         val zedurl = arguments?.getString("zed_href")
 
         val exam = view.findViewById<TextView>(R.id.tvExam)

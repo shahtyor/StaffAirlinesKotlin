@@ -33,7 +33,7 @@ class SettingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        GlobalStuff.navView.setVisibility(View.VISIBLE)
+        GlobalStuff.navView!!.visibility = View.VISIBLE
 
         val set_ac = view.findViewById<TextView>(R.id.setting_yourac)
         val set_permit = view.findViewById<TextView>(R.id.setting_permitted)

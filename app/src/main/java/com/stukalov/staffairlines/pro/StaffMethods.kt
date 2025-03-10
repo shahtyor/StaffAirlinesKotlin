@@ -1,7 +1,5 @@
 package com.stukalov.staffairlines.pro
 
-import androidx.lifecycle.LifecycleCoroutineScope
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -165,6 +163,69 @@ class StaffMethods {
             res = ex.message + "..." + ex.stackTrace
         }
         return res
+    }
+
+    fun RemainSubscribe(token: String): Remain?
+    {
+        try
+        {
+            val Uri = BaseUrl + "/subscribes/Remain?token=" + token
+
+            val request = Request.Builder().url(Uri).build()
+
+            val Json = RequestJson(client, request)
+
+            var rem: Remain? = null
+            val gson = Gson()
+
+            try {
+                rem = gson.fromJson(Json, Remain::class.java)
+            }
+            catch (e: Exception)
+            {
+                val kjh = e.message + "..." + e.stackTrace
+            }
+            return rem
+        }
+        catch (ex: Exception)
+        {
+            val kjh = ex.message + "..." + ex.stackTrace
+        }
+        return null
+    }
+
+    fun CreateSubscribe(token: String, flight: String, origin: String, destination: String, pax: Int, time: String): SubscribeWithRemainResult
+    {
+        try
+        {
+            val Uri: String = BaseUrl + "/subscribes/Create?token=" + token + "&flight=" + flight + "&origin=" + origin + "&destination=" + destination + "&pax=" + pax.toString() + "&time=" + time.replace("T", "%20") + "&channel=1"
+
+            val request = Request.Builder().url(Uri).build()
+
+            val Json = RequestJson(client, request)
+
+            val subscribe: SubscribeResult
+            val gson = Gson()
+
+            try {
+                subscribe = gson.fromJson(Json, SubscribeResult::class.java)
+
+                val rem: Remain? = RemainSubscribe(token)
+
+                val result2: SubscribeWithRemainResult = SubscribeWithRemainResult(subscribe.before_push, subscribe.alert, rem!!.count)
+
+                return result2
+            }
+            catch (e: Exception)
+            {
+                val kjh = e.message + "..." + e.stackTrace
+            }
+        }
+        catch (ex: Exception)
+        {
+            val kjgh = ex.message + "..." + ex.stackTrace
+        }
+        return SubscribeWithRemainResult(0, "", 0)
     }
 
     fun LoadLocations(): String {
@@ -375,6 +436,19 @@ class StaffMethods {
             if (Air != null) {
                     GlobalStuff.OwnAC = Air
             }
+        }
+    }
+
+    fun SaveAppToken()
+    {
+        val editor = GlobalStuff.prefs.edit()
+        editor.putString("app_token", GlobalStuff.Token).apply()
+    }
+
+    fun GetAppToken()
+    {
+        if (GlobalStuff.prefs.contains("app_token")) {
+            GlobalStuff.Token = GlobalStuff.prefs.getString("app_token", null)
         }
     }
 

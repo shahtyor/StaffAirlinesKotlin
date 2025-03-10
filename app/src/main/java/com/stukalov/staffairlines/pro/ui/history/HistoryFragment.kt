@@ -53,7 +53,7 @@ class HistoryFragment : Fragment() {
 
         val SM: StaffMethods = StaffMethods()
 
-        GlobalStuff.navView.setVisibility(View.VISIBLE)
+        GlobalStuff.navView!!.setVisibility(View.VISIBLE)
 
         val hist_lv: ListView = view.findViewById<ListView>(R.id.histlistview)
 

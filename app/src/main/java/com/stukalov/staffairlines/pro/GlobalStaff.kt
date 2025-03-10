@@ -4,25 +4,30 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Resources
-import android.widget.ArrayAdapter
-import android.widget.FrameLayout
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.fragment.app.FragmentContainerView
 import androidx.navigation.NavController
+import com.adapty.errors.AdaptyError
+import com.adapty.models.AdaptyPaywallProduct
+import com.adapty.ui.AdaptyUI
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.stukalov.staffairlines.pro.databinding.ActivityMainBinding
+import com.stukalov.staffairlines.pro.ui.home.HomeFragment
 import java.time.LocalDate
 
     @SuppressLint("StaticFieldLeak")
     object GlobalStuff {
         lateinit var navController: NavController
-        lateinit var navView: BottomNavigationView
+        var navView: BottomNavigationView? = null
         lateinit var Locations: List<Location>
         var Airlines: List<Airline0> = listOf()
         var Permitted: List<PermittedAC> = listOf()
         var FavoriteList = mutableListOf<FlightWithPax>()
         var HistoryList = mutableListOf<HistoryElement>()
+        var NotificationData: Map<String, String> = mapOf()
+        var HF: HomeFragment? = null
+        var Token: String? = null
+        var Remain: Int = 5
+
         lateinit var activity: Context
         lateinit var mActivity: MainActivity
         lateinit var binding: ActivityMainBinding
@@ -43,5 +48,13 @@ import java.time.LocalDate
         lateinit var StaffRes: Resources
         lateinit var supportFragManager: androidx.fragment.app.FragmentManager
         lateinit var prefs: SharedPreferences
+
+        var AdaptyProducts: List<AdaptyPaywallProduct> = listOf()
+        var AdaptyConfig: AdaptyUI.LocalizedViewConfiguration? = null
+        var AdaptyErr: AdaptyError? = null
+
+        var AdaptyProfileID: String? = null
+        var premiumAccess: Boolean = false
+        var subscriptionId: String? = null
     }
 //}

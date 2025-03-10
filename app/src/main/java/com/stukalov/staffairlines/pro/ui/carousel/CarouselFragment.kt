@@ -47,7 +47,7 @@ class CarouselFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
-        GlobalStuff.navView.visibility = View.GONE
+        GlobalStuff.navView!!.visibility = View.GONE
 
         val viewPager = view.findViewById<ViewPager2>(R.id.view_pager_carousel)
         val btBegin = view.findViewById<Button>(R.id.btCarBegin)
