@@ -32,6 +32,7 @@ import com.stukalov.staffairlines.pro.RType
 import com.stukalov.staffairlines.pro.ResultType
 import com.stukalov.staffairlines.pro.SelectedPoint
 import com.stukalov.staffairlines.pro.databinding.FragmentResultBinding
+import com.stukalov.staffairlines.pro.ui.paywall.AdaptyController
 import java.time.Duration
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -41,6 +42,7 @@ class ResultFragment : Fragment() {
 
     private var _binding: FragmentResultBinding? = null
     lateinit var resultadapter: DirectResultAdapter
+    val AdControl: AdaptyController = AdaptyController()
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -78,6 +80,7 @@ class ResultFragment : Fragment() {
         val btFinalNew = view.findViewById<Button>(R.id.btFinalNew)
         val llWaitInfoFinal = view.findViewById<LinearLayout>(R.id.llWaitInfoFinal)
         val tvWaitInfoFinal = view.findViewById<TextView>(R.id.tvWaitInfoFinal)
+        val spin_layout = view.findViewById<FrameLayout>(R.id.spinner_result)
 
         if (GlobalStuff.BackResType != null)
         {
@@ -190,7 +193,15 @@ class ResultFragment : Fragment() {
         }
 
         tabTransfers.setOnClickListener { view ->
-            GlobalStuff.navController.navigate(R.id.transferlayout, Bundle())
+            if (!GlobalStuff.premiumAccess)  // показываем пэйвол
+            {
+                spin_layout.isVisible = true
+
+                AdControl.GetPaywallViewParams("test_main_action2")
+            }
+            else {
+                GlobalStuff.navController.navigate(R.id.transferlayout, Bundle())
+            }
         }
 
         btFinalNew.setOnClickListener { view ->
@@ -200,6 +211,11 @@ class ResultFragment : Fragment() {
             GlobalStuff.SecondSegment = null
             GlobalStuff.navController.navigate(R.id.navigation_home)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        (activity as AppCompatActivity?)!!.supportActionBar!!.show()
     }
 
     fun InitFirstSegment(view: View)

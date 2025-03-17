@@ -13,6 +13,7 @@
     <color name="staff_gray">#777777</color>
     <color name="staff_dark2">#2F2F2F</color>
     <color name="lightgray">#EDEDED</color>
+    <color name="staff_another_gray">#AAAAAA</color>
     <color name="text_gray">#BBBBBB</color>
     <color name="hint_text">#B8B8B8</color>
     <color name="sa_green">#92C55A</color>

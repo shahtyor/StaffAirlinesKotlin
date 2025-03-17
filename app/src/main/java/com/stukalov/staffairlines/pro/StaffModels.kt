@@ -38,6 +38,11 @@ enum class RType(val value: Int)
     }
 }
 
+enum class AdaptyAction
+{
+    None, Identify, UpdateFrofile, UpdateAttribution, LogOut
+}
+
 enum class ResultType
 {
     Direct, First, Second, Final
@@ -332,5 +337,32 @@ data class ExtendedResult(
     var Log: String,
     var Alert: String?
 )
+
+data class SignInResult(
+    val data: UserData?,
+    val errorMessage: String?
+)
+
+data class UserData(
+    val userId: String,
+    val username: String?,
+    val profilePictureUrl: String?
+)
+
+data class SignInState(
+    val isSignInSuccessful: Boolean = false,
+    val signInError: String? = null
+)
+
+class ProfileTokens
+(
+    val SubscribeTokens: Int,
+    val NonSubscribeTokens: Int,
+    val Premium: Boolean,
+    val Error: String,
+    val Timing: String,
+    val OwnAC: String
+)
+
 
 

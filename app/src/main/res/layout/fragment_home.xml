@@ -280,6 +280,37 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/llHomeInvite"
+                android:orientation="horizontal"
+                android:layout_marginStart="100dp"
+                android:gravity="end"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_gravity="bottom"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:textAlignment="textEnd"
+                    android:id="@+id/tvHomeInvite"
+                    android:text="Invite your colleagues"
+                    android:textColor="@color/staff_blue"
+                    android:textSize="16sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:src="@drawable/heart"
+                    android:layout_marginStart="5dp"
+                    android:scaleType="fitXY"
+                    android:layout_gravity="center_vertical"
+                    />
+
+            </LinearLayout>
+
         </LinearLayout>
 
         <TextView
@@ -320,6 +351,7 @@
 
     </LinearLayout>
 
+
     <FrameLayout
         android:id="@+id/spinner_home"
         android:layout_width="match_parent"
@@ -339,5 +371,4 @@
             android:indeterminateTintMode="src_atop" />
 
     </FrameLayout>
-
  </androidx.constraintlayout.widget.ConstraintLayout>

@@ -13,11 +13,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.stukalov.staffairlines.pro.Airline0
 import com.stukalov.staffairlines.pro.FlightWithPax
@@ -26,10 +28,12 @@ import com.stukalov.staffairlines.pro.R
 import com.stukalov.staffairlines.pro.RType
 import com.stukalov.staffairlines.pro.ResultType
 import com.stukalov.staffairlines.pro.StaffMethods
+import com.stukalov.staffairlines.pro.ui.paywall.AdaptyController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -40,6 +44,7 @@ class FlightFragment : Fragment() {
 
     lateinit var olbsublost: TextView
     val SM: StaffMethods = StaffMethods()
+    val AdControl: AdaptyController = AdaptyController()
 
     companion object {
         fun newInstance() = FlightFragment()
@@ -261,6 +266,12 @@ class FlightFragment : Fragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        (activity as AppCompatActivity?)!!.supportActionBar!!.show()
+    }
+
     fun flyzed_click(view: View) {
         val bundle = Bundle()
         bundle.putString(
@@ -270,12 +281,21 @@ class FlightFragment : Fragment() {
     }
 
     fun btSubscribe_Click(view: View) {
-        AlertDialog.Builder(view.context)
-            .setTitle("")
-            .setMessage("Do you want to subscribe to this flight?")
-            .setPositiveButton("YES") { dialog, id -> NextStep(dialog, view.context) }
-            .setNegativeButton("NO") { dialog, id -> dialog.cancel() }
-            .show()
+        if (!GlobalStuff.premiumAccess)  // показываем пэйвол
+        {
+            val spin_layout = view.findViewById<FrameLayout>(R.id.spinner_flight)
+            spin_layout.isVisible = true
+
+            AdControl.GetPaywallViewParams("test_main_action2")
+        }
+        else {
+            AlertDialog.Builder(view.context)
+                .setTitle("")
+                .setMessage("Do you want to subscribe to this flight?")
+                .setPositiveButton("YES") { dialog, id -> NextStep(dialog, view.context) }
+                .setNegativeButton("NO") { dialog, id -> dialog.cancel() }
+                .show()
+        }
     }
 
     fun NextStep(dialog: DialogInterface, cont: Context) {

@@ -342,4 +342,24 @@
 
     </LinearLayout>
 
+    <FrameLayout
+        android:id="@+id/spinner_result"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:background="@drawable/overlay_back"
+        android:elevation="4dp"
+        android:translationZ="4dp"
+        android:visibility="gone"
+        tools:ignore="MissingConstraints">
+
+        <ProgressBar
+            android:id="@+id/loading_spinner3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:indeterminateTint="@color/staff_blue"
+            android:indeterminateTintMode="src_atop" />
+
+    </FrameLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

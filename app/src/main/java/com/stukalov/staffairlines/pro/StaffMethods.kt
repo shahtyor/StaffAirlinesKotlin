@@ -452,6 +452,19 @@ class StaffMethods {
         }
     }
 
+    fun SaveCustomerID()
+    {
+        val editor = GlobalStuff.prefs.edit()
+        editor.putString("customer_id", GlobalStuff.customerID).apply()
+    }
+
+    fun GetCustomerID()
+    {
+        if (GlobalStuff.prefs.contains("customer_id")) {
+            GlobalStuff.customerID = GlobalStuff.prefs.getString("customer_id", null)
+        }
+    }
+
     fun GetPermittedString(): String
     {
         val astr = mutableListOf<String>()

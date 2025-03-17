@@ -1,5 +1,7 @@
 package com.stukalov.staffairlines.pro.ui.home
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.text.Html
 import android.view.LayoutInflater
@@ -81,6 +83,9 @@ class HomeFragment : Fragment() {
     lateinit var tvFreePlan: TextView
     lateinit var llPremiumPlan: LinearLayout
     lateinit var spin_layout: FrameLayout
+    lateinit var tvHomeInvite: TextView
+    lateinit var llHomeInvite: LinearLayout
+    lateinit var tvHomeSearchCurrent: TextView
     val SM: StaffMethods = StaffMethods()
     val AdControl: AdaptyController = AdaptyController()
 
@@ -124,9 +129,13 @@ class HomeFragment : Fragment() {
         tvPremium = view.findViewById(R.id.tvPremium)
         llPremiumPlan = view.findViewById(R.id.llPremiumPlan)
         spin_layout = view.findViewById<FrameLayout>(R.id.spinner_home)
+        tvHomeInvite = view.findViewById(R.id.tvHomeInvite)
+        llHomeInvite = view.findViewById(R.id.llHomeInvite)
+        tvHomeSearchCurrent = view.findViewById(R.id.tvHomeSearchCurrent)
 
         tvHomeTryPremium.setText(Html.fromHtml("<u>Try premium</u>"))
         tvPremium.setText(Html.fromHtml("<u>Premium</u>"))
+        tvHomeInvite.setText(Html.fromHtml("<u>Invite your colleagues</u>"))
 
         SetSelPoint()
 
@@ -176,6 +185,14 @@ class HomeFragment : Fragment() {
 
         llHomeTryPremium.setOnClickListener {
             paywall_try(view)
+        }
+
+        llHomeInvite.setOnClickListener {
+            invite_click(view)
+        }
+
+        llPremiumPlan.setOnClickListener {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/account/subscriptions?sku=" + GlobalStuff.subscriptionId + "&package=com.stukalov.staffairlines.pro")))
         }
 
         GlobalStuff.HF = this
@@ -321,6 +338,7 @@ class HomeFragment : Fragment() {
             llHomeTryPremium.visibility = View.GONE
             llPremiumPlan.visibility = View.VISIBLE
             tvFreePlan.visibility = View.GONE
+            tvHomeSearchCurrent.visibility = View.GONE
         }
         else
         {
@@ -328,6 +346,7 @@ class HomeFragment : Fragment() {
             llHomeTryPremium.visibility = View.VISIBLE
             llPremiumPlan.visibility = View.GONE
             tvFreePlan.visibility = View.VISIBLE
+            tvHomeSearchCurrent.visibility = View.VISIBLE
         }
     }
 
@@ -494,6 +513,14 @@ class HomeFragment : Fragment() {
         SetDisable(false)
 
         AdControl.GetPaywallViewParams("test_main_action2")
+    }
+
+    fun invite_click(view: View) {
+        val shareIntent: Intent = Intent(Intent.ACTION_SEND)
+        shareIntent.setType("text/html")
+        shareIntent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml("Seems that it useful tool for planning nonrev travel. This is the link for downloading mobile application Staff Airlines from AppStore or Google Play:<br/>https://staffairlines.com/download"))
+        startActivity(Intent.createChooser(shareIntent, "I use Staff Airlines app for planning my nonrev travel"))
+        //GlobalStuff.navController.navigate(R.id.main_frag, Bundle())
     }
 
     fun search_click(view: View) {

@@ -2,10 +2,19 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'com.google.gms.google-services'
+    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
     //id 'com.google.gms.google-services'
 }
 
 android {
+    signingConfigs {
+        debug {
+            storeFile file('C:\\Users\\shahm\\AppData\\Local\\Xamarin\\Mono for Android\\Keystore\\debug\\debug.keystore')
+            storePassword 'e4r5t6'
+            keyAlias 'debug'
+            keyPassword 'e4r5t6'
+        }
+    }
     namespace 'com.stukalov.staffairlines.pro'
     compileSdk 35
 
@@ -26,11 +35,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '11'
     }
     buildFeatures {
         viewBinding true
@@ -77,12 +86,20 @@ dependencies {
     implementation 'io.adapty:android-sdk'
     implementation 'io.adapty:android-ui'
 
+    implementation "androidx.credentials:credentials:1.5.0"
+    implementation "androidx.credentials:credentials-play-services-auth:1.5.0"
+    implementation "com.google.android.libraries.identity.googleid:googleid:1.1.1"
+
     // CometChat Push Notification Extension
     //implementation "com.cometchat:pro-android-chat-sdk:3.0.0"
     //implementation "com.cometchat:pro-ext-pn:1.0.0"
 
     // Firebase Messaging
     implementation "com.google.firebase:firebase-messaging:24.1.0"
+    implementation 'com.google.android.gms:play-services-auth:21.3.0'
+    //implementation 'com.google.firebase:firebase-auth-common:9.8.0'
+    implementation 'com.google.firebase:firebase-auth-ktx:23.2.0'
+    implementation 'com.google.android.gms:play-services-maps:19.1.0'
     //implementation "com.google.gms.google-services:1.0"
 
     //implementation 'androidx.navigation:navigation-fragment-ktx:2.5.2'

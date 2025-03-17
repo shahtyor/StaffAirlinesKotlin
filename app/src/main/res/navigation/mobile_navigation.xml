@@ -25,9 +25,9 @@
 
             <fragment
                 android:id="@+id/navigation_settings"
-                android:name="com.stukalov.staffairlines.pro.ui.setting.SettingFragment"
-                android:label="Settings"
-                tools:layout="@layout/fragment_setting" />
+                android:name="com.stukalov.staffairlines.pro.ui.setting.ProfileFragment"
+                android:label="Profile"
+                tools:layout="@layout/fragment_profileset" />
 
             <fragment
                 android:id="@+id/sel_point"
@@ -89,6 +89,20 @@
                 android:name="com.stukalov.staffairlines.pro.ui.paywall.PaywallUiFragment"
                 android:label=""
                 tools:layout="@layout/fragment_paywall_ui"
+                />
+
+            <fragment
+                android:id="@+id/login_frag"
+                android:name="com.stukalov.staffairlines.pro.ui.setting.LoginFragment"
+                android:label="SignIn"
+                tools:layout="@layout/fragment_login"
+                />
+
+            <fragment
+                android:id="@+id/main_frag"
+                android:name="com.stukalov.staffairlines.pro.ui.main.MainFragment0"
+                android:label=""
+                tools:layout="@layout/fragment_main"
                 />
 
         </navigation>

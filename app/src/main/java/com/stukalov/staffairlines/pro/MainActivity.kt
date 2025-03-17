@@ -2,10 +2,12 @@ package com.stukalov.staffairlines.pro
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
@@ -16,21 +18,40 @@ import androidx.navigation.ui.setupWithNavController
 import com.adapty.Adapty
 import com.adapty.models.AdaptyConfig
 import com.adapty.models.AdaptyProfile
+import com.adapty.models.AdaptyProfileParameters
 import com.adapty.utils.AdaptyLogLevel
 import com.adapty.utils.AdaptyResult
+import com.adapty.utils.ImmutableMap
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.bottomnavigation.LabelVisibilityMode
+import com.google.android.material.navigation.NavigationBarView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.messaging.FirebaseMessaging
 import com.stukalov.staffairlines.pro.databinding.ActivityMainBinding
 import com.stukalov.staffairlines.pro.ui.home.HomeFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.math.BigInteger
+import java.security.MessageDigest
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
     private lateinit var navView: BottomNavigationView
+    val RC_SIGN_IN: Int = 1
+    //lateinit var signInClient: GoogleSignInClient
+    //lateinit var signInOptions: GoogleSignInOptions
+    private lateinit var auth: FirebaseAuth
+    val SM: StaffMethods = StaffMethods()
 
     @SuppressLint("ResourceAsColor")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,13 +59,18 @@ class MainActivity : AppCompatActivity() {
 
         Adapty.logLevel = AdaptyLogLevel.VERBOSE
 
+        auth = FirebaseAuth.getInstance()
+
         GlobalStuff.Pax = 1
+
+        GlobalStuff.prefs = getSharedPreferences("settings", Context.MODE_PRIVATE)
+        SM.GetCustomerID()
 
         Adapty.activate(
             applicationContext,
             AdaptyConfig.Builder("public_live_acbEIggW.S6BV02NUN0hqnxiqZLGS")
                 .withObserverMode(true) //default false
-                .withCustomerUserId(null) //default null
+                .withCustomerUserId(GlobalStuff.customerID) //default null
                 .withIpAddressCollectionDisabled(false) //default false
                 .withAdIdCollectionDisabled(false) // default false
                 .build()
@@ -67,6 +93,9 @@ class MainActivity : AppCompatActivity() {
                         GlobalStuff.premiumAccess = false;
                         GlobalStuff.subscriptionId = null;
                     }
+
+                    BuildProfileToken(profile.customAttributes, premium!!)
+
                     if (GlobalStuff.HF != null) {
                         GlobalStuff.HF!!.SetPlan()
                     }
@@ -88,6 +117,7 @@ class MainActivity : AppCompatActivity() {
         //GlobalStuff.navController = navController
 
         navView = binding.navView
+        //navView.labelVisibilityMode = NavigationBarView.LABEL_VISIBILITY_LABELED
 
         val cd = ColorDrawable(Color.parseColor("#3b3b3b"))
 
@@ -101,8 +131,6 @@ class MainActivity : AppCompatActivity() {
         )
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration)
         navView.setupWithNavController(navController)
-
-        val SM: StaffMethods = StaffMethods()
 
         lifecycleScope.launch {
             val jsonloc = withContext(Dispatchers.IO) { SM.LoadLocations() }
@@ -119,7 +147,7 @@ class MainActivity : AppCompatActivity() {
         GlobalStuff.navView = navView
         GlobalStuff.StaffRes = resources
         GlobalStuff.supportFragManager = supportFragmentManager
-        GlobalStuff.prefs = getSharedPreferences("settings", Context.MODE_PRIVATE)
+
 
         /*val fireinst = FirebaseMessaging.getInstance()
         if (fireinst.token.isSuccessful)
@@ -127,7 +155,12 @@ class MainActivity : AppCompatActivity() {
             val strt = fireinst.token.result
         }*/
 
-        SM.GetAppToken()
+        //SM.GetAppToken()
+
+        if (GlobalStuff.Token.isNullOrEmpty())
+        {
+            SM.GetAppToken()
+        }
 
         if (GlobalStuff.Token.isNullOrEmpty()) {
             lifecycleScope.launch {
@@ -150,11 +183,6 @@ class MainActivity : AppCompatActivity() {
         SM.ReadFavorites()
         SM.ReadHistory()
 
-        if (GlobalStuff.Token.isNullOrEmpty())
-        {
-            SM.GetAppToken()
-        }
-
         lifecycleScope.launch {
             val rem = withContext(Dispatchers.IO) { SM.RemainSubscribe(GlobalStuff.Token!!) }
 
@@ -163,6 +191,133 @@ class MainActivity : AppCompatActivity() {
             }
         }
         //GlobalStuff.navController.navigate(R.id.main_fragment)
+    }
+
+    companion object {
+        fun getLaunchIntent(from: Context) = Intent(from, MainActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        }
+    }
+
+    fun BuildProfileToken(im: ImmutableMap<String, Any>, premium: AdaptyProfile.AccessLevel)
+    {
+        try
+        {
+            val o1 = im.get("own_ac")
+            val o2 = im.get("subscribe_tokens")
+            val o3 = im.get("nonsubscribe_tokens")
+
+            if (o1 != null && o2 != null && o3 != null)
+            {
+                val so1 = o1.toString()
+                val so2 = o2.toString()
+                val so3 = o3.toString()
+                var isub: Int = 0
+                var inon: Int = 0
+                var prem: Boolean = false
+                try
+                {
+                    val dsub = so2.toFloatOrNull()
+                    val dnon = so3.toFloatOrNull()
+                    isub = dsub!!.toInt()
+                    inon = dnon!!.toInt()
+                    if (premium != null && premium.isActive)
+                    {
+                        prem = true;
+                    }
+                }
+                catch (e: Exception)
+                {
+                    val lk = "24"
+                }
+                GlobalStuff.customerProfile = ProfileTokens(isub, inon, prem, "", "", so1)
+            }
+        }
+        catch (ex: Exception)
+        {
+            val khj = "234"
+        }
+    }
+
+
+    override fun onStart() {
+        super.onStart()
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user != null) {
+            //startActivity(LoggedInActivity.getLaunchIntent(this))
+            //finish()
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == RC_SIGN_IN || 1==1) {
+            val task: Task<GoogleSignInAccount> = GoogleSignIn.getSignedInAccountFromIntent(data)
+            try {
+                val account = task.getResult(ApiException::class.java)
+                if (account != null) {
+                    googleFirebaseAuth(account)
+                }
+            } catch (e: ApiException) {
+                Toast.makeText(this, "Google sign in failed:(", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    fun md5(input:String): String {
+        val md = MessageDigest.getInstance("MD5")
+        return BigInteger(1, md.digest(input.toByteArray())).toString(16).padStart(32, '0')
+    }
+
+    private fun googleFirebaseAuth(acct: GoogleSignInAccount) {
+        val credential = GoogleAuthProvider.getCredential(acct.idToken, null)
+        auth.signInWithCredential(credential).addOnCompleteListener {
+            if (it.isSuccessful) {
+                val cMD5 = "2_" + md5(acct.id!!)
+                GlobalStuff.customerID = cMD5
+                GlobalStuff.customerEmail = acct.email
+                GlobalStuff.customerFirstName = acct.givenName
+                GlobalStuff.customerLastName = acct.familyName
+
+                SM.SaveCustomerID()
+
+                if (!GlobalStuff.Token.isNullOrEmpty()) {
+                    lifecycleScope.launch {
+                        val rem = withContext(Dispatchers.IO) { SM.RemainSubscribe(GlobalStuff.Token!!) }
+
+                        if (rem != null) {
+                            GlobalStuff.Remain = rem.count
+                        }
+                    }
+                }
+
+                Adapty.identify(cMD5) { error ->
+                    if (error == null) {
+
+                        val aprof = AdaptyProfileParameters.Builder()
+                            .withEmail(acct.email)
+                            .withFirstName(acct.givenName)
+                            .withLastName(acct.familyName)
+                            .withCustomAttribute("own_ac", GlobalStuff.OwnAC?.Code!!)
+
+                        Adapty.updateProfile(aprof.build()) { error2 ->
+                            if (error2 != null) {
+                                Toast.makeText(GlobalStuff.activity, "Update profile failed " + error2.message, Toast.LENGTH_LONG).show()
+                            }
+                            else
+                            {
+                                GlobalStuff.navController.navigateUp()
+                            }
+                        }
+                    }
+                }
+
+                Toast.makeText(GlobalStuff.activity, "Google sign in success " + acct.displayName, Toast.LENGTH_LONG).show()
+                //startActivity(LoggedInActivity.getLaunchIntent(GlobalStuff.activity))
+            } else {
+                Toast.makeText(GlobalStuff.activity, "Google sign in failed:(", Toast.LENGTH_LONG).show()
+            }
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

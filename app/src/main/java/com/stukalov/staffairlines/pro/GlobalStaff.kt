@@ -56,5 +56,12 @@ import java.time.LocalDate
         var AdaptyProfileID: String? = null
         var premiumAccess: Boolean = false
         var subscriptionId: String? = null
+
+        var customerID: String? = null
+        var customerEmail: String? = null
+        var customerFirstName: String? = null
+        var customerLastName: String? = null
+        var customerProfile: ProfileTokens? = null
+        var adAction: AdaptyAction = AdaptyAction.None
     }
 //}
