@@ -9,9 +9,11 @@ import androidx.navigation.NavController
 import com.adapty.errors.AdaptyError
 import com.adapty.models.AdaptyPaywallProduct
 import com.adapty.ui.AdaptyUI
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.stukalov.staffairlines.pro.databinding.ActivityMainBinding
 import com.stukalov.staffairlines.pro.ui.home.HomeFragment
+import com.stukalov.staffairlines.pro.ui.setting.CredentialsFragment
 import java.time.LocalDate
 
     @SuppressLint("StaticFieldLeak")
@@ -25,6 +27,7 @@ import java.time.LocalDate
         var HistoryList = mutableListOf<HistoryElement>()
         var NotificationData: Map<String, String> = mapOf()
         var HF: HomeFragment? = null
+        var CF: CredentialsFragment? = null
         var Token: String? = null
         var Remain: Int = 5
 
@@ -56,6 +59,7 @@ import java.time.LocalDate
         var AdaptyProfileID: String? = null
         var premiumAccess: Boolean = false
         var subscriptionId: String? = null
+        var googleInClient: GoogleSignInClient? = null
 
         var customerID: String? = null
         var customerEmail: String? = null

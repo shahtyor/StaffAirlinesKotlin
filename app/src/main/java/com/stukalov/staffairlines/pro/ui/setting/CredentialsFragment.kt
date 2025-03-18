@@ -20,6 +20,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.adapty.Adapty
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.stukalov.staffairlines.pro.GlobalStuff
 import com.stukalov.staffairlines.pro.R
 import com.stukalov.staffairlines.pro.StaffMethods
@@ -30,6 +33,17 @@ class CredentialsFragment : Fragment() {
 
     private var _binding: FragmentCredentialsBinding? = null
     val SM: StaffMethods = StaffMethods()
+    lateinit var tvCredLogin: TextView
+    lateinit var tvCredFirst: TextView
+    lateinit var tvCredSecond: TextView
+    lateinit var tvCredDelete: TextView
+    lateinit var llCredID: LinearLayout
+    lateinit var tvCredID: TextView
+    lateinit var ivCredID: ImageView
+    lateinit var tvCredCoins: TextView
+    lateinit var ivCredCoins: ImageView
+    lateinit var signInClient: GoogleSignInClient
+    lateinit var signInOptions: GoogleSignInOptions
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -43,6 +57,8 @@ class CredentialsFragment : Fragment() {
         _binding = FragmentCredentialsBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
+        setupGoogleLogin()
+
         return root
     }
 
@@ -52,21 +68,46 @@ class CredentialsFragment : Fragment() {
 
         GlobalStuff.navView!!.visibility = View.VISIBLE
 
-        Init(view)
+        tvCredLogin = view.findViewById(R.id.tvCredLogin)
+        tvCredFirst = view.findViewById(R.id.tvCredFirst)
+        tvCredSecond = view.findViewById(R.id.tvCredSecond)
+        tvCredDelete = view.findViewById(R.id.tvCredDelete)
+        llCredID = view.findViewById(R.id.llCredID)
+        tvCredID = view.findViewById(R.id.tvCredID)
+        ivCredID = view.findViewById(R.id.ivCredID)
+        tvCredCoins = view.findViewById(R.id.tvCredCoins)
+        ivCredCoins = view.findViewById(R.id.ivCredCoins)
+
+        ivCredID.setOnClickListener()
+        {
+            val clipboard =
+                GlobalStuff.mActivity.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = ClipData.newPlainText("ID", GlobalStuff.customerID?.removeRange(0, 2))
+            clipboard.setPrimaryClip(clip)
+            Toast.makeText(GlobalStuff.activity, "Copied!", Toast.LENGTH_LONG).show()
+        }
+
+        tvCredDelete.setText(Html.fromHtml("<u>Delete profile</u>"))
+        tvCredSecond.setText(Html.fromHtml("If you want to become an agent, post flight load data and get your own benefits, go to the <a href='https://t.me/DevStaffCommunityBot?start=123' style='color: #8ebf42'><u>telegram bot</u></a>. More about agents read <a href='https://staffairlines.com/flightclub'><u>here</u></a>."))
+        tvCredSecond.setMovementMethod(LinkMovementMethod.getInstance())
+        tvCredSecond.setLinkTextColor(GlobalStuff.StaffRes.getColor(R.color.staff_blue, null))
+        tvCredSecond.setTextColor(GlobalStuff.StaffRes.getColor(R.color.black, null))
+
+        Init()
+        GlobalStuff.CF = this
     }
 
-    fun Init(view: View)
-    {
-        val tvCredLogin: TextView = view.findViewById(R.id.tvCredLogin)
-        val tvCredFirst: TextView = view.findViewById(R.id.tvCredFirst)
-        val tvCredSecond: TextView = view.findViewById(R.id.tvCredSecond)
-        val tvCredDelete: TextView = view.findViewById(R.id.tvCredDelete)
-        val llCredID: LinearLayout = view.findViewById(R.id.llCredID)
-        val tvCredID: TextView = view.findViewById(R.id.tvCredID)
-        val ivCredID: ImageView = view.findViewById(R.id.ivCredID)
-        val tvCredCoins: TextView = view.findViewById(R.id.tvCredCoins)
-        val ivCredCoins: ImageView = view.findViewById(R.id.ivCredCoins)
+    private fun setupGoogleLogin() {
+        signInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.web_client_id))
+            .requestEmail()
+            .build()
+        signInClient = GoogleSignIn.getClient(GlobalStuff.mActivity, signInOptions)
+        GlobalStuff.googleInClient = signInClient
+    }
 
+    fun Init()
+    {
         tvCredLogin.setOnClickListener()
         {
             if (GlobalStuff.customerID.isNullOrEmpty()) {
@@ -82,20 +123,12 @@ class CredentialsFragment : Fragment() {
                         GlobalStuff.customerLastName = null
                         GlobalStuff.customerFirstName = null
 
+                        GlobalStuff.googleInClient?.signOut()
                         SM.SaveCustomerID()
-                        Init(view)
+                        Init()
                     }
                 }
             }
-        }
-
-        ivCredID.setOnClickListener()
-        {
-            val clipboard =
-                GlobalStuff.mActivity.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clip = ClipData.newPlainText("ID", GlobalStuff.customerID?.removeRange(0, 2))
-            clipboard.setPrimaryClip(clip)
-            Toast.makeText(GlobalStuff.activity, "Copied!", Toast.LENGTH_LONG).show()
         }
 
         if (GlobalStuff.customerID.isNullOrEmpty())
@@ -130,12 +163,6 @@ class CredentialsFragment : Fragment() {
                 tvCredCoins.setText("0")
             }
         }
-
-        tvCredDelete.setText(Html.fromHtml("<u>Delete profile</u>"))
-        tvCredSecond.setText(Html.fromHtml("If you want to become an agent, post flight load data and get your own benefits, go to the <a href='https://t.me/DevStaffCommunityBot?start=123' style='color: #8ebf42'><u>telegram bot</u></a>. More about agents read <a href='https://staffairlines.com/flightclub'><u>here</u></a>."))
-        tvCredSecond.setMovementMethod(LinkMovementMethod.getInstance())
-        tvCredSecond.setLinkTextColor(GlobalStuff.StaffRes.getColor(R.color.staff_blue, null))
-        tvCredSecond.setTextColor(GlobalStuff.StaffRes.getColor(R.color.black, null))
     }
 
     override fun onResume() {

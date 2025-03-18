@@ -76,36 +76,7 @@ class MainActivity : AppCompatActivity() {
                 .build()
         )
 
-        Adapty.getProfile { result ->
-            when (result) {
-                is AdaptyResult.Success -> {
-                    val profile = result.value
-                    GlobalStuff.AdaptyProfileID = profile.profileId
-                    val premium = profile.accessLevels["premium"]
-
-                    if (premium?.isActive == true)
-                    {
-                        GlobalStuff.premiumAccess = true
-                        GlobalStuff.subscriptionId = premium.vendorProductId
-                    }
-                    else
-                    {
-                        GlobalStuff.premiumAccess = false;
-                        GlobalStuff.subscriptionId = null;
-                    }
-
-                    BuildProfileToken(profile.customAttributes, premium!!)
-
-                    if (GlobalStuff.HF != null) {
-                        GlobalStuff.HF!!.SetPlan()
-                    }
-                }
-                is AdaptyResult.Error -> {
-                    val error = result.error
-                    // handle the error
-                }
-            }
-        }
+        AdaptyGetProdile()
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -199,7 +170,41 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun BuildProfileToken(im: ImmutableMap<String, Any>, premium: AdaptyProfile.AccessLevel)
+    fun AdaptyGetProdile()
+    {
+        Adapty.getProfile { result ->
+            when (result) {
+                is AdaptyResult.Success -> {
+                    val profile = result.value
+                    GlobalStuff.AdaptyProfileID = profile.profileId
+                    val premium = profile.accessLevels["premium"]
+
+                    if (premium?.isActive == true)
+                    {
+                        GlobalStuff.premiumAccess = true
+                        GlobalStuff.subscriptionId = premium.vendorProductId
+                    }
+                    else
+                    {
+                        GlobalStuff.premiumAccess = false;
+                        GlobalStuff.subscriptionId = null;
+                    }
+
+                    BuildProfileToken(profile.customAttributes, premium)
+
+                    if (GlobalStuff.HF != null) {
+                        GlobalStuff.HF!!.SetPlan()
+                    }
+                }
+                is AdaptyResult.Error -> {
+                    val error = result.error
+                    // handle the error
+                }
+            }
+        }
+    }
+
+    fun BuildProfileToken(im: ImmutableMap<String, Any>, premium: AdaptyProfile.AccessLevel?)
     {
         try
         {
@@ -309,6 +314,9 @@ class MainActivity : AppCompatActivity() {
                                 GlobalStuff.navController.navigateUp()
                             }
                         }
+
+                        AdaptyGetProdile()
+                        GlobalStuff.CF?.Init()
                     }
                 }
 

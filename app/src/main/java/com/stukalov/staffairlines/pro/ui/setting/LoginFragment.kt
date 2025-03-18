@@ -13,12 +13,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.stukalov.staffairlines.pro.GlobalStuff
 import com.stukalov.staffairlines.pro.R
 import com.stukalov.staffairlines.pro.databinding.FragmentLoginBinding
+import com.stukalov.staffairlines.pro.ui.flight.FlightFragment
 
 class LoginFragment : Fragment() {
 
     val RC_SIGN_IN: Int = 1
-    lateinit var signInClient: GoogleSignInClient
-    lateinit var signInOptions: GoogleSignInOptions
     private var _binding: FragmentLoginBinding? = null
     //private lateinit var auth: FirebaseAuth
 
@@ -35,7 +34,6 @@ class LoginFragment : Fragment() {
         val root: View = binding.root
 
         //auth = FirebaseAuth.getInstance()
-        setupGoogleLogin()
 
         return root
     }
@@ -53,16 +51,8 @@ class LoginFragment : Fragment() {
     }
 
     private fun login() {
-        val loginIntent: Intent = signInClient.signInIntent
+        val loginIntent: Intent = GlobalStuff.googleInClient!!.signInIntent //signInClient.signInIntent
         startActivityForResult(loginIntent, RC_SIGN_IN)
-    }
-
-    private fun setupGoogleLogin() {
-        signInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.web_client_id))
-            .requestEmail()
-            .build()
-        signInClient = GoogleSignIn.getClient(GlobalStuff.mActivity, signInOptions)
     }
 
     /*private fun googleFirebaseAuth(acct: GoogleSignInAccount) {
