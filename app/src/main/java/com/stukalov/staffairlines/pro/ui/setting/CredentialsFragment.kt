@@ -19,6 +19,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.adapty.Adapty
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -26,7 +27,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.stukalov.staffairlines.pro.GlobalStuff
 import com.stukalov.staffairlines.pro.R
 import com.stukalov.staffairlines.pro.StaffMethods
+import com.stukalov.staffairlines.pro.Token
 import com.stukalov.staffairlines.pro.databinding.FragmentCredentialsBinding
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class CredentialsFragment : Fragment() {
@@ -87,8 +92,19 @@ class CredentialsFragment : Fragment() {
             Toast.makeText(GlobalStuff.activity, "Copied!", Toast.LENGTH_LONG).show()
         }
 
+        var strtoken = ""
+        if (!GlobalStuff.customerID.isNullOrEmpty()) {
+            lifecycleScope.launch {
+                val tok = withContext(Dispatchers.IO) { SM.GenToken(GlobalStuff.customerID!!) }
+
+                if (tok != null) {
+                    strtoken = tok.token
+                    tvCredSecond.setText(Html.fromHtml("If you want to become an agent, post flight load data and get your own benefits, go to the <a href='https://t.me/DevStaffCommunityBot?start=" + strtoken + "' style='color: #8ebf42'><u>telegram bot</u></a>. More about agents read <a href='https://staffairlines.com/flightclub'><u>here</u></a>."))
+                }
+            }
+        }
+
         tvCredDelete.setText(Html.fromHtml("<u>Delete profile</u>"))
-        tvCredSecond.setText(Html.fromHtml("If you want to become an agent, post flight load data and get your own benefits, go to the <a href='https://t.me/DevStaffCommunityBot?start=123' style='color: #8ebf42'><u>telegram bot</u></a>. More about agents read <a href='https://staffairlines.com/flightclub'><u>here</u></a>."))
         tvCredSecond.setMovementMethod(LinkMovementMethod.getInstance())
         tvCredSecond.setLinkTextColor(GlobalStuff.StaffRes.getColor(R.color.staff_blue, null))
         tvCredSecond.setTextColor(GlobalStuff.StaffRes.getColor(R.color.black, null))

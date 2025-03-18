@@ -2,6 +2,7 @@ package com.stukalov.staffairlines.pro
 
 import androidx.lifecycle.lifecycleScope
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -190,6 +191,33 @@ class StaffMethods {
         catch (ex: Exception)
         {
             val kjh = ex.message + "..." + ex.stackTrace
+        }
+        return null
+    }
+
+    fun GenToken(id_user: String): Token?
+    {
+        try
+        {
+            val tmp = id_user.split('_')
+            val Uri = BaseUrl + "/token/Gen?type=" + tmp[0] + "&id_user=" + tmp[1]
+            val request = Request.Builder().url(Uri).build()
+
+            val Json = RequestJson(client, request)
+            var tok: Token? = null
+
+            try
+            {
+                tok = gson.fromJson(Json, Token::class.java)
+            } catch (e: Exception)
+            {
+                val hk = "kljl"
+            }
+            return tok
+        }
+        catch (ex: Exception)
+        {
+            val kjh = "sdfds"
         }
         return null
     }

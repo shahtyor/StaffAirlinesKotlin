@@ -1,15 +1,12 @@
 package com.stukalov.staffairlines.pro.ui.result
 
-import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import android.widget.Button
-import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -17,20 +14,15 @@ import android.widget.ListView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import com.stukalov.staffairlines.pro.DirectResultAdapter
 import com.stukalov.staffairlines.pro.Flight
 import com.stukalov.staffairlines.pro.GlobalStuff
-import com.stukalov.staffairlines.pro.Location
 import com.stukalov.staffairlines.pro.NonDirectResult
-import com.stukalov.staffairlines.pro.PointType
 import com.stukalov.staffairlines.pro.R
 import com.stukalov.staffairlines.pro.RType
 import com.stukalov.staffairlines.pro.ResultType
-import com.stukalov.staffairlines.pro.SelectedPoint
 import com.stukalov.staffairlines.pro.databinding.FragmentResultBinding
 import com.stukalov.staffairlines.pro.ui.paywall.AdaptyController
 import java.time.Duration
@@ -43,6 +35,7 @@ class ResultFragment : Fragment() {
     private var _binding: FragmentResultBinding? = null
     lateinit var resultadapter: DirectResultAdapter
     val AdControl: AdaptyController = AdaptyController()
+    lateinit var btResCommercial: Button
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -58,8 +51,6 @@ class ResultFragment : Fragment() {
 
         _binding = FragmentResultBinding.inflate(inflater, container, false)
         val root: View = binding.root
-
-        //val textView: TextView = binding.selpointtext
 
         return root
     }
@@ -81,6 +72,8 @@ class ResultFragment : Fragment() {
         val llWaitInfoFinal = view.findViewById<LinearLayout>(R.id.llWaitInfoFinal)
         val tvWaitInfoFinal = view.findViewById<TextView>(R.id.tvWaitInfoFinal)
         val spin_layout = view.findViewById<FrameLayout>(R.id.spinner_result)
+        val llResForListview = view.findViewById<LinearLayout>(R.id.llResForListview)
+        btResCommercial = view.findViewById(R.id.btResCommercial)
 
         if (GlobalStuff.BackResType != null)
         {
@@ -94,6 +87,10 @@ class ResultFragment : Fragment() {
             llFirstSegment.visibility = View.GONE
             btFinalNew.visibility = View.GONE
             llWaitInfoFinal.visibility = View.GONE
+
+            llResForListview.layoutParams.height = 1600
+            llResForListview.requestLayout()
+
             resultadapter = DirectResultAdapter(view.context, GlobalStuff.ExtResult!!.DirectRes)
         }
         else if (GlobalStuff.ResType == ResultType.First) {
@@ -105,6 +102,9 @@ class ResultFragment : Fragment() {
             llWaitInfoFinal.visibility = View.GONE
             val infotxt = "Choose a FIRST FLIGHT " + GlobalStuff.OriginPoint!!.Code + "-" + GlobalStuff.ChangePoint
             tvResInfo.setText(infotxt)
+
+            llResForListview.layoutParams.height = 1600
+            llResForListview.requestLayout()
 
             var ListRes: List<Flight> = listOf()
             var NonRes: NonDirectResult? = null
@@ -130,6 +130,9 @@ class ResultFragment : Fragment() {
             tvResInfo.setText(infotxt)
 
             llFirstSegment.visibility = View.VISIBLE
+            llResForListview.layoutParams.height = 1300
+            llResForListview.requestLayout()
+
             llFirstLayout.setBackgroundColor(ContextCompat.getColor(GlobalStuff.activity, R.color.lightgray))
             InitFirstSegment(view)
 
@@ -157,6 +160,9 @@ class ResultFragment : Fragment() {
             llWaitInfoFinal.visibility = View.VISIBLE
             tvResInfo.visibility = View.GONE
 
+            llResForListview.layoutParams.height = 500
+            llResForListview.requestLayout()
+
             var waittext = ""
             if (GlobalStuff.FirstSegment != null && GlobalStuff.SecondSegment != null) {
                 var waittime = Duration.between(GlobalStuff.FirstSegment!!.ArrDateTime, GlobalStuff.SecondSegment!!.DepDateTime).toMinutes().toInt()
@@ -173,6 +179,8 @@ class ResultFragment : Fragment() {
 
             resultadapter = DirectResultAdapter(view.context, ListRes.toList())
         }
+
+        SetCommercialButton()
 
         direct_lv.setAdapter(resultadapter)
 
@@ -210,6 +218,82 @@ class ResultFragment : Fragment() {
             GlobalStuff.FirstSegment = null
             GlobalStuff.SecondSegment = null
             GlobalStuff.navController.navigate(R.id.navigation_home)
+        }
+    }
+
+    fun SetCommercialButton()
+    {
+        val Exres = GlobalStuff.ExtResult
+
+        btResCommercial.visibility = View.GONE
+        if (GlobalStuff.ResType != ResultType.Final)
+        {
+            btResCommercial.visibility = View.VISIBLE
+            btResCommercial.setText("View commercial fares")
+            if (Exres != null)
+            {
+                if (GlobalStuff.ResType == ResultType.Direct && Exres.DirectInfo != null && Exres.DirectInfo.Amount > 0)
+                {
+                    val strPrice = "Commercial fares from " + Exres.DirectInfo.Amount.toString() + " " + Exres.DirectInfo.Currency
+                    btResCommercial.setText(strPrice)
+                }
+                else if (!Exres.NonDirectRes.isNullOrEmpty())
+                {
+                    val ndr = Exres.NonDirectRes.filter { it -> it.Transfer == GlobalStuff.ChangePoint }.first()
+                    if (GlobalStuff.ResType == ResultType.First)
+                    {
+                        if (ndr.ToTransferInfo != null && ndr.ToTransferInfo.Amount > 0)
+                        {
+                            val strPrice2 = "Commercial fares from " + ndr.ToTransferInfo.Amount.toString() + " " + ndr.ToTransferInfo.Currency
+                            btResCommercial.setText(strPrice2)
+                        }
+                    }
+                    else if (GlobalStuff.ResType == ResultType.Second)
+                    {
+                        if (ndr.FromTransferInfo != null && ndr.FromTransferInfo.Amount > 0)
+                        {
+                            val strPrice3 = "Commercial fares from " + ndr.FromTransferInfo.Amount + " " + ndr.FromTransferInfo.Currency
+                            btResCommercial.setText(strPrice3)
+                        }
+                    }
+                }
+            }
+        }
+
+        btResCommercial.setOnClickListener()
+        {
+            //var suser = PremiumFunctions.SetUserID();
+            val openURL = Intent(Intent.ACTION_VIEW)
+
+            if (Exres != null)
+            {
+                var dlink: String = ""
+                if (GlobalStuff.ResType == ResultType.Direct && Exres.DirectInfo != null && Exres.DirectInfo.Link != null)
+                {
+                    dlink = Exres.DirectInfo.Link
+                }
+                else if (Exres.NonDirectRes != null)
+                {
+                    val ndr = Exres.NonDirectRes.filter { it -> it.Transfer == GlobalStuff.ChangePoint }.first()
+                    if (GlobalStuff.ResType == ResultType.First && ndr != null)
+                    {
+                        if (ndr.ToTransferInfo != null && ndr.ToTransferInfo.Link != null)
+                        {
+                            dlink = ndr.ToTransferInfo.Link
+                        }
+                    }
+                    else if (GlobalStuff.ResType == ResultType.Second && ndr != null)
+                    {
+                        if (ndr.FromTransferInfo != null && ndr.FromTransferInfo.Amount > 0)
+                        {
+                            dlink = ndr.FromTransferInfo.Link
+                        }
+                    }
+                }
+
+                openURL.data = Uri.parse(dlink)
+                startActivity(openURL)
+            }
         }
     }
 

@@ -1,6 +1,7 @@
 package com.stukalov.staffairlines.pro
 
 import android.text.Spanned
+import androidx.constraintlayout.widget.Guideline
 import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -363,6 +364,24 @@ class ProfileTokens
     val Timing: String,
     val OwnAC: String
 )
+
+class Token
+(
+    val id: Long,
+    val type: Short,
+    val id_user: String,
+    val token: String,
+    val ts_create: String,
+    val ts_valid: String
+)
+{
+    val time_create: LocalDateTime
+        get() = LocalDateTime.parse(ts_create, secondFormatter)
+
+    val time_valid: LocalDateTime
+        get() = LocalDateTime.parse(ts_valid, secondFormatter)
+}
+
 
 
 
