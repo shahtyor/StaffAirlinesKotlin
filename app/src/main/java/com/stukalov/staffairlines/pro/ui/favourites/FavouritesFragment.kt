@@ -86,7 +86,9 @@ class FavouritesFragment : Fragment() {
                         fl.Fl.DepDateTime,
                         fl.pax,
                         fl.Fl.MarketingCarrier,
-                        fl.Fl.FlightNumber
+                        fl.Fl.FlightNumber,
+                        null,
+                        GlobalStuff.customerID
                     )
                 }
 

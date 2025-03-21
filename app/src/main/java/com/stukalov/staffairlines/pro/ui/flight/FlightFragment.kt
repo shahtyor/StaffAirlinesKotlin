@@ -4,10 +4,12 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
 import android.graphics.Color
 import androidx.fragment.app.viewModels
 import android.os.Bundle
 import android.text.Html
+import android.text.method.LinkMovementMethod
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -16,14 +18,19 @@ import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.core.view.marginStart
 import androidx.lifecycle.lifecycleScope
 import com.stukalov.staffairlines.pro.Airline0
 import com.stukalov.staffairlines.pro.FlightWithPax
+import com.stukalov.staffairlines.pro.GetNonDirectType
 import com.stukalov.staffairlines.pro.GlobalStuff
+import com.stukalov.staffairlines.pro.ProfileTokens
 import com.stukalov.staffairlines.pro.R
 import com.stukalov.staffairlines.pro.RType
 import com.stukalov.staffairlines.pro.ResultType
@@ -42,7 +49,38 @@ import java.util.Locale
 
 class FlightFragment : Fragment() {
 
-    lateinit var olbsublost: TextView
+    lateinit var tvOneSubLost: TextView
+    lateinit var alogo: ImageView
+    lateinit var aname: TextView
+    lateinit var onumfl: TextView
+    lateinit var oengine: TextView
+    lateinit var otimedep: TextView
+    lateinit var odatedep: TextView
+    lateinit var onamedep: TextView
+    lateinit var oduration: TextView
+    lateinit var otimearr: TextView
+    lateinit var odatearr: TextView
+    lateinit var onamearr: TextView
+    lateinit var orat: TextView
+    lateinit var oclasses: TextView
+    lateinit var oflyzed: TextView
+    lateinit var btOneAction: Button
+    lateinit var ofav: ImageButton
+    lateinit var ivOneCoins: ImageView
+    lateinit var tvOneCoins: TextView
+    lateinit var tvOneNewFeature: TextView
+    lateinit var tvOneShareLoads: TextView
+    lateinit var llOneButtons: LinearLayout
+    lateinit var llOneBellCoins: LinearLayout
+    lateinit var btOneRequest: Button
+    lateinit var btOneSubscribe: Button
+    lateinit var tvOneAgentEconomy: TextView
+    lateinit var tvOneAgentBusiness: TextView
+    lateinit var tvOneAgentStanby: TextView
+    lateinit var llOneAgentInfo: LinearLayout
+    lateinit var tvOneAgentInfo: TextView
+    lateinit var llSeatsInfo: LinearLayout
+
     val SM: StaffMethods = StaffMethods()
     val AdControl: AdaptyController = AdaptyController()
 
@@ -72,24 +110,42 @@ class FlightFragment : Fragment() {
         val stf = DateTimeFormatter.ofPattern("HH:mm")
         val sdf = DateTimeFormatter.ofPattern("DD MMM")
 
-        val alogo = view.findViewById<ImageView>(R.id.aclogo_one)
-        val aname = view.findViewById<TextView>(R.id.acname_one)
-        val onumfl = view.findViewById<TextView>(R.id.numflight_one)
-        val oengine = view.findViewById<TextView>(R.id.engine_one)
-        val otimedep = view.findViewById<TextView>(R.id.timedep_one)
-        val odatedep = view.findViewById<TextView>(R.id.datedep_one)
-        val onamedep = view.findViewById<TextView>(R.id.namedep_one)
-        val oduration = view.findViewById<TextView>(R.id.duration_one)
-        val otimearr = view.findViewById<TextView>(R.id.timearr_one)
-        val odatearr = view.findViewById<TextView>(R.id.datearr_one)
-        val onamearr = view.findViewById<TextView>(R.id.namearr_one)
-        val orat = view.findViewById<TextView>(R.id.rating_one)
-        val oclasses = view.findViewById<TextView>(R.id.classes_one)
-        val oflyzed = view.findViewById<TextView>(R.id.flyzed_one)
-        val osearch = view.findViewById<Button>(R.id.btSearch_one)
-        val ofav = view.findViewById<ImageButton>(R.id.fav_one)
-        val obtsubscr = view.findViewById<ImageButton>(R.id.btSubscribe_one)
-        olbsublost = view.findViewById<TextView>(R.id.lbSubLost)
+        alogo = view.findViewById(R.id.aclogo_one)
+        aname = view.findViewById(R.id.acname_one)
+        onumfl = view.findViewById(R.id.numflight_one)
+        oengine = view.findViewById(R.id.engine_one)
+        otimedep = view.findViewById(R.id.timedep_one)
+        odatedep = view.findViewById(R.id.datedep_one)
+        onamedep = view.findViewById(R.id.namedep_one)
+        oduration = view.findViewById(R.id.duration_one)
+        otimearr = view.findViewById(R.id.timearr_one)
+        odatearr = view.findViewById(R.id.datearr_one)
+        onamearr = view.findViewById(R.id.namearr_one)
+        orat = view.findViewById(R.id.rating_one)
+        oclasses = view.findViewById(R.id.classes_one)
+        oflyzed = view.findViewById(R.id.flyzed_one)
+        btOneAction = view.findViewById(R.id.btOneAction)
+        ofav = view.findViewById(R.id.fav_one)
+        ivOneCoins = view.findViewById(R.id.ivOneCoins)
+        tvOneCoins = view.findViewById(R.id.tvOneCoins)
+        tvOneNewFeature = view.findViewById(R.id.tvOneNewFeature)
+        tvOneShareLoads = view.findViewById(R.id.tvOneShareLoads)
+        llOneButtons = view.findViewById(R.id.llOneButtons)
+        llOneBellCoins = view.findViewById(R.id.llOneBellCoins)
+        btOneRequest = view.findViewById(R.id.btOneRequest)
+        btOneSubscribe = view.findViewById(R.id.btOneSubscribe)
+        tvOneSubLost = view.findViewById(R.id.tvOneSubLost)
+        tvOneAgentEconomy = view.findViewById(R.id.tvOneAgentEconomy)
+        tvOneAgentBusiness = view.findViewById(R.id.tvOneAgentBusiness)
+        tvOneAgentStanby = view.findViewById(R.id.tvOneAgentStandby)
+        llOneAgentInfo = view.findViewById(R.id.llOneAgentInfo)
+        tvOneAgentInfo = view.findViewById(R.id.tvOneAgentInfo)
+        llSeatsInfo = view.findViewById(R.id.llSeatsInfo)
+
+        tvOneShareLoads.setText(Html.fromHtml("Share loads data with other SA commuters and get premium for free. <a href='https://staffairlines.com/flightclub'><u>Become an agent</u></a>"))
+
+        tvOneShareLoads.setMovementMethod(LinkMovementMethod.getInstance())
+        tvOneShareLoads.setLinkTextColor(GlobalStuff.StaffRes.getColor(R.color.staff_blue, null))
 
         if (GlobalStuff.BackResType != null)
         {
@@ -109,9 +165,9 @@ class FlightFragment : Fragment() {
             GlobalStuff.BackResType = ResultType.Final
         }
 
-        osearch.setOnClickListener()
+        btOneAction.setOnClickListener()
         {
-            search_click_one(view)
+            action_click_one(view)
         }
 
         ofav.setOnClickListener()
@@ -124,9 +180,14 @@ class FlightFragment : Fragment() {
             flyzed_click(view)
         }
 
-        obtsubscr.setOnClickListener()
+        btOneRequest.setOnClickListener()
         {
-            btSubscribe_Click(view)
+            Request_Click(view)
+        }
+
+        btOneSubscribe.setOnClickListener()
+        {
+            Subscribe_Click(view)
         }
 
         var f = GlobalStuff.OneResult!!
@@ -158,13 +219,71 @@ class FlightFragment : Fragment() {
             DestinationNameExt = f.ArrivalCityName + ", " + DestinationNameExt
         }
 
+        if (f.Reporters)
+        {
+            btOneRequest.setBackgroundResource(R.drawable.search_button_on)
+            btOneRequest.setTextColor(GlobalStuff.StaffRes.getColor(R.color.white, null))
+            btOneRequest.setText("REQUEST")
+
+            tvOneNewFeature.setBackgroundResource(R.drawable.box_green)
+            tvOneNewFeature.setText(Html.fromHtml("<b>New feature!</b> Use the Request button to, clarify seat availability via this airline's agent. This can be helpful on the day of departure.", Html.FROM_HTML_MODE_LEGACY))
+        }
+        else
+        {
+            btOneRequest.setBackgroundResource(R.drawable.search_button_off)
+            btOneRequest.setTextColor(GlobalStuff.StaffRes.getColor(R.color.staff_blue, null))
+            btOneRequest.setText("NO AGENTS YET")
+
+            tvOneNewFeature.setBackgroundColor(GlobalStuff.StaffRes.getColor(R.color.white, null))
+            tvOneNewFeature.setText("There are no agents for this airline yet, use the available seats estimate above.")
+        }
+
         alogo.setImageResource(identifier)
         aname.setText(f.MarketingName)
 
         onumfl.setText(f.MarketingCarrier + " " + f.FlightNumber)
         oengine.setText(f.EquipmentName)
 
-        olbsublost.setText(GlobalStuff.Remain.toString())
+        val actionbut = getArguments()?.getString("ActionButton")
+
+        if (GlobalStuff.ResType == ResultType.Direct || GlobalStuff.ResType == ResultType.Final || actionbut == "no")
+        {
+            llOneButtons.visibility = View.VISIBLE
+            btOneAction.visibility = View.GONE
+            llOneBellCoins.visibility = View.VISIBLE
+        }
+        else
+        {
+            llOneButtons.visibility = View.GONE
+            btOneAction.visibility = View.VISIBLE
+            llOneBellCoins.visibility = View.VISIBLE
+        }
+
+        SetPlan()
+
+        if (f.AgentInfo != null)
+        {
+            val ainfo = f.AgentInfo
+            tvOneAgentEconomy.setText(if (ainfo.EconomyPlaces == null) "--" else ainfo.EconomyPlaces.toString())
+            tvOneAgentBusiness.setText(if (ainfo.BusinessPlaces == null) "--" else ainfo.BusinessPlaces.toString())
+            tvOneAgentStanby.setText(if (ainfo.CntSAPassenger == null) "--" else ainfo.CntSAPassenger.toString())
+            llOneAgentInfo.visibility = View.VISIBLE
+
+            if (ainfo.TimePassed < 60)
+            {
+                tvOneAgentInfo.setText("Flight load details were received from agent " + ainfo.Nickname + " " + GetTimeAsHM2(ainfo.TimePassed) + " ago")
+                llSeatsInfo.visibility = View.GONE
+            }
+            else
+            {
+                tvOneAgentInfo.setText("Loads details from agent " + GetTimeAsHM2(ainfo.TimePassed) + " ago")
+                llSeatsInfo.visibility = View.VISIBLE
+            }
+        }
+        else
+        {
+            llOneAgentInfo.visibility = View.GONE
+        }
 
         val sstdep = stf.format(f.DepDateTime)
         val ssddep = sdf.format(f.DepDateTime) + ", " + f.DepDateTime.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
@@ -197,26 +316,6 @@ class FlightFragment : Fragment() {
 
         val strflyzed = "<u>" + GlobalStuff.activity.getString(R.string.label_flyzed) + " " + f.MarketingName + "</u>"
 
-        if (GlobalStuff.ResType == ResultType.Direct)
-        {
-            osearch.setText("NEW SEARCH")
-        }
-        else
-        {
-            osearch.setText("SELECT FLIGHT")
-        }
-
-        val actionbut = getArguments()?.getString("ActionButton")
-
-        if (GlobalStuff.ResType == ResultType.Final || actionbut == "no")
-        {
-            osearch.visibility = View.GONE
-        }
-        else
-        {
-            osearch.visibility = View.VISIBLE
-        }
-
         otimedep.setText(sstdep)
         odatedep.setText(ssddep)
         onamedep.setText(OriginNameExt)
@@ -239,13 +338,56 @@ class FlightFragment : Fragment() {
         }
     }
 
+    fun SetPlan()
+    {
+        if (GlobalStuff.Remain == 0)
+        {
+            btOneSubscribe.setBackgroundResource(R.drawable.search_button_off)
+            btOneSubscribe.setTextColor(GlobalStuff.StaffRes.getColor(R.color.staff_blue, null))
+        }
+        else
+        {
+            btOneSubscribe.setBackgroundResource(R.drawable.search_button_on)
+            btOneSubscribe.setTextColor(GlobalStuff.StaffRes.getColor(R.color.white, null))
+        }
+
+        if (GlobalStuff.customerID.isNullOrEmpty())
+        {
+            tvOneCoins.visibility = View.GONE
+            ivOneCoins.visibility = View.GONE
+            aname.layoutParams.width = (250 * GlobalStuff.density).toInt()
+        }
+        else
+        {
+            tvOneCoins.visibility = View.VISIBLE
+            ivOneCoins.visibility = View.VISIBLE
+            aname.layoutParams.width = (210 * GlobalStuff.density).toInt()
+
+            if (GlobalStuff.premiumAccess && GlobalStuff.customerProfile != null)
+            {
+                val sum = GlobalStuff.customerProfile!!.SubscribeTokens + GlobalStuff.customerProfile!!.NonSubscribeTokens
+                tvOneCoins.setText(sum.toString())
+            }
+            else
+            {
+                tvOneCoins.setText("0")
+            }
+        }
+
+        if (GlobalStuff.premiumAccess) {
+            tvOneSubLost.setText(GlobalStuff.Remain.toString())
+        } else {
+            tvOneSubLost.setText("0")
+        }
+    }
+
     fun GetTimeAsHM2(minutes: Int): String {
         val h = minutes / 60
         val m = minutes - h * 60
         return h.toString().padStart(2, '0') + "h " + m.toString().padStart(2, '0').toString() + "m"
     }
 
-    fun search_click_one(view: View) {
+    fun action_click_one(view: View) {
         if (GlobalStuff.ResType == ResultType.Direct) {
             GlobalStuff.BackResType = null
             GlobalStuff.navController.navigate(R.id.navigation_home)    //Переход на начало поиска
@@ -280,13 +422,21 @@ class FlightFragment : Fragment() {
         GlobalStuff.navController.navigate(R.id.show_zed_frag, bundle)
     }
 
-    fun btSubscribe_Click(view: View) {
+    fun Subscribe_Click(view: View) {
         if (!GlobalStuff.premiumAccess)  // показываем пэйвол
         {
             val spin_layout = view.findViewById<FrameLayout>(R.id.spinner_flight)
             spin_layout.isVisible = true
 
             AdControl.GetPaywallViewParams("test_main_action2")
+        }
+        else if (GlobalStuff.Remain == 0)
+        {
+            AlertDialog.Builder(view.context)
+                .setTitle("Subscribe")
+                .setMessage("You have reached the maximum number of active flight subscriptionns - 5")
+                .setNegativeButton("OK") { dial, id -> dial.cancel() }
+                .show()
         }
         else {
             AlertDialog.Builder(view.context)
@@ -296,6 +446,107 @@ class FlightFragment : Fragment() {
                 .setNegativeButton("NO") { dialog, id -> dialog.cancel() }
                 .show()
         }
+    }
+
+    fun Request_Click(view: View)
+    {
+        //await PremiumFunctions.SendEventClickAgentRequest(DirectFlight.OperatingCarrier, DirectFlight.AllPlaces, "{" + string.Join(",", DirectFlight.NumSeatsForBookingClass) + "}", (int)DirectFlight.Rating, DateTime.Now, DirectFlight.DepartureDateTime.ToString(), DirectFlight.AgentInfo != null, DirectFlight.Forecast.ToString(), DirectFlight.AgentInfo != null ? DirectFlight.AgentInfo.TimePassed : 0);
+        val f = GlobalStuff.OneResult!!
+
+        if (f.Reporters == false)
+        {
+            //await PremiumFunctions.SendEventNoAgentPopup(DirectFlight.OperatingCarrier);
+            AlertDialog.Builder(view.context)
+                .setTitle("Post request")
+                .setMessage("Unfortunately, there are no registered " + f.OperatingName + " staff yet who could help with data on the actual load on flight.\nDetails on staffairlines.com")
+                .setNegativeButton("OK") { dial, id -> dial.cancel() }
+                .show()
+        }
+        else
+        {
+            if (GlobalStuff.customerID.isNullOrEmpty())
+            {
+                login()
+            }
+            else
+            {
+                RequestWork(view)
+            }
+        }
+        return;
+    }
+
+    private fun SumTokens(pt: ProfileTokens): Int
+    {
+        var result: Int = pt.SubscribeTokens + pt.NonSubscribeTokens
+        return result;
+    }
+
+
+    fun RequestWork(view: View)
+    {
+        val f = GlobalStuff.OneResult!!
+
+        var custProf = GlobalStuff.customerProfile
+        if (GlobalStuff.premiumAccess && GlobalStuff.customerProfile != null && SumTokens(GlobalStuff.customerProfile!!) >= 1) // есть премиум подписка и хватает токенов
+        {
+            AlertDialog.Builder(view.context)
+                .setTitle("Post Request")
+                .setMessage("You can request up-to-date flight " + f.MarketingCarrier + f.FlightNumber + " loads from an airline staff member. The cost of the request is 1 token.")
+                .setPositiveButton("Request") { dialog, id -> CreateRequest(view) }
+                .setNegativeButton("Cancel") { dialog, id -> dialog.cancel() }
+                .show()
+        }
+        else // нет премиум подписки
+        {
+            // кидаем на пэйвол
+            val spin_layout = view.findViewById<FrameLayout>(R.id.spinner_flight)
+            spin_layout.isVisible = true
+
+            AdControl.GetPaywallViewParams("test_main_action2")        }
+    }
+
+    fun CreateRequest(view: View)
+    {
+        val f = GlobalStuff.OneResult!!
+        // делаем запрос
+        lifecycleScope.launch {
+            val result = withContext(Dispatchers.IO) {
+                SM.SendReportRequest(
+                    GlobalStuff.customerID!!,
+                    GlobalStuff.Token!!,
+                    f.Origin,
+                    f.Destination,
+                    f.OperatingCarrier,
+                    f.MarketingCarrier + f.FlightNumber,
+                    f.DepDateTime,
+                    GlobalStuff.Pax
+                )
+            }
+
+            if (result != null) {
+                val tokens = result.Tokens
+                val custProf = GlobalStuff.customerProfile!!
+
+                if (tokens != null) {
+                    custProf.SubscribeTokens = tokens.SubscribeTokens
+                    custProf.NonSubscribeTokens = tokens.NonSubscribeTokens
+                }
+
+                GlobalStuff.customerProfile = custProf
+
+                AlertDialog.Builder(view.context)
+                    .setTitle("Post request")
+                    .setMessage(result.StatusName)
+                    .setNegativeButton("OK") { dial, id -> dial.cancel() }
+                    .show()
+            }
+        }
+    }
+
+    private fun login() {
+        val loginIntent: Intent = GlobalStuff.googleInClient!!.signInIntent
+        startActivityForResult(loginIntent, 1)
     }
 
     fun NextStep(dialog: DialogInterface, cont: Context) {
@@ -334,7 +585,7 @@ class FlightFragment : Fragment() {
                         .show()
 
                     GlobalStuff.Remain = subresult.remain
-                    olbsublost.setText(GlobalStuff.Remain.toString())
+                    tvOneSubLost.setText(GlobalStuff.Remain.toString())
                 }
                 else
                 {

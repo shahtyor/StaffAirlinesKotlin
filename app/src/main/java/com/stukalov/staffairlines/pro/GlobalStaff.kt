@@ -9,6 +9,7 @@ import androidx.navigation.NavController
 import com.adapty.errors.AdaptyError
 import com.adapty.models.AdaptyPaywallProduct
 import com.adapty.ui.AdaptyUI
+import com.amplitude.android.Amplitude
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.stukalov.staffairlines.pro.databinding.ActivityMainBinding
@@ -18,6 +19,7 @@ import java.time.LocalDate
 
     @SuppressLint("StaticFieldLeak")
     object GlobalStuff {
+        var density: Float = 1.0F
         lateinit var navController: NavController
         var navView: BottomNavigationView? = null
         lateinit var Locations: List<Location>
@@ -60,6 +62,7 @@ import java.time.LocalDate
         var premiumAccess: Boolean = false
         var subscriptionId: String? = null
         var googleInClient: GoogleSignInClient? = null
+        var amplitude: Amplitude? = null
 
         var customerID: String? = null
         var customerEmail: String? = null

@@ -21,11 +21,12 @@ import java.util.concurrent.TimeUnit
 
 class StaffMethods {
 
-    val BaseUrl: String = "https://api.staffairlines.com:8033/api"
+    //val BaseUrl: String = "https://api.staffairlines.com:8033/api"
+    val BaseUrl: String = "http://dev-api.staffairlines.com:8033/api"
     var StaffApp = StaffAirlines()
     val gson = Gson()
     val client = OkHttpClient().newBuilder().connectionSpecs(
-        Arrays.asList(ConnectionSpec.MODERN_TLS, ConnectionSpec.COMPATIBLE_TLS)).addInterceptor { chain ->
+        Arrays.asList(ConnectionSpec.CLEARTEXT, ConnectionSpec.MODERN_TLS, ConnectionSpec.COMPATIBLE_TLS)).addInterceptor { chain ->
         val originalRequest = chain.request()
 
         val builder = originalRequest.newBuilder()
@@ -37,13 +38,13 @@ class StaffMethods {
         .readTimeout(180, TimeUnit.SECONDS)
         .build()
 
-    fun ExtendedSearch(origin: String, destination: String, date: LocalDate, list: String, GetTransfer: Boolean, ntype: GetNonDirectType, pax: Int, currency: String, lang: String, country: String, token: String = "void token", sa: Boolean = true, ver: String = "1.0", ac: String = "--"): String
+    fun ExtendedSearch(origin: String, destination: String, date: LocalDate, list: String, GetTransfer: Boolean, ntype: GetNonDirectType, pax: Int, currency: String, lang: String, country: String, token: String = "void token", sa: Boolean = true, ver: String = "1.0", ac: String = "--", id_user: String? = "common ticketapi user"): String
     {
         var res: String = ""
         try
         {
             val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-            val Uri = BaseUrl + "/amadeus/ExtendedSearch?origin=" + origin + "&destination=" + destination + "&date=" + date.format(formatter) + "&list=" + list + "&GetTransfer=" + GetTransfer.toString() + "&GetNonDirect=" + ntype.toString() + "&pax=" + pax + "&token=" + token + "&sa=" + sa.toString() + "&ver=" + ver + "&ac=" + ac + "&currency=" + currency + "&lang=" + lang + "&country=" + country;
+            val Uri = BaseUrl + "/amadeus/ExtendedSearch?origin=" + origin + "&destination=" + destination + "&date=" + date.format(formatter) + "&list=" + list + "&GetTransfer=" + GetTransfer.toString() + "&GetNonDirect=" + ntype.toString() + "&pax=" + pax + "&token=" + token + "&sa=" + sa.toString() + "&ver=" + ver + "&ac=" + ac + "&currency=" + currency + "&lang=" + lang + "&country=" + country + "&id_user" + id_user
             val request = Request.Builder().url(Uri).build()
 
             val Json = RequestJson(client, request)
@@ -69,7 +70,7 @@ class StaffMethods {
         return res
     }
 
-    fun GetFlightInfo(origin: String, destination: String, date: LocalDateTime, pax: Int, aircompany: String, number: String, token: String = "void token", id_user: String = "common ticketapi user"): String
+    fun GetFlightInfo(origin: String, destination: String, date: LocalDateTime, pax: Int, aircompany: String, number: String, token: String? = "void token", id_user: String? = "common ticketapi user"): String
     {
         var res: String = ""
         try
@@ -105,7 +106,7 @@ class StaffMethods {
         return res
     }
 
-    fun GetNonDirectFlights(origin: String, destination: String, change: String, date: LocalDate, list: String, pax: Int, currency: String, lang: String, token: String = "void token", ver: String = "1.0", id_user: String = "common ticketapi user"): String
+    fun GetNonDirectFlights(origin: String, destination: String, change: String, date: LocalDate, list: String, pax: Int, currency: String, lang: String, token: String? = "void token", ver: String = "1.0", id_user: String? = "common ticketapi user"): String
     {
         var res: String = ""
         try
@@ -254,6 +255,38 @@ class StaffMethods {
             val kjgh = ex.message + "..." + ex.stackTrace
         }
         return SubscribeWithRemainResult(0, "", 0)
+    }
+
+    fun SendReportRequest(id_user: String, device_id: String, origin: String, destination: String, operating: String, flight: String, departure: LocalDateTime, pax: Int): ReportRequestStatus?
+    {
+        try
+        {
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+
+            val Uri: String = BaseUrl + "/token/ReportRequest?id_user=" + id_user + "&device_id=" + device_id + "&origin=" + origin + "&destination=" + destination + "&operating=" + operating + "&flight=" + flight + "&time=" + departure.format(formatter) + "&pax=" + pax
+
+            val request = Request.Builder().url(Uri).build()
+
+            val Json = RequestJson(client, request)
+
+            val result: ReportRequestStatus
+            val gson = Gson()
+
+            try {
+                result = gson.fromJson(Json, ReportRequestStatus::class.java)
+
+                return result
+            }
+            catch (e: Exception)
+            {
+                val kjh = e.message + "..." + e.stackTrace
+            }
+        }
+        catch (ex: Exception)
+        {
+            val khj="123"
+        }
+        return null
     }
 
     fun LoadLocations(): String {

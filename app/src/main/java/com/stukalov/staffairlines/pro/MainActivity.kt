@@ -1,14 +1,19 @@
 package com.stukalov.staffairlines.pro
 
+import android.Manifest.permission.POST_NOTIFICATIONS
+import android.app.Notification
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
@@ -22,34 +27,33 @@ import com.adapty.models.AdaptyProfileParameters
 import com.adapty.utils.AdaptyLogLevel
 import com.adapty.utils.AdaptyResult
 import com.adapty.utils.ImmutableMap
+import com.amplitude.android.Amplitude
+import com.amplitude.android.Configuration
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.bottomnavigation.LabelVisibilityMode
-import com.google.android.material.navigation.NavigationBarView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.messaging.FirebaseMessaging
 import com.stukalov.staffairlines.pro.databinding.ActivityMainBinding
-import com.stukalov.staffairlines.pro.ui.home.HomeFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.math.BigInteger
 import java.security.MessageDigest
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
+    private val REQUEST_CODE_POST_NOTIFICATIONS = 1
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
     private lateinit var navView: BottomNavigationView
     val RC_SIGN_IN: Int = 1
-    //lateinit var signInClient: GoogleSignInClient
-    //lateinit var signInOptions: GoogleSignInOptions
     private lateinit var auth: FirebaseAuth
     val SM: StaffMethods = StaffMethods()
 
@@ -77,6 +81,36 @@ class MainActivity : AppCompatActivity() {
         )
 
         AdaptyGetProdile()
+        Adapty.setOnProfileUpdatedListener{ profile ->
+            GlobalStuff.AdaptyProfileID = profile.profileId
+            val premium = profile.accessLevels["premium"]
+
+            if (premium?.isActive == true)
+            {
+                GlobalStuff.premiumAccess = true
+                GlobalStuff.subscriptionId = premium.vendorProductId
+            }
+            else
+            {
+                GlobalStuff.premiumAccess = false;
+                GlobalStuff.subscriptionId = null;
+            }
+
+            BuildProfileToken(profile.customAttributes, premium)
+
+            if (GlobalStuff.HF != null) {
+                GlobalStuff.HF!!.SetPlan()
+            }
+        }
+
+        val amplitude = Amplitude(
+            Configuration(
+                apiKey = getString(R.string.amplitude_api_key),
+                context = applicationContext,
+                flushIntervalMillis = 10000,
+                flushQueueSize = 5,
+            )
+        )
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -84,8 +118,6 @@ class MainActivity : AppCompatActivity() {
         //var StaffApp = StaffAirlines()
 
         navController = findNavController(R.id.nav_host_fragment_activity_main)
-
-        //GlobalStuff.navController = navController
 
         navView = binding.navView
         //navView.labelVisibilityMode = NavigationBarView.LABEL_VISIBILITY_LABELED
@@ -118,6 +150,8 @@ class MainActivity : AppCompatActivity() {
         GlobalStuff.navView = navView
         GlobalStuff.StaffRes = resources
         GlobalStuff.supportFragManager = supportFragmentManager
+        GlobalStuff.amplitude = amplitude
+        GlobalStuff.density = this.baseContext.resources.displayMetrics.density
 
 
         /*val fireinst = FirebaseMessaging.getInstance()
@@ -154,6 +188,12 @@ class MainActivity : AppCompatActivity() {
         SM.ReadFavorites()
         SM.ReadHistory()
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ActivityCompat.checkSelfPermission(this, POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, arrayOf(POST_NOTIFICATIONS), REQUEST_CODE_POST_NOTIFICATIONS)
+            }
+        }
+
         lifecycleScope.launch {
             val rem = withContext(Dispatchers.IO) { SM.RemainSubscribe(GlobalStuff.Token!!) }
 
@@ -162,6 +202,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
         //GlobalStuff.navController.navigate(R.id.main_fragment)
+        ExtrasProcess()
     }
 
     companion object {
@@ -244,6 +285,83 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun loadSomeFragment(): Unit
+    {
+        val jmkh = "we"
+    }
+
+    private fun ExtrasProcess()
+    {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH)
+        val data: NotificationData = NotificationData("", "", "", LocalDateTime.now(), 0, "", "")
+
+        if (intent.extras != null)
+        {
+            intent.extras!!.keySet().forEach { key ->
+                if (key != null)
+                {
+                    if (key == "type")
+                    {
+                        data.type = intent.extras?.getString(key)!!
+                    }
+                    else if (key == "origin")
+                    {
+                        data.origin = intent.extras?.getString(key)!!
+                    }
+                    else if (key == "destination")
+                    {
+                        data.destination = intent.extras?.getString(key)!!
+                    }
+                    else if (key == "departureDateTime")
+                    {
+                        data.departureDateTime = LocalDateTime.parse(intent.extras?.getString(key)!!, formatter)
+                    }
+                    else if (key == "paxAmount")
+                    {
+                        data.paxAmount = intent.extras?.getString(key)!!.toInt()
+                    }
+                    else if (key == "marketingCarrier")
+                    {
+                        data.marketingCarrier = intent.extras?.getString(key)!!
+                    }
+                    else if (key == "flightNumber")
+                    {
+                        data.flightNumber = intent.extras?.getString(key)!!
+                    }
+                }
+            }
+            OpenNotificationFlight(data)
+        }
+    }
+
+    fun OpenNotificationFlight(data: NotificationData)
+    {
+        if (data.paxAmount == 0)
+        {
+            data.paxAmount = 1;
+        }
+
+        lifecycleScope.launch {
+            val res = withContext(Dispatchers.IO) {
+                SM.GetFlightInfo(
+                    data.origin,
+                    data.destination,
+                    data.departureDateTime,
+                    data.paxAmount,
+                    data.marketingCarrier,
+                    data.flightNumber,
+                    GlobalStuff.Token,
+                    GlobalStuff.customerID
+                )
+            }
+
+            if (res == "OK" && GlobalStuff.FlInfo != null) {
+                GlobalStuff.OneResult = GlobalStuff.FlInfo?.Flight
+                SM.SaveAppToken()
+                GlobalStuff.navController.navigate(R.id.result_one)
+            }
+        }
+    }
 
     override fun onStart() {
         super.onStart()

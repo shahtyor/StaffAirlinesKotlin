@@ -117,8 +117,9 @@ class TransferFragment : Fragment() {
                             GlobalStuff.Pax,
                             "USD",
                             "EN",
-                            "",
-                            "3.0"
+                            null,
+                            "3.0",
+                            GlobalStuff.customerID
                         )
                     }
 

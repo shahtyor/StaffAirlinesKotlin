@@ -4,6 +4,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -12,6 +13,7 @@ import java.util.Dictionary
 import kotlin.random.Random
 
 class FcmListenerService : FirebaseMessagingService() {
+
     override fun onNewToken(token: String) {
         super.onNewToken(token)
 
@@ -39,7 +41,7 @@ class FcmListenerService : FirebaseMessagingService() {
 
     fun SendNotification2(title: String, messageBody: String, data: Map<String, String>)
     {
-        var intent = Intent(this, MainActivity::class.java);
+        var intent = Intent(this, MainActivity::class.java)
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         data.forEach { it ->
             intent.putExtra(it.key, it.value)

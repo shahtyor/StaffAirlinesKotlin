@@ -13,7 +13,7 @@ import com.adapty.ui.listeners.AdaptyUiEventListener
 
 public class AdaptyListener : AdaptyUiDefaultEventListener() {
 
-    override fun onActionPerformed(action: AdaptyUI.Action, context: Context) {
+/*    override fun onActionPerformed(action: AdaptyUI.Action, context: Context) {
         when (action) {
             AdaptyUI.Action.Close -> (context as? Activity)?.onBackPressed()
 
@@ -90,5 +90,5 @@ public class AdaptyListener : AdaptyUiDefaultEventListener() {
 
     override fun onRestoreStarted(context: Context) {
         super.onRestoreStarted(context)
-    }
+    }*/
 }

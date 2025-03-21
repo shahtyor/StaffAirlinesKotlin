@@ -51,7 +51,7 @@ class LoginFragment : Fragment() {
     }
 
     private fun login() {
-        val loginIntent: Intent = GlobalStuff.googleInClient!!.signInIntent //signInClient.signInIntent
+        val loginIntent: Intent = GlobalStuff.googleInClient!!.signInIntent
         startActivityForResult(loginIntent, RC_SIGN_IN)
     }
 

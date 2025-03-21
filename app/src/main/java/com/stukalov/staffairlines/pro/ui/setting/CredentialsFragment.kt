@@ -47,6 +47,7 @@ class CredentialsFragment : Fragment() {
     lateinit var ivCredID: ImageView
     lateinit var tvCredCoins: TextView
     lateinit var ivCredCoins: ImageView
+    lateinit var tvCredSubLost: TextView
     lateinit var signInClient: GoogleSignInClient
     lateinit var signInOptions: GoogleSignInOptions
 
@@ -82,6 +83,7 @@ class CredentialsFragment : Fragment() {
         ivCredID = view.findViewById(R.id.ivCredID)
         tvCredCoins = view.findViewById(R.id.tvCredCoins)
         ivCredCoins = view.findViewById(R.id.ivCredCoins)
+        tvCredSubLost = view.findViewById(R.id.tvCredSubLost)
 
         ivCredID.setOnClickListener()
         {
@@ -178,6 +180,12 @@ class CredentialsFragment : Fragment() {
             {
                 tvCredCoins.setText("0")
             }
+        }
+
+        if (GlobalStuff.premiumAccess) {
+            tvCredSubLost.setText(GlobalStuff.Remain.toString())
+        } else {
+            tvCredSubLost.setText("0")
         }
     }
 

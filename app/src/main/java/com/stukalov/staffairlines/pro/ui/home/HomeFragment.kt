@@ -30,6 +30,7 @@ import com.adapty.ui.listeners.AdaptyUiTagResolver
 import com.adapty.ui.listeners.AdaptyUiTimerResolver
 import com.adapty.utils.AdaptyResult
 import com.adapty.utils.seconds
+import com.amplitude.android.events.BaseEvent
 import com.stukalov.staffairlines.pro.AdaptyListener
 import com.stukalov.staffairlines.pro.GetNonDirectType
 import com.stukalov.staffairlines.pro.GlobalStuff
@@ -557,6 +558,14 @@ class HomeFragment : Fragment() {
 
                 val permlist = SM.GetStringPermitt()
 
+                // Отладка
+                /*var event = BaseEvent()
+                event.eventType = "Test 1803 event"
+                event.userId = "shahtyor_test"
+                event.eventProperties = mutableMapOf<String, Any?>("title" to "Test event", "desc" to "desc event")
+                event.userProperties = mutableMapOf<String, Any?>("name" to "shahtyor")
+                GlobalStuff.amplitude?.track(event)*/
+
                 lifecycleScope.launch {
                     val result = withContext(Dispatchers.IO) {
                         SM.ExtendedSearch(
@@ -573,7 +582,8 @@ class HomeFragment : Fragment() {
                             "",
                             false,
                             "3.0",
-                            "--"
+                            "--",
+                            GlobalStuff.customerID
                         )
                     }
 

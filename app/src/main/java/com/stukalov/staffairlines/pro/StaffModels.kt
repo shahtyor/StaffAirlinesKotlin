@@ -49,6 +49,11 @@ enum class ResultType
     Direct, First, Second, Final
 }
 
+enum class ReportStatus
+{
+    success, error, already_in_progress, already_in_progress_another
+}
+
 data class Location(
     @SerializedName("id")
     var Id: Int,
@@ -281,11 +286,15 @@ data class PlaceInfo(
     var EconomyPlaces: Int?,
     var BusinessPlaces: Int?,
     var CntSAPassenger: Int?,
-    var ts: LocalDate,
+    var ts: String,
     var TimePassed: Int,
     var Nickname: String,
     var Id_user: String
 )
+{
+    val TSDateTime: LocalDateTime
+        get() = LocalDateTime.parse(ts, secondFormatter)
+}
 
 data class AviasalesInfo(
     var Amount: Float,
@@ -357,8 +366,8 @@ data class SignInState(
 
 class ProfileTokens
 (
-    val SubscribeTokens: Int,
-    val NonSubscribeTokens: Int,
+    var SubscribeTokens: Int,
+    var NonSubscribeTokens: Int,
     val Premium: Boolean,
     val Error: String,
     val Timing: String,
@@ -382,6 +391,31 @@ class Token
         get() = LocalDateTime.parse(ts_valid, secondFormatter)
 }
 
+class TokenCollection
+(
+    val SubscribeTokens: Int,
+    val NonSubscribeTokens: Int,
+    val DebtSubscribeTokens: Int,
+    val DebtNonSubscribeTokens: Int,
+    val Error: String
+)
 
+class ReportRequestStatus
+(
+    val Status: ReportStatus,
+    val StatusName: String,
+    val Tokens: TokenCollection,
+    val IdGroup: Long
+)
 
+class NotificationData
+(
+    var type: String,
+    var origin: String,
+    var destination: String,
+    var departureDateTime: LocalDateTime,
+    var paxAmount: Int,
+    var marketingCarrier: String,
+    var flightNumber: String
+)
 
