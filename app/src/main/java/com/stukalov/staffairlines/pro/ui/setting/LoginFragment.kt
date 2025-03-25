@@ -7,13 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.stukalov.staffairlines.pro.GlobalStuff
 import com.stukalov.staffairlines.pro.R
 import com.stukalov.staffairlines.pro.databinding.FragmentLoginBinding
-import com.stukalov.staffairlines.pro.ui.flight.FlightFragment
 
 class LoginFragment : Fragment() {
 
@@ -40,8 +36,6 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        GlobalStuff.navView!!.visibility = View.GONE
 
         val cvGoogleLogin = view.findViewById<CardView>(R.id.cvGoogleLogin)
         cvGoogleLogin.setOnClickListener()

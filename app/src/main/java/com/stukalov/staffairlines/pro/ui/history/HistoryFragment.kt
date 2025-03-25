@@ -4,16 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.ListView
-import android.widget.TextView
-import android.widget.Toast
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import com.stukalov.staffairlines.pro.FavouritesAdapter
-import com.stukalov.staffairlines.pro.FlightWithPax
 import com.stukalov.staffairlines.pro.GlobalStuff
 import com.stukalov.staffairlines.pro.HistoryAdapter
 import com.stukalov.staffairlines.pro.HistoryElement
@@ -22,11 +14,7 @@ import com.stukalov.staffairlines.pro.R
 import com.stukalov.staffairlines.pro.SelectedPoint
 import com.stukalov.staffairlines.pro.StaffMethods
 import com.stukalov.staffairlines.pro.databinding.FragmentHistoryBinding
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 class HistoryFragment : Fragment() {
 
@@ -53,8 +41,6 @@ class HistoryFragment : Fragment() {
 
         val SM: StaffMethods = StaffMethods()
 
-        GlobalStuff.navView!!.setVisibility(View.VISIBLE)
-
         val hist_lv: ListView = view.findViewById<ListView>(R.id.histlistview)
 
         SM.ReadHistory()
@@ -75,8 +61,13 @@ class HistoryFragment : Fragment() {
                 GlobalStuff.SearchDT = SearchDT
             }
 
-            GlobalStuff.navController.navigate(R.id.navigation_home)
+            GlobalStuff.navController.navigate(R.id.main_frag)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        GlobalStuff.setActionBar(true, false, "History")
     }
 
     override fun onDestroyView() {

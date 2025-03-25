@@ -51,8 +51,7 @@ class ShowPermittFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         ac_lv = view.findViewById<ListView>(R.id.permittlistview)
-
-        GlobalStuff.navView!!.visibility = View.GONE
+        GlobalStuff.setActionBar(true, true, "Permitted airlines")
 
         try {
 
@@ -72,8 +71,6 @@ class ShowPermittFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-
-        //var LocList = StaffApp.Locations
     }
 
     override fun onDestroyView() {

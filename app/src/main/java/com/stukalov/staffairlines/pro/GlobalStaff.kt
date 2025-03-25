@@ -4,7 +4,11 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Resources
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.widget.TextView
+import androidx.appcompat.app.ActionBar
+import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import com.adapty.errors.AdaptyError
 import com.adapty.models.AdaptyPaywallProduct
@@ -21,8 +25,9 @@ import java.time.LocalDate
     object GlobalStuff {
         var density: Float = 1.0F
         lateinit var navController: NavController
-        var navView: BottomNavigationView? = null
+        //var navView: BottomNavigationView? = null
         lateinit var Locations: List<Location>
+        var actionBar: ActionBar? = null
         var Airlines: List<Airline0> = listOf()
         var Permitted: List<PermittedAC> = listOf()
         var FavoriteList = mutableListOf<FlightWithPax>()
@@ -70,5 +75,34 @@ import java.time.LocalDate
         var customerLastName: String? = null
         var customerProfile: ProfileTokens? = null
         var adAction: AdaptyAction = AdaptyAction.None
+
+        fun setActionBar(visibility: Boolean, upEnable: Boolean, title: String)
+        {
+            val colorwhite = ColorDrawable(Color.parseColor("#FFFFFF"))
+            val colorgray =  ColorDrawable(Color.parseColor("#3b3b3b"))
+            var actionBar = this.actionBar
+
+            if (actionBar == null)
+            {
+                actionBar = (activity as AppCompatActivity?)!!.supportActionBar
+                this.actionBar = actionBar
+            }
+
+            actionBar?.setDisplayHomeAsUpEnabled(upEnable)
+            actionBar?.title = title
+            if (visibility) {
+                if (actionBar?.isShowing != true)
+                {
+                    actionBar?.show()
+                }
+
+                actionBar?.setBackgroundDrawable(colorgray)
+                actionBar?.elevation = 2f
+            }
+            else {
+                actionBar?.setBackgroundDrawable(colorwhite)
+                actionBar?.elevation = 0f
+            }
+        }
     }
 //}

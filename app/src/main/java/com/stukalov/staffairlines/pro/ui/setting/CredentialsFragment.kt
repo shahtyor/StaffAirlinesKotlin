@@ -1,13 +1,9 @@
 package com.stukalov.staffairlines.pro.ui.setting
 
-import android.R.attr.label
-import android.R.attr.text
 import android.annotation.SuppressLint
-import android.app.AppOpsManager
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.content.Context.CLIPBOARD_SERVICE
 import android.os.Bundle
 import android.text.Html
 import android.text.method.LinkMovementMethod
@@ -21,13 +17,9 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.adapty.Adapty
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.stukalov.staffairlines.pro.GlobalStuff
 import com.stukalov.staffairlines.pro.R
 import com.stukalov.staffairlines.pro.StaffMethods
-import com.stukalov.staffairlines.pro.Token
 import com.stukalov.staffairlines.pro.databinding.FragmentCredentialsBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -48,8 +40,6 @@ class CredentialsFragment : Fragment() {
     lateinit var tvCredCoins: TextView
     lateinit var ivCredCoins: ImageView
     lateinit var tvCredSubLost: TextView
-    lateinit var signInClient: GoogleSignInClient
-    lateinit var signInOptions: GoogleSignInOptions
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -63,16 +53,12 @@ class CredentialsFragment : Fragment() {
         _binding = FragmentCredentialsBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        setupGoogleLogin()
-
         return root
     }
 
     @SuppressLint("ServiceCast")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        GlobalStuff.navView!!.visibility = View.VISIBLE
 
         tvCredLogin = view.findViewById(R.id.tvCredLogin)
         tvCredFirst = view.findViewById(R.id.tvCredFirst)
@@ -113,15 +99,6 @@ class CredentialsFragment : Fragment() {
 
         Init()
         GlobalStuff.CF = this
-    }
-
-    private fun setupGoogleLogin() {
-        signInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.web_client_id))
-            .requestEmail()
-            .build()
-        signInClient = GoogleSignIn.getClient(GlobalStuff.mActivity, signInOptions)
-        GlobalStuff.googleInClient = signInClient
     }
 
     fun Init()

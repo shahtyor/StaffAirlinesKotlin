@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
@@ -45,8 +46,6 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        //(activity as AppCompatActivity?)!!.supportActionBar!!.hide()
-        GlobalStuff.navView!!.visibility = View.VISIBLE
         viewPager = view.findViewById(R.id.pager_profileset)
         tabLayout = view.findViewById(R.id.tab_layout_profileset)
 
@@ -60,6 +59,7 @@ class ProfileFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        GlobalStuff.setActionBar(true, false, "Profile")
     }
 
     override fun onDestroyView() {

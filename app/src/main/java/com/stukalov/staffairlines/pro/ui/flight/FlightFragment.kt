@@ -190,11 +190,14 @@ class FlightFragment : Fragment() {
             Subscribe_Click(view)
         }
 
-        var f = GlobalStuff.OneResult!!
+        var f = GlobalStuff.OneResult
+
+        if (f == null) return
 
         val formatter0 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val title = f.Origin + " - " + f.Destination + ", " + f.DepDateTime.format(formatter0)
-        (activity as AppCompatActivity).supportActionBar?.title = title
+        GlobalStuff.setActionBar(true, true, title)
+        //(activity as AppCompatActivity).supportActionBar?.title = title
 
         val mc = "_" + f.MarketingCarrier.lowercase(Locale.ENGLISH)
         val identifier = GlobalStuff.StaffRes.getIdentifier(mc, "drawable", "com.stukalov.staffairlines.pro")
@@ -340,7 +343,7 @@ class FlightFragment : Fragment() {
 
     fun SetPlan()
     {
-        if (GlobalStuff.Remain == 0)
+        if (GlobalStuff.Remain == 0 || !GlobalStuff.premiumAccess)
         {
             btOneSubscribe.setBackgroundResource(R.drawable.search_button_off)
             btOneSubscribe.setTextColor(GlobalStuff.StaffRes.getColor(R.color.staff_blue, null))
@@ -411,7 +414,7 @@ class FlightFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
-        (activity as AppCompatActivity?)!!.supportActionBar!!.show()
+        //(activity as AppCompatActivity?)!!.supportActionBar!!.show()
     }
 
     fun flyzed_click(view: View) {

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
@@ -54,8 +55,6 @@ class SelPointFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val points_lv: ListView = view.findViewById<ListView>(R.id.pointlistview)
-
-        GlobalStuff.navView!!.visibility = View.GONE
 
         val strmode = getArguments()?.getString("PointMode")
         val PointMode: PointType = if (strmode == "Origin")
@@ -125,7 +124,6 @@ class SelPointFragment : Fragment() {
                 }
 
                 GlobalStuff.navController.navigateUp()
-                GlobalStuff.navView!!.visibility = View.VISIBLE
              }
         }
         catch (e: Exception)
@@ -134,10 +132,14 @@ class SelPointFragment : Fragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        GlobalStuff.setActionBar(true, true, "Flights")
+    }
+
     override fun onStart() {
         super.onStart()
-
-        //var LocList = StaffApp.Locations
     }
 
     override fun onDestroyView() {

@@ -60,7 +60,8 @@ class ResultFragment : Fragment() {
 
         val formatter0 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val result_title = GlobalStuff.OriginPoint!!.Code + " - " + GlobalStuff.DestinationPoint!!.Code + ", " + GlobalStuff.SearchDT!!.format(formatter0)
-        (activity as AppCompatActivity).supportActionBar?.title = result_title
+        //(activity as AppCompatActivity).supportActionBar?.title = result_title
+        GlobalStuff.setActionBar(true, true, result_title)
 
         val direct_lv: ListView = view.findViewById<ListView>(R.id.directlistview)
         val tabTransfers = view.findViewById<LinearLayout>(R.id.TabTransfers)
@@ -217,7 +218,7 @@ class ResultFragment : Fragment() {
             GlobalStuff.BackResType = null
             GlobalStuff.FirstSegment = null
             GlobalStuff.SecondSegment = null
-            GlobalStuff.navController.navigate(R.id.navigation_home)
+            GlobalStuff.navController.navigate(R.id.main_frag)
         }
     }
 
@@ -299,7 +300,7 @@ class ResultFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        (activity as AppCompatActivity?)!!.supportActionBar!!.show()
+        //(activity as AppCompatActivity?)!!.supportActionBar!!.show()
     }
 
     fun InitFirstSegment(view: View)

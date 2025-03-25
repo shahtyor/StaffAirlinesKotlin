@@ -4,8 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="40dp"
-    tools:context=".ui.favourites.FavouritesFragment">
+    android:paddingTop="10dp"
+    android:accessibilityPaneTitle="Favourites"
+    tools:context=".ui.favourites.FavouritesFragment"
+    tools:ignore="UnusedAttribute">
 
     <LinearLayout
         android:background="@color/white"

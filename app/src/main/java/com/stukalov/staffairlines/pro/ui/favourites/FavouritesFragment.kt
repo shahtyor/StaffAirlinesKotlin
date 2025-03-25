@@ -6,18 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ListView
-import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.stukalov.staffairlines.pro.DirectResultAdapter
 import com.stukalov.staffairlines.pro.FavouritesAdapter
-import com.stukalov.staffairlines.pro.Flight
 import com.stukalov.staffairlines.pro.FlightWithPax
-import com.stukalov.staffairlines.pro.GetNonDirectType
 import com.stukalov.staffairlines.pro.GlobalStuff
 import com.stukalov.staffairlines.pro.R
 import com.stukalov.staffairlines.pro.StaffMethods
@@ -27,7 +21,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
 
 class FavouritesFragment : Fragment() {
 
@@ -57,12 +50,6 @@ class FavouritesFragment : Fragment() {
 
         val SM: StaffMethods = StaffMethods()
 
-        //GlobalStuff.navView.setVisibility(View.VISIBLE)
-        GlobalStuff.navView!!.visibility = View.VISIBLE
-
-        //val title = arguments?.getString("result_title")
-        //(activity as AppCompatActivity).supportActionBar?.title = title
-
         val fav_lv: ListView = view.findViewById<ListView>(R.id.favlistview)
         val spin_layout = view.findViewById<FrameLayout>(R.id.spinner_favour)
 
@@ -71,10 +58,9 @@ class FavouritesFragment : Fragment() {
 
         fav_lv.setAdapter(favadapter)
 
-        fav_lv.setOnItemClickListener {parent, view, position, id ->
+        fav_lv.setOnItemClickListener { parent, view, position, id ->
 
             spin_layout.isVisible = true
-            GlobalStuff.navView!!.visibility = View.GONE
 
             val fl = parent.getItemAtPosition(position) as FlightWithPax
 
@@ -93,7 +79,6 @@ class FavouritesFragment : Fragment() {
                 }
 
                 if (result == "OK" && GlobalStuff.FlInfo != null) {
-                    GlobalStuff.navView!!.visibility = View.GONE
 
                     val filt = GlobalStuff.FavoriteList.filter { it.Fl.DepartureDateTime == fl.Fl.DepartureDateTime && it.Fl.FlightNumber == fl.Fl.FlightNumber && it.Fl.MarketingCarrier == fl.Fl.MarketingCarrier }
                     if (filt.size > 0)
@@ -109,7 +94,6 @@ class FavouritesFragment : Fragment() {
                 else
                 {
                     spin_layout.isVisible = false
-                    GlobalStuff.navView!!.visibility = View.VISIBLE
                     var serr: String = ""
                     if (GlobalStuff.ExtResult == null)
                     {
@@ -120,6 +104,11 @@ class FavouritesFragment : Fragment() {
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        GlobalStuff.setActionBar(true, false, "Favourites")
     }
 
     override fun onDestroyView() {

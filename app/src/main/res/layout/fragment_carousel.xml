@@ -17,15 +17,15 @@
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/view_pager_carousel"
-            android:scrollIndicators="bottom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
             android:layout_marginEnd="20dp"
             android:background="@drawable/round_box_light"
+            android:scrollIndicators="bottom"
+            android:layout_weight="12"
             app:layout_constraintBottom_toTopOf="@id/tab_layout_car"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="MissingConstraints" />
 
@@ -34,27 +34,37 @@
             android:layout_marginTop="10dp"
             app:tabBackground="@drawable/tab_selector"
             app:tabGravity="center"
+            android:layout_weight="1"
             app:tabIndicatorHeight="0dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <Button
-            android:id="@+id/btCarBegin"
-            android:layout_width="300dp"
-            android:layout_height="50dp"
-            style="@style/NotTintedButton"
-            android:text="GET STARTED"
-            android:textSize="20sp"
-            android:layout_gravity="bottom"
-            android:layout_marginTop="10dp"
-            android:layout_marginStart="55dp"
-            android:shadowColor="@color/white"
-            android:textColor="@color/white"
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_gravity="center"
             app:layout_constraintTop_toBottomOf="@id/tab_layout_car"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:outlineSpotShadowColor="@color/staff_blue"
-            android:background="@drawable/begin_button"
-            tools:ignore="MissingConstraints" />
+            android:layout_weight="2"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/btCarBegin"
+                android:layout_width="200dp"
+                android:layout_height="50dp"
+                style="@style/NotTintedButton"
+                android:layout_gravity="bottom"
+                android:text="GET STARTED"
+                android:textSize="20sp"
+                android:shadowColor="@color/white"
+                android:textColor="@color/white"
+                android:outlineSpotShadowColor="@color/staff_blue"
+                android:background="@drawable/begin_button"
+                tools:ignore="MissingConstraints" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

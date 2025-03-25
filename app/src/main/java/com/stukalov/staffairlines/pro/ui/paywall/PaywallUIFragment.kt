@@ -35,8 +35,9 @@ class PaywallUiFragment : Fragment(R.layout.fragment_paywall_ui) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
-        GlobalStuff.navView!!.visibility = View.GONE
+        //(activity as AppCompatActivity?)!!.supportActionBar!!.hide()
+        //GlobalStuff.setActionBar(false, false, "")
+        GlobalStuff.actionBar?.hide()
 
         products = GlobalStuff.AdaptyProducts
         viewConfiguration = GlobalStuff.AdaptyConfig

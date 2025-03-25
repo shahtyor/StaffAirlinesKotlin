@@ -23,7 +23,6 @@
             android:layout_height="80dp"
             android:layout_gravity="top"
             android:layout_marginLeft="80dp"
-            android:layout_marginTop="25dp"
             android:layout_marginRight="80dp"
             android:src="@drawable/sa"
             tools:ignore="ContentDescription" />
@@ -143,14 +142,13 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="20dp"
             android:orientation="horizontal">
 
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="50dp"
+                android:layout_height="match_parent"
                 android:layout_marginStart="30dp"
-                android:layout_marginTop="5dp"
                 android:layout_marginEnd="40dp"
                 android:gravity="center_vertical"
                 android:text="@string/label_passengers"
@@ -162,7 +160,6 @@
                 style="@style/NotTintedButton"
                 android:layout_width="50dp"
                 android:layout_height="40dp"
-                android:layout_marginTop="10dp"
                 android:background="@drawable/minus_button_off"
                 android:src="@drawable/minus_blue"
                 tools:ignore="ContentDescription" />
@@ -171,10 +168,10 @@
                 android:id="@+id/cntpass"
                 android:layout_width="50dp"
                 android:layout_height="40dp"
-                android:layout_marginTop="20px"
                 android:background="@drawable/border_top_bottom"
-                android:gravity="center"
+                android:layout_gravity="top"
                 android:text="1"
+                android:gravity="center_vertical | center_horizontal"
                 android:textColor="@color/black"
                 android:textSize="20sp" />
 
@@ -182,7 +179,6 @@
                 android:id="@+id/plusbut"
                 android:layout_width="50dp"
                 android:layout_height="40dp"
-                android:layout_marginTop="10dp"
                 android:background="@drawable/plus_button_on"
                 android:src="@drawable/plus_white"
                 tools:ignore="ContentDescription" />
@@ -194,7 +190,7 @@
             style="@style/NotTintedButton"
             android:layout_width="300dp"
             android:layout_height="50dp"
-            android:layout_marginStart="55dp"
+            android:layout_gravity="center"
             android:layout_marginTop="50dp"
             android:background="@drawable/search_button_off"
             android:outlineSpotShadowColor="@color/white"
@@ -240,9 +236,11 @@
         </LinearLayout>
 
         <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
             android:layout_marginBottom="20dp">
 
             <TextView
@@ -281,34 +279,36 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/llHomeInvite"
-                android:orientation="horizontal"
-                android:layout_marginStart="100dp"
-                android:gravity="end"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:layout_gravity="bottom"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-                <TextView
-                    android:textAlignment="textEnd"
-                    android:id="@+id/tvHomeInvite"
-                    android:text="Invite your colleagues"
-                    android:textColor="@color/staff_blue"
-                    android:textSize="16sp"
+                <LinearLayout
+                    android:id="@+id/llHomeInvite"
+                    android:orientation="horizontal"
+                    android:layout_gravity="end"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="match_parent">
 
-                <ImageView
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    android:src="@drawable/heart"
-                    android:layout_marginStart="5dp"
-                    android:scaleType="fitXY"
-                    android:layout_gravity="center_vertical"
-                    />
+                    <TextView
+                        android:id="@+id/tvHomeInvite"
+                        android:text="Invite your colleagues"
+                        android:textColor="@color/staff_blue"
+                        android:textSize="16sp"
+                        android:layout_gravity="bottom"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
 
+                    <ImageView
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:src="@drawable/heart"
+                        android:layout_marginStart="5dp"
+                        android:scaleType="fitXY"
+                        android:layout_gravity="bottom"
+                        />
+
+                </LinearLayout>
             </LinearLayout>
 
         </LinearLayout>

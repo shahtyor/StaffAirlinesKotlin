@@ -67,12 +67,12 @@ class FavouritesAdapter(private val context: Context, private val FavResult: Lis
 
     @SuppressLint("ResourceAsColor")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        if (CurPosition < position && MaxPosition < position) {
+        /*if (CurPosition < position && MaxPosition < position) {
             CurPosition = position
             if (MaxPosition < position)
             {
                 MaxPosition = position
-            }
+            }*/
 
             var convertView = convertView
             val holder: ViewHolder
@@ -202,9 +202,9 @@ class FavouritesAdapter(private val context: Context, private val FavResult: Lis
 
             holder.llWaitInfo!!.visibility = View.GONE
             return convertView
-        }
+        /*}
 
-        return convertView!!
+        return convertView!!*/
     }
 
     private inner class ViewHolder {

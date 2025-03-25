@@ -1,6 +1,8 @@
 package com.stukalov.staffairlines.pro.ui.home
 
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.text.Html
@@ -18,31 +20,15 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.transition.Visibility
-import com.adapty.Adapty
-import com.adapty.models.AdaptyPaywallProduct
-import com.adapty.ui.AdaptyPaywallInsets
-import com.adapty.ui.AdaptyPaywallInsets.Companion
-import com.adapty.ui.AdaptyUI
-import com.adapty.ui.listeners.AdaptyUiObserverModeHandler
-import com.adapty.ui.listeners.AdaptyUiPersonalizedOfferResolver
-import com.adapty.ui.listeners.AdaptyUiTagResolver
-import com.adapty.ui.listeners.AdaptyUiTimerResolver
-import com.adapty.utils.AdaptyResult
-import com.adapty.utils.seconds
-import com.amplitude.android.events.BaseEvent
-import com.stukalov.staffairlines.pro.AdaptyListener
 import com.stukalov.staffairlines.pro.GetNonDirectType
 import com.stukalov.staffairlines.pro.GlobalStuff
 import com.stukalov.staffairlines.pro.HistoryElement
-import com.stukalov.staffairlines.pro.MainActivity
 import com.stukalov.staffairlines.pro.PointType
 import com.stukalov.staffairlines.pro.R
 import com.stukalov.staffairlines.pro.ResultType
 import com.stukalov.staffairlines.pro.StaffMethods
 import com.stukalov.staffairlines.pro.databinding.FragmentHomeBinding
 import com.stukalov.staffairlines.pro.ui.paywall.AdaptyController
-import com.stukalov.staffairlines.pro.ui.paywall.PaywallUiFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -51,12 +37,6 @@ import java.time.format.DateTimeFormatter
 
 
 class HomeFragment : Fragment() {
-
-    /*companion object {
-        fun HomeSetPLan() {
-            SetPlan()
-        }
-    }*/
 
     private var _binding: FragmentHomeBinding? = null
 
@@ -98,7 +78,7 @@ class HomeFragment : Fragment() {
         val homeViewModel =
             ViewModelProvider(this).get(HomeViewModel::class.java)
 
-        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
+        GlobalStuff.setActionBar(false, true, "")
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
@@ -139,10 +119,6 @@ class HomeFragment : Fragment() {
         tvHomeInvite.setText(Html.fromHtml("<u>Invite your colleagues</u>"))
 
         SetSelPoint()
-
-        if (GlobalStuff.navView != null) {
-            GlobalStuff.navView!!.visibility = View.VISIBLE
-        }
 
         if (GlobalStuff.SearchDT == null) {
             GlobalStuff.SearchDT = LocalDate.now()
@@ -353,7 +329,8 @@ class HomeFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
+
+        GlobalStuff.setActionBar(false, true, "")
 
         if (GlobalStuff.OwnAC == null)
         {
@@ -507,9 +484,7 @@ class HomeFragment : Fragment() {
 
     fun paywall_try(view: View) {
 
-        //val spin_layout = view.findViewById<FrameLayout>(R.id.spinner_home)
         spin_layout.isVisible = true
-        GlobalStuff.navView!!.visibility = View.GONE
 
         SetDisable(false)
 
@@ -521,7 +496,7 @@ class HomeFragment : Fragment() {
         shareIntent.setType("text/html")
         shareIntent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml("Seems that it useful tool for planning nonrev travel. This is the link for downloading mobile application Staff Airlines from AppStore or Google Play:<br/>https://staffairlines.com/download"))
         startActivity(Intent.createChooser(shareIntent, "I use Staff Airlines app for planning my nonrev travel"))
-        //GlobalStuff.navController.navigate(R.id.main_frag, Bundle())
+        GlobalStuff.navController.navigate(R.id.main_frag, Bundle())
     }
 
     fun search_click(view: View) {
@@ -531,16 +506,13 @@ class HomeFragment : Fragment() {
             if (GlobalStuff.SearchDT!!.isAfter(LocalDate.now()) && !GlobalStuff.premiumAccess)  // показываем пэйвол
             {
                 spin_layout.isVisible = true
-                GlobalStuff.navView!!.visibility = View.GONE
 
                 SetDisable(false)
 
                 AdControl.GetPaywallViewParams("test_main_action2")
             }
             else {
-                //val spin_layout = view.findViewById<FrameLayout>(R.id.spinner_home)
                 spin_layout.isVisible = true
-                GlobalStuff.navView!!.visibility = View.GONE
 
                 SetDisable(false)
                 val OP = GlobalStuff.OriginPoint
@@ -594,7 +566,7 @@ class HomeFragment : Fragment() {
                     } else {
                         SetDisable(true)
                         spin_layout.isVisible = false
-                        GlobalStuff.navView!!.visibility = View.VISIBLE
+
                         var serr: String = ""
                         if (GlobalStuff.ExtResult == null) {
                             serr = " , er=null"

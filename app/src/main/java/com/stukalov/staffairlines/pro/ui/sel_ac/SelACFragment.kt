@@ -1,7 +1,6 @@
 package com.stukalov.staffairlines.pro.ui.sel_ac
 
 import android.app.AlertDialog
-import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
@@ -10,13 +9,8 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
-import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ListView
-import android.widget.TextView
-import android.widget.Toast
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.stukalov.staffairlines.pro.Airline0
@@ -53,6 +47,7 @@ class SelACFragment : Fragment() {
         _binding = FragmentSelAcBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
+        GlobalStuff.setActionBar(true, true, "Work airline")
         //val textView: TextView = binding.selpointtext
 
         return root
@@ -89,8 +84,6 @@ class SelACFragment : Fragment() {
 
         ac_lv = view.findViewById<ListView>(R.id.aclistview)
         cont = view.context
-
-        GlobalStuff.navView!!.visibility = View.GONE
 
         strmode = getArguments()?.getString("SelACMode")
 
@@ -171,13 +164,18 @@ class SelACFragment : Fragment() {
 
         if (strmode == "home")
         {
-            GlobalStuff.navController.navigate(R.id.navigation_home, Bundle())
+            GlobalStuff.navController.navigate(R.id.main_frag, Bundle())
         }
         else
         {
             GlobalStuff.navController.navigateUp()
         }
-        GlobalStuff.navView!!.visibility = View.VISIBLE
+        //GlobalStuff.navView!!.visibility = View.VISIBLE
+    }
+
+    override fun onResume() {
+        super.onResume()
+        GlobalStuff.setActionBar(true, true, "Work airline")
     }
 
     override fun onStart() {

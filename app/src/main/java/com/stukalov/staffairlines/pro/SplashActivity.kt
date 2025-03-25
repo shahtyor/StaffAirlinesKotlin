@@ -1,5 +1,6 @@
 package com.stukalov.staffairlines.pro
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -16,6 +17,9 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_splash)
+
+        GlobalStuff.Pax = 1
+        GlobalStuff.prefs = getSharedPreferences("settings", Context.MODE_PRIVATE)
 
         window.setFlags(
             WindowManager.LayoutParams.FLAG_FULLSCREEN,

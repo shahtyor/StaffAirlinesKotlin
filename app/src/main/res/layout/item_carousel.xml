@@ -16,18 +16,28 @@
             android:textColor="@color/black"
             android:textSize="24sp"
             android:layout_width="match_parent"
+            android:layout_weight="1"
             android:layout_marginTop="20dp"
             android:layout_marginStart="30dp"
             android:layout_marginBottom="30dp"
             android:layout_marginEnd="30dp"
             android:layout_height="wrap_content" />
 
-        <ImageView
-            android:id="@+id/ivCarousel"
-            android:src="@drawable/board1"
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:scaleType="center"
-            android:layout_height="300dp" />
+            android:layout_weight="1"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/ivCarousel"
+                android:src="@drawable/board1"
+                android:layout_width="match_parent"
+                android:layout_gravity="center_vertical"
+                android:scaleType="center"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
 
         <TextView
             android:id="@+id/tvCarouselDesc"
@@ -38,6 +48,7 @@
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="20dp"
             android:textColor="@color/black"
+            android:layout_weight="1"
             android:text="Now if you were bumped and couldn't flight out you can get plan B in seconds. We prepare for you list of stopovers and help to choose suitable flights."
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />

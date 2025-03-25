@@ -20,6 +20,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
+import androidx.viewpager2.widget.ViewPager2
 import com.adapty.Adapty
 import com.adapty.models.AdaptyConfig
 import com.adapty.models.AdaptyProfile
@@ -31,9 +32,13 @@ import com.amplitude.android.Amplitude
 import com.amplitude.android.Configuration
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.messaging.FirebaseMessaging
@@ -52,7 +57,11 @@ class MainActivity : AppCompatActivity() {
     private val REQUEST_CODE_POST_NOTIFICATIONS = 1
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
-    private lateinit var navView: BottomNavigationView
+    private lateinit var viewPager: ViewPager2
+    private lateinit var tabLayout: TabLayout
+    lateinit var signInClient: GoogleSignInClient
+    lateinit var signInOptions: GoogleSignInOptions
+    lateinit var adapter: BottomMenuAdapter
     val RC_SIGN_IN: Int = 1
     private lateinit var auth: FirebaseAuth
     val SM: StaffMethods = StaffMethods()
@@ -62,6 +71,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         Adapty.logLevel = AdaptyLogLevel.VERBOSE
+
+        val cd = ColorDrawable(Color.parseColor("#3b3b3b"))
+
+        val actionBar = getSupportActionBar()
+        actionBar?.setBackgroundDrawable(cd)
+        actionBar?.setDisplayHomeAsUpEnabled(true)
+        actionBar?.show()
 
         auth = FirebaseAuth.getInstance()
 
@@ -81,6 +97,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         AdaptyGetProdile()
+
         Adapty.setOnProfileUpdatedListener{ profile ->
             GlobalStuff.AdaptyProfileID = profile.profileId
             val premium = profile.accessLevels["premium"]
@@ -115,25 +132,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //var StaffApp = StaffAirlines()
-
         navController = findNavController(R.id.nav_host_fragment_activity_main)
-
-        navView = binding.navView
-        //navView.labelVisibilityMode = NavigationBarView.LABEL_VISIBILITY_LABELED
-
-        val cd = ColorDrawable(Color.parseColor("#3b3b3b"))
-
-        getSupportActionBar()?.setBackgroundDrawable(cd)
-        getSupportActionBar()?.setDisplayHomeAsUpEnabled(true)
-
-        val appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.navigation_home, R.id.navigation_favourites, R.id.navigation_history, R.id.navigation_settings
-            )
-        )
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
 
         lifecycleScope.launch {
             val jsonloc = withContext(Dispatchers.IO) { SM.LoadLocations() }
@@ -147,12 +146,14 @@ class MainActivity : AppCompatActivity() {
         GlobalStuff.mActivity = this
 
         GlobalStuff.navController = navController
-        GlobalStuff.navView = navView
+        GlobalStuff.actionBar = actionBar
         GlobalStuff.StaffRes = resources
+        GlobalStuff.ResType = ResultType.Direct
         GlobalStuff.supportFragManager = supportFragmentManager
         GlobalStuff.amplitude = amplitude
         GlobalStuff.density = this.baseContext.resources.displayMetrics.density
 
+        setupGoogleLogin()
 
         /*val fireinst = FirebaseMessaging.getInstance()
         if (fireinst.token.isSuccessful)
@@ -180,8 +181,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        //navController.navigate(R.id.main_fragment)
-
         //SM.SaveVoidFavourites()
         SM.GetOwnAC()
         SM.ReadPermit()
@@ -201,7 +200,7 @@ class MainActivity : AppCompatActivity() {
                 GlobalStuff.Remain = rem.count
             }
         }
-        //GlobalStuff.navController.navigate(R.id.main_fragment)
+
         ExtrasProcess()
     }
 
@@ -285,6 +284,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun setupGoogleLogin() {
+        signInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.web_client_id))
+            .requestEmail()
+            .build()
+        signInClient = GoogleSignIn.getClient(this, signInOptions)
+        GlobalStuff.googleInClient = signInClient
+    }
+
     fun loadSomeFragment(): Unit
     {
         val jmkh = "we"
@@ -365,11 +373,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        val user = FirebaseAuth.getInstance().currentUser
-        if (user != null) {
+        //val user = FirebaseAuth.getInstance().currentUser
+        //if (user != null) {
             //startActivity(LoggedInActivity.getLaunchIntent(this))
             //finish()
-        }
+        //}
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -429,7 +437,7 @@ class MainActivity : AppCompatActivity() {
                             }
                             else
                             {
-                                GlobalStuff.navController.navigateUp()
+                                //GlobalStuff.navController.navigateUp()
                             }
                         }
 
@@ -452,7 +460,7 @@ class MainActivity : AppCompatActivity() {
                 navController.navigateUp()
                 return true
             }
+            else -> return super.onOptionsItemSelected(item)
         }
-        return super.onOptionsItemSelected(item)
     }
 }

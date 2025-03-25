@@ -46,8 +46,8 @@ class CarouselFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
-        GlobalStuff.navView!!.visibility = View.GONE
+        //(activity as AppCompatActivity?)!!.supportActionBar!!.hide()
+        GlobalStuff.actionBar?.hide()
 
         val viewPager = view.findViewById<ViewPager2>(R.id.view_pager_carousel)
         val btBegin = view.findViewById<Button>(R.id.btCarBegin)
@@ -84,6 +84,7 @@ class CarouselFragment : Fragment() {
 
             if (GlobalStuff.Airlines.size > 0)
             {
+                GlobalStuff.actionBar?.show()
                 GlobalStuff.navController.navigate(R.id.sel_ac_frag, bundle)
             }
             else {
@@ -91,6 +92,7 @@ class CarouselFragment : Fragment() {
                     val jsonair = withContext(Dispatchers.IO) { SM.LoadAirlines() }
 
                     if (jsonair.isNotEmpty() && GlobalStuff.Airlines.size > 0) {
+                        GlobalStuff.actionBar?.show()
                         GlobalStuff.navController.navigate(R.id.sel_ac_frag, bundle)
                     }
                 }

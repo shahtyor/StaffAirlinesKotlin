@@ -53,16 +53,23 @@ class TransferFragment : Fragment() {
         return root
     }
 
+    fun GetTitle(): String
+    {
+        val formatter0 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val result_title = GlobalStuff.OriginPoint!!.Code + " - " + GlobalStuff.DestinationPoint!!.Code + ", " + GlobalStuff.SearchDT!!.format(formatter0)
+        return result_title
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         vView = view
-        val formatter0 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        val result_title = GlobalStuff.OriginPoint!!.Code + " - " + GlobalStuff.DestinationPoint!!.Code + ", " + GlobalStuff.SearchDT!!.format(formatter0)
-        (activity as AppCompatActivity).supportActionBar?.title = result_title
 
-        val tvinfo: TextView = view.findViewById<TextView>(R.id.tvInfoTransfer)
-        val transfer_lv: ListView = view.findViewById<ListView>(R.id.transferlistview)
+        //(activity as AppCompatActivity).supportActionBar?.title = result_title
+        GlobalStuff.setActionBar(true, true, GetTitle())
+
+        val tvinfo: TextView = view.findViewById(R.id.tvInfoTransfer)
+        val transfer_lv: ListView = view.findViewById(R.id.transferlistview)
         val tabDirect = view.findViewById<LinearLayout>(R.id.TabDirect)
         val spin_layout = view.findViewById<FrameLayout>(R.id.spinner_transfer)
 
@@ -103,7 +110,8 @@ class TransferFragment : Fragment() {
                 spin_layout.isVisible = true
                 tabDirect.isEnabled = false
                 transfer_lv.isEnabled = false
-                (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
+                //(activity as AppCompatActivity?)!!.supportActionBar!!.hide()
+                GlobalStuff.setActionBar(true, false, GetTitle())
 
                 val permlist = SM.GetStringPermitt()
                 lifecycleScope.launch {
@@ -130,7 +138,8 @@ class TransferFragment : Fragment() {
 
                             tabDirect.isEnabled = true
                             transfer_lv.isEnabled = true
-                            (activity as AppCompatActivity?)!!.supportActionBar!!.show()
+                            //(activity as AppCompatActivity?)!!.supportActionBar!!.show()
+                            GlobalStuff.setActionBar(true, true, GetTitle())
                             spin_layout.isVisible = false
                             tvinfo.setText("Choose a city to get a list of transfer flights")
                             transferadapter = TransferResultAdapter(vView.context, tdet.tp, tdet.ndr)
@@ -176,7 +185,8 @@ class TransferFragment : Fragment() {
 
             spin_layout.isVisible = true
             tabDirect.isEnabled = false
-            (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
+            //(activity as AppCompatActivity?)!!.supportActionBar!!.hide()
+            GlobalStuff.setActionBar(true, false, GetTitle())
 
             tvinfo.setText("Searching for optimal stopovers...")
 
@@ -209,7 +219,8 @@ class TransferFragment : Fragment() {
                     if (tdet.tp.isNotEmpty()) {
 
                         tabDirect.isEnabled = true
-                        (activity as AppCompatActivity?)!!.supportActionBar!!.show()
+                        //(activity as AppCompatActivity?)!!.supportActionBar!!.show()
+                        GlobalStuff.setActionBar(true, true, GetTitle())
                         spin_layout.isVisible = false
                         tvinfo.setText("Choose a city to get a list of transfer flights")
                         transferadapter = TransferResultAdapter(vView.context, tdet.tp, tdet.ndr)

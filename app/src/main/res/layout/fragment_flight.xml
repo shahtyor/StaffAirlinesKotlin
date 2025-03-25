@@ -14,7 +14,7 @@
         android:layout_height="match_parent"
         android:layout_margin="0dp"
         android:orientation="vertical"
-        android:padding="20dp"
+        android:padding="10dp"
         app:flow_verticalAlign="top"
         tools:ignore="MissingConstraints"
         tools:layout_editor_absoluteX="0dp"
@@ -41,8 +41,9 @@
 
             <TextView
                 android:id="@+id/acname_one"
-                android:layout_width="210dp"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_weight="10"
                 android:layout_margin="0dp"
                 android:gravity="center_vertical"
                 android:padding="0dp"
@@ -50,53 +51,63 @@
                 android:textSize="18sp" />
 
             <LinearLayout
-                android:id="@+id/llOneBellCoins"
-                android:orientation="horizontal"
-                android:layout_gravity="center"
-                android:padding="0dp"
-                android:layout_margin="0dp"
+                android:orientation="vertical"
+                android:layout_weight="0"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent">
 
-                <ImageView
-                    android:id="@+id/ivOneCoins"
-                    android:src="@drawable/coins"
-                    android:minHeight="22dp"
-                    android:minWidth="20dp"
-                    android:scaleType="fitXY"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="2dp"
+                <LinearLayout
+                    android:id="@+id/llOneBellCoins"
+                    android:orientation="horizontal"
+                    android:layout_gravity="end"
+                    android:padding="0dp"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="match_parent">
 
-                <TextView
-                    android:id="@+id/tvOneCoins"
-                    android:text="0"
-                    android:textColor="@color/staff_blue"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:layout_marginEnd="10dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    <ImageView
+                        android:id="@+id/ivOneCoins"
+                        android:src="@drawable/coins"
+                        android:minHeight="22dp"
+                        android:minWidth="20dp"
+                        android:scaleType="fitXY"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="2dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
 
-                <ImageView
-                    android:src="@drawable/bell"
-                    android:minHeight="22dp"
-                    android:minWidth="20dp"
-                    android:scaleType="fitXY"
-                    android:layout_marginEnd="2dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    <TextView
+                        android:id="@+id/tvOneCoins"
+                        android:text="0"
+                        android:textColor="@color/staff_blue"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginEnd="10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
 
-                <TextView
-                    android:id="@+id/tvOneSubLost"
-                    android:text="5"
-                    android:textColor="@color/staff_blue"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:layout_height="wrap_content"
-                    android:layout_width="wrap_content" />
+                    <ImageView
+                        android:src="@drawable/bell"
+                        android:minHeight="22dp"
+                        android:minWidth="20dp"
+                        android:scaleType="fitXY"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginEnd="2dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
 
+                    <TextView
+                        android:id="@+id/tvOneSubLost"
+                        android:text="5"
+                        android:textColor="@color/staff_blue"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:layout_gravity="center_vertical"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content" />
+
+                </LinearLayout>
             </LinearLayout>
 
         </LinearLayout>
@@ -182,7 +193,8 @@
                 android:gravity="center"
                 android:textColor="@color/black"
                 android:textSize="16sp"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                tools:ignore="RtlCompat" />
 
         </LinearLayout>
 
@@ -245,7 +257,8 @@
                 android:gravity="center"
                 android:textColor="@color/black"
                 android:textSize="16sp"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                tools:ignore="RtlCompat" />
 
         </LinearLayout>
 
@@ -430,7 +443,7 @@
                 android:layout_height="45dp"
                 style="@style/NotTintedButton"
                 android:text="REQUEST"
-                android:textSize="20sp"
+                android:textSize="18sp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginStart="5dp"
                 android:layout_marginEnd="5dp"
@@ -447,8 +460,8 @@
                 android:layout_height="45dp"
                 style="@style/NotTintedButton"
                 android:text="SUBSCRIBE"
-                android:textSize="20sp"
-                android:layout_marginStart="20dp"
+                android:textSize="18sp"
+                android:layout_marginStart="10dp"
                 android:layout_marginEnd="5dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="10dp"
