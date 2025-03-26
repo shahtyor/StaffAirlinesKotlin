@@ -17,6 +17,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.adapty.Adapty
+import com.appsflyer.AppsFlyerLib
 import com.stukalov.staffairlines.pro.GlobalStuff
 import com.stukalov.staffairlines.pro.R
 import com.stukalov.staffairlines.pro.StaffMethods
@@ -123,6 +124,7 @@ class CredentialsFragment : Fragment() {
                         Init()
                     }
                 }
+                AppsFlyerLib.getInstance().setCustomerUserId(null)
             }
         }
 

@@ -10,6 +10,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -30,6 +31,7 @@ import com.adapty.utils.AdaptyResult
 import com.adapty.utils.ImmutableMap
 import com.amplitude.android.Amplitude
 import com.amplitude.android.Configuration
+import com.appsflyer.AppsFlyerLib
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -83,8 +85,25 @@ class MainActivity : AppCompatActivity() {
 
         GlobalStuff.Pax = 1
 
-        GlobalStuff.prefs = getSharedPreferences("settings", Context.MODE_PRIVATE)
+        /*if (GlobalStuff.prefs == null) {
+            GlobalStuff.prefs = getSharedPreferences("settings", Context.MODE_PRIVATE)
+        }*/
+
         SM.GetCustomerID()
+
+        val amplitude = Amplitude(
+            Configuration(
+                apiKey = getString(R.string.amplitude_api_key),
+                context = applicationContext,
+                flushIntervalMillis = 10000,
+                flushQueueSize = 5,
+            )
+        )
+
+        AppsFlyerLib.getInstance().init(getString(R.string.appsFlyerDevKey), ConversionLietener(), this)
+        AppsFlyerLib.getInstance().waitForCustomerUserId(true)
+        AppsFlyerLib.getInstance().start(this)
+        Log.d("AppsFlyerLib", "Start")
 
         Adapty.activate(
             applicationContext,
@@ -96,7 +115,15 @@ class MainActivity : AppCompatActivity() {
                 .build()
         )
 
-        AdaptyGetProdile()
+        if (GlobalStuff.customerID != null)
+        {
+            amplitude.setUserId(GlobalStuff.customerID)
+            //AppsFlyerLib.getInstance().setCustomerUserId(GlobalStuff.customerID)
+            AppsFlyerLib.getInstance().setCustomerIdAndLogSession(GlobalStuff.customerID, this)
+            Log.d("AppsFlyerLib", "setCustomerUserId")
+        }
+
+        AdaptyGetProfile()
 
         Adapty.setOnProfileUpdatedListener{ profile ->
             GlobalStuff.AdaptyProfileID = profile.profileId
@@ -119,15 +146,6 @@ class MainActivity : AppCompatActivity() {
                 GlobalStuff.HF!!.SetPlan()
             }
         }
-
-        val amplitude = Amplitude(
-            Configuration(
-                apiKey = getString(R.string.amplitude_api_key),
-                context = applicationContext,
-                flushIntervalMillis = 10000,
-                flushQueueSize = 5,
-            )
-        )
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -210,7 +228,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun AdaptyGetProdile()
+    fun AdaptyGetProfile()
     {
         Adapty.getProfile { result ->
             when (result) {
@@ -409,6 +427,7 @@ class MainActivity : AppCompatActivity() {
                 GlobalStuff.customerEmail = acct.email
                 GlobalStuff.customerFirstName = acct.givenName
                 GlobalStuff.customerLastName = acct.familyName
+                AppsFlyerLib.getInstance().setCustomerUserId(cMD5)
 
                 SM.SaveCustomerID()
 
@@ -441,7 +460,7 @@ class MainActivity : AppCompatActivity() {
                             }
                         }
 
-                        AdaptyGetProdile()
+                        AdaptyGetProfile()
                         GlobalStuff.CF?.Init()
                     }
                 }

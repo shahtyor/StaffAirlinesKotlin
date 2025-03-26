@@ -22,3 +22,7 @@
 
 
 -keep class com.adapty.** { *; }
+-keep class com.appsflyer.** { *; }
+-keep class kotlin.jvm.internal.** { *; }
+-keep class com.stukalov.staffairlines.pro.** { *; }
+-keepattributes *Annotation*

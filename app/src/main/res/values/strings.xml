@@ -30,6 +30,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="web_client_id">661840568265-pechqshf9aos58s0q2kl0irseuvud7j3.apps.googleusercontent.com</string>
     <string name="amplitude_api_key">95be547554caecf51c57c691bafb2640</string>
+    <string name="appsFlyerDevKey">d73NjGErPuCmWqPsko5mGV</string>
     <string name="cred_long_string">If you want to become an agent, post flight load data and get your own benefits, go to the <a href="https://t.me/DevStaffCommunityBot?start=123">telegram bot</a>. More about agents read <a href="https://staffairlines.com/flightclub">here</a>.</string>
 
 </resources>
