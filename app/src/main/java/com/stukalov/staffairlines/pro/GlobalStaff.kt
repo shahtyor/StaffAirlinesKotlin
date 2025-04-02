@@ -6,26 +6,31 @@ import android.content.SharedPreferences
 import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.util.Log
 import android.widget.TextView
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
+import com.adapty.Adapty
 import com.adapty.errors.AdaptyError
 import com.adapty.models.AdaptyPaywallProduct
+import com.adapty.models.AdaptyProfileParameters
 import com.adapty.ui.AdaptyUI
 import com.amplitude.android.Amplitude
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.onesignal.OneSignal
 import com.stukalov.staffairlines.pro.databinding.ActivityMainBinding
 import com.stukalov.staffairlines.pro.ui.home.HomeFragment
 import com.stukalov.staffairlines.pro.ui.setting.CredentialsFragment
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 
     @SuppressLint("StaticFieldLeak")
     object GlobalStuff {
         var density: Float = 1.0F
         lateinit var navController: NavController
-        //var navView: BottomNavigationView? = null
         lateinit var Locations: List<Location>
         var actionBar: ActionBar? = null
         var Airlines: List<Airline0> = listOf()
@@ -36,6 +41,8 @@ import java.time.LocalDate
         var HF: HomeFragment? = null
         var CF: CredentialsFragment? = null
         var Token: String? = null
+        var FirstLaunch: Boolean = true
+        var HomeFromSelect: Boolean = false
         var Remain: Int = 5
 
         lateinit var activity: Context
@@ -104,5 +111,36 @@ import java.time.LocalDate
                 actionBar?.elevation = 0f
             }
         }
+
+        fun SaveOneSignalToAdapty()
+        {
+            if (FirstLaunch) {
+                amplitude?.track("First launch")
+
+                CoroutineScope(Dispatchers.IO).launch {
+                    val accepted = OneSignal.Notifications.requestPermission(true)
+
+                    if (accepted)
+                    {
+                        val id = OneSignal.User.pushSubscription.id
+                        val builder = AdaptyProfileParameters.Builder().withCustomAttribute("oneSignalSubscriptionId", id)
+                        Adapty.updateProfile(builder.build()) { error ->
+                            if (error != null) {
+                                Log.d("Adapty.updateProfile", error.toString())
+                            }
+                        }
+                    }
+                }
+
+            } else {
+                val id = OneSignal.User.pushSubscription.id
+                val builder = AdaptyProfileParameters.Builder().withCustomAttribute("oneSignalSubscriptionId", id)
+
+                Adapty.updateProfile(builder.build()) { error ->
+                    if (error != null) {
+                        Log.d("Adapty.updateProfile", error.toString())
+                    }
+                }
+            }
+        }
     }
-//}

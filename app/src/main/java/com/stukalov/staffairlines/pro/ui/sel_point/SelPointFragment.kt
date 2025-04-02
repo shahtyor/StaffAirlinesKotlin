@@ -123,6 +123,7 @@ class SelPointFragment : Fragment() {
                     GlobalStuff.DestinationPoint = SelectedPoint(point.Id, point.NameWithCountry, point.Code, PointMode, point.Name_country)
                 }
 
+                GlobalStuff.HomeFromSelect = true
                 GlobalStuff.navController.navigateUp()
              }
         }

@@ -70,7 +70,6 @@ class TransferFragment : Fragment() {
 
         val tvinfo: TextView = view.findViewById(R.id.tvInfoTransfer)
         val transfer_lv: ListView = view.findViewById(R.id.transferlistview)
-        val tabDirect = view.findViewById<LinearLayout>(R.id.TabDirect)
         val spin_layout = view.findViewById<FrameLayout>(R.id.spinner_transfer)
 
         var tdet = GetTransferDetails()
@@ -108,7 +107,6 @@ class TransferFragment : Fragment() {
             {
                 //запрос
                 spin_layout.isVisible = true
-                tabDirect.isEnabled = false
                 transfer_lv.isEnabled = false
                 //(activity as AppCompatActivity?)!!.supportActionBar!!.hide()
                 GlobalStuff.setActionBar(true, false, GetTitle())
@@ -136,7 +134,6 @@ class TransferFragment : Fragment() {
                         tdet = GetTransferDetails()
                         if (tdet.tp.isNotEmpty()) {
 
-                            tabDirect.isEnabled = true
                             transfer_lv.isEnabled = true
                             //(activity as AppCompatActivity?)!!.supportActionBar!!.show()
                             GlobalStuff.setActionBar(true, true, GetTitle())
@@ -166,9 +163,9 @@ class TransferFragment : Fragment() {
             }
         }
 
-        tabDirect.setOnClickListener { view ->
+        /*tabDirect.setOnClickListener { view ->
             GlobalStuff.navController.navigate(R.id.resultlayout, Bundle())
-        }
+        }*/
     }
 
     override fun onResume() {
@@ -181,10 +178,8 @@ class TransferFragment : Fragment() {
             val transfer_lv: ListView = vView.findViewById<ListView>(R.id.transferlistview)
             val tvinfo: TextView = vView.findViewById(R.id.tvInfoTransfer)
             val spin_layout = vView.findViewById<FrameLayout>(R.id.spinner_transfer)
-            val tabDirect = vView.findViewById<LinearLayout>(R.id.TabDirect)
 
             spin_layout.isVisible = true
-            tabDirect.isEnabled = false
             //(activity as AppCompatActivity?)!!.supportActionBar!!.hide()
             GlobalStuff.setActionBar(true, false, GetTitle())
 
@@ -218,7 +213,6 @@ class TransferFragment : Fragment() {
 
                     if (tdet.tp.isNotEmpty()) {
 
-                        tabDirect.isEnabled = true
                         //(activity as AppCompatActivity?)!!.supportActionBar!!.show()
                         GlobalStuff.setActionBar(true, true, GetTitle())
                         spin_layout.isVisible = false

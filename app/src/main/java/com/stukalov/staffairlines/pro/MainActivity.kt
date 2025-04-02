@@ -1,7 +1,6 @@
 package com.stukalov.staffairlines.pro
 
 import android.Manifest.permission.POST_NOTIFICATIONS
-import android.app.Notification
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -18,9 +17,6 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.NavigationUI
-import androidx.navigation.ui.setupWithNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.adapty.Adapty
 import com.adapty.models.AdaptyConfig
@@ -38,12 +34,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.messaging.FirebaseMessaging
+import com.onesignal.OneSignal
 import com.stukalov.staffairlines.pro.databinding.ActivityMainBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -120,6 +115,7 @@ class MainActivity : AppCompatActivity() {
             amplitude.setUserId(GlobalStuff.customerID)
             //AppsFlyerLib.getInstance().setCustomerUserId(GlobalStuff.customerID)
             AppsFlyerLib.getInstance().setCustomerIdAndLogSession(GlobalStuff.customerID, this)
+            OneSignal.login(GlobalStuff.customerID!!)
             Log.d("AppsFlyerLib", "setCustomerUserId")
         }
 
@@ -241,11 +237,13 @@ class MainActivity : AppCompatActivity() {
                     {
                         GlobalStuff.premiumAccess = true
                         GlobalStuff.subscriptionId = premium.vendorProductId
+                        OneSignal.User.addTag("active_subscription", "true")
                     }
                     else
                     {
-                        GlobalStuff.premiumAccess = false;
-                        GlobalStuff.subscriptionId = null;
+                        GlobalStuff.premiumAccess = false
+                        GlobalStuff.subscriptionId = null
+                        OneSignal.User.addTag("active_subscription", "false")
                     }
 
                     BuildProfileToken(profile.customAttributes, premium)
@@ -430,6 +428,8 @@ class MainActivity : AppCompatActivity() {
                 AppsFlyerLib.getInstance().setCustomerUserId(cMD5)
 
                 SM.SaveCustomerID()
+                OneSignal.login(cMD5)
+                GlobalStuff.SaveOneSignalToAdapty()
 
                 if (!GlobalStuff.Token.isNullOrEmpty()) {
                     lifecycleScope.launch {

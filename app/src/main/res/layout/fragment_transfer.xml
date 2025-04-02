@@ -17,60 +17,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
-            android:baselineAligned="false"
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginTop="10dp"
-            tools:ignore="MissingConstraints">
-
-            <LinearLayout
-                android:id="@+id/TabDirect"
-                android:orientation="vertical"
-                android:layout_weight="1"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                tools:ignore="UseCompoundDrawables">
-
-                <TextView
-                    android:text="DIRECT FLIGHTS"
-                    android:textAlignment="center"
-                    android:gravity="center"
-                    android:textSize="16sp"
-                    android:textColor="@color/black"
-                    android:layout_width="match_parent"
-                    android:layout_height="37dp" />
-                <ImageView
-                    android:background="@color/white"
-                    android:layout_width="match_parent"
-                    android:layout_height="3dp" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                tools:ignore="UseCompoundDrawables">
-
-                <TextView
-                    android:text="TRANSFERS"
-                    android:textAlignment="center"
-                    android:gravity="center"
-                    android:textSize="16sp"
-                    android:textColor="@color/black"
-                    android:layout_width="match_parent"
-                    android:layout_height="37dp" />
-                <ImageView
-                    android:background="@color/staff_blue"
-                    android:layout_width="match_parent"
-                    android:layout_height="3dp" />
-            </LinearLayout>
-
-        </LinearLayout>
-
         <TextView
             android:id="@+id/tvInfoTransfer"
             android:text="Searching for optimal stopovers..."

@@ -31,6 +31,12 @@
                 tools:layout="@layout/fragment_profileset" />
 
             <fragment
+                android:id="@+id/navigation_resulttrans"
+                android:name="com.stukalov.staffairlines.pro.ui.result.ResultTransFragment"
+                android:label=""
+                tools:layout="@layout/fragment_resulttrans" />
+
+            <fragment
                 android:id="@+id/sel_point"
                 android:name="com.stukalov.staffairlines.pro.ui.sel_point.SelPointFragment"
                 android:label="Select point"

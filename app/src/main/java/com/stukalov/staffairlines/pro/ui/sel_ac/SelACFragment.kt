@@ -13,6 +13,7 @@ import android.widget.EditText
 import android.widget.ListView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.onesignal.OneSignal
 import com.stukalov.staffairlines.pro.Airline0
 import com.stukalov.staffairlines.pro.GlobalStuff
 import com.stukalov.staffairlines.pro.R
@@ -157,6 +158,8 @@ class SelACFragment : Fragment() {
 
         GlobalStuff.OwnAC = ac
         SM.SaveOwnAC()
+
+        OneSignal.InAppMessages.addTrigger("os_ownAC", ac.Code)
 
         lifecycleScope.launch {
             val jsonperm = withContext(Dispatchers.IO) { SM.GetPermittedAC(GlobalStuff.OwnAC!!.Code) }

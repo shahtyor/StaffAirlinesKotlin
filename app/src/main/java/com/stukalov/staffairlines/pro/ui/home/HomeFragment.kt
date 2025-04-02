@@ -20,6 +20,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.onesignal.OneSignal
 import com.stukalov.staffairlines.pro.GetNonDirectType
 import com.stukalov.staffairlines.pro.GlobalStuff
 import com.stukalov.staffairlines.pro.HistoryElement
@@ -332,9 +333,32 @@ class HomeFragment : Fragment() {
 
         GlobalStuff.setActionBar(false, true, "")
 
+        OneSignal.InAppMessages.addTrigger("os_open_screen", "formSearch")
+
         if (GlobalStuff.OwnAC == null)
         {
+            if (!GlobalStuff.HomeFromSelect) {
+                GlobalStuff.FirstLaunch = true
+                GlobalStuff.SaveOneSignalToAdapty()
+                GlobalStuff.HomeFromSelect = false
+            }
+
             GlobalStuff.navController.navigate(R.id.carousel_frag, Bundle())
+        }
+        else
+        {
+            if (!GlobalStuff.HomeFromSelect) {
+                GlobalStuff.FirstLaunch = false
+                GlobalStuff.SaveOneSignalToAdapty()
+                GlobalStuff.HomeFromSelect = false
+            }
+
+            OneSignal.InAppMessages.addTrigger("os_ownAC", GlobalStuff.OwnAC!!.Code)
+            if (GlobalStuff.Permitted.isEmpty()) {
+                OneSignal.InAppMessages.addTrigger("os_presetAC", "notExists")
+            } else {
+                OneSignal.InAppMessages.addTrigger("os_presetAC", "exists")
+            }
         }
     }
 
@@ -562,7 +586,7 @@ class HomeFragment : Fragment() {
                     if (result == "OK" && GlobalStuff.ExtResult != null) {
                         GlobalStuff.ResType = ResultType.Direct
                         GlobalStuff.BackResType = null
-                        GlobalStuff.navController.navigate(R.id.resultlayout, Bundle())
+                        GlobalStuff.navController.navigate(R.id.navigation_resulttrans, Bundle())
                     } else {
                         SetDisable(true)
                         spin_layout.isVisible = false

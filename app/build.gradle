@@ -120,4 +120,5 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     implementation 'com.amplitude:analytics-android:1.20.3'
     implementation 'com.appsflyer:af-android-sdk:6.12.1'
+    implementation 'com.onesignal:OneSignal:[5.0.0, 5.1.99]'
 }

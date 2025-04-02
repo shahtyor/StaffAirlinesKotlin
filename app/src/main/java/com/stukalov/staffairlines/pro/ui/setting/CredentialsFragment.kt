@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.adapty.Adapty
 import com.appsflyer.AppsFlyerLib
+import com.onesignal.OneSignal
 import com.stukalov.staffairlines.pro.GlobalStuff
 import com.stukalov.staffairlines.pro.R
 import com.stukalov.staffairlines.pro.StaffMethods
@@ -125,6 +126,8 @@ class CredentialsFragment : Fragment() {
                     }
                 }
                 AppsFlyerLib.getInstance().setCustomerUserId(null)
+                OneSignal.logout()
+                GlobalStuff.SaveOneSignalToAdapty()
             }
         }
 

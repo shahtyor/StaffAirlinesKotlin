@@ -9,236 +9,282 @@
     style="@style/StaffNoActionBar"
     tools:context=".ui.home.HomeFragment">
 
+    <!--1-->
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="top"
-        android:orientation="vertical"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="16dp">
+        android:orientation="vertical">
 
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:layout_gravity="top"
-            android:layout_marginLeft="80dp"
-            android:layout_marginRight="80dp"
-            android:src="@drawable/sa"
-            tools:ignore="ContentDescription" />
-
+        <!--2-->
         <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:layout_marginTop="40dp"
-            android:orientation="horizontal">
+            android:layout_weight="2"
+            android:layout_height="0dp">
 
-            <TextView
-                android:id="@+id/datepicktv"
-                android:layout_width="wrap_content"
+            <ImageView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="30dp"
-                android:layout_marginTop="7dp"
-                android:layout_weight="9.0"
-                android:minWidth="300dp"
-                android:onClick="datepicktv_click"
-                android:textColor="@color/black"
-                android:textSize="15sp" />
-
-            <ImageButton
-                android:id="@+id/datebutton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="20dp"
-                android:layout_weight="1.0"
-                android:background="@color/white"
-                android:minWidth="30dp"
-                android:minHeight="30dp"
-                android:onClick="datebutton_click"
-                android:scaleType="fitCenter"
-                android:src="@drawable/cal"
+                android:layout_marginStart="80dp"
+                android:layout_marginEnd="80dp"
+                android:src="@drawable/sa"
                 tools:ignore="ContentDescription" />
-
         </LinearLayout>
+        <!--2-->
 
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:layout_marginTop="5dp"
-            android:background="@color/lightgray"
-            tools:ignore="ContentDescription" />
-
+        <!--2-->
         <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:orientation="horizontal">
+            android:layout_weight="11"
+            android:layout_height="0dp">
 
+            <!--3-->
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="9.0"
-                android:orientation="vertical"
-                tools:ignore="InefficientWeight">
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_marginTop="30dp"
+                android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/origin"
+                    android:id="@+id/datepicktv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="30dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginEnd="20dp"
-                    android:minHeight="20dp"
-                    android:onClick="origin_click"
-                    android:text="@string/label_origin_cuty"
-                    android:textColor="@color/text_gray"
+                    android:layout_marginTop="7dp"
+                    android:layout_weight="9.0"
+                    android:minWidth="300dp"
+                    android:onClick="datepicktv_click"
+                    android:textColor="@color/black"
                     android:textSize="15sp" />
 
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="5dp"
-                    android:background="@color/lightgray"
+                <ImageButton
+                    android:id="@+id/datebutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="20dp"
+                    android:layout_weight="1.0"
+                    android:background="@color/white"
+                    android:minWidth="30dp"
+                    android:minHeight="30dp"
+                    android:onClick="datebutton_click"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/cal"
+                    tools:ignore="ContentDescription" />
+
+            </LinearLayout>
+            <!--3-->
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginTop="5dp"
+                android:background="@color/lightgray"
+                tools:ignore="ContentDescription" />
+
+            <!--3-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <!--4-->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="8"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    tools:ignore="InefficientWeight">
+
+                    <TextView
+                        android:id="@+id/origin"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="30dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="20dp"
+                        android:minHeight="20dp"
+                        android:onClick="origin_click"
+                        android:text="@string/label_origin_cuty"
+                        android:textColor="@color/text_gray"
+                        android:textSize="15sp" />
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="5dp"
+                        android:background="@color/lightgray"
+                        tools:ignore="ContentDescription" />
+
+                    <TextView
+                        android:id="@+id/destination"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="30dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginEnd="20dp"
+                        android:minHeight="20dp"
+                        android:onClick="destination_click"
+                        android:text="@string/label_destination_city"
+                        android:textColor="@color/text_gray"
+                        android:textSize="15sp" />
+
+                </LinearLayout>
+                <!--4-->
+
+                <ImageButton
+                    android:id="@+id/btReplace"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="@color/white"
+                    android:minWidth="30dp"
+                    android:minHeight="30dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/arr"
+                    tools:ignore="ContentDescription" />
+
+            </LinearLayout>
+            <!--3-->
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="5dp"
+                android:background="@color/lightgray"
+                tools:ignore="ContentDescription" />
+
+            <!--3-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginEnd="40dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/label_passengers"
+                    android:textColor="@color/black"
+                    android:textSize="15sp" />
+
+                <ImageButton
+                    android:id="@+id/minusbut"
+                    style="@style/NotTintedButton"
+                    android:layout_width="50dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/minus_button_off"
+                    android:src="@drawable/minus_blue"
                     tools:ignore="ContentDescription" />
 
                 <TextView
-                    android:id="@+id/destination"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="30dp"
-                    android:layout_marginTop="30dp"
-                    android:layout_marginEnd="20dp"
-                    android:minHeight="20dp"
-                    android:onClick="destination_click"
-                    android:text="@string/label_destination_city"
-                    android:textColor="@color/text_gray"
-                    android:textSize="15sp" />
+                    android:id="@+id/cntpass"
+                    android:layout_width="50dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/border_top_bottom"
+                    android:layout_gravity="top"
+                    android:text="1"
+                    android:gravity="center"
+                    android:textColor="@color/black"
+                    android:textSize="20sp" />
+
+                <ImageButton
+                    android:id="@+id/plusbut"
+                    android:layout_width="50dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/plus_button_on"
+                    android:src="@drawable/plus_white"
+                    tools:ignore="ContentDescription" />
 
             </LinearLayout>
-
-            <ImageButton
-                android:id="@+id/btReplace"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_gravity="center"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="20dp"
-                android:background="@color/white"
-                android:minWidth="30dp"
-                android:minHeight="30dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/arr"
-                tools:ignore="ContentDescription" />
+            <!--3-->
 
         </LinearLayout>
+        <!--2-->
 
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="5dp"
-            android:background="@color/lightgray"
-            tools:ignore="ContentDescription" />
-
+        <!--2-->
         <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:orientation="horizontal">
+            android:layout_weight="7"
+            android:layout_height="0dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginStart="30dp"
-                android:layout_marginEnd="40dp"
-                android:gravity="center_vertical"
-                android:text="@string/label_passengers"
-                android:textColor="@color/black"
-                android:textSize="15sp" />
-
-            <ImageButton
-                android:id="@+id/minusbut"
-                style="@style/NotTintedButton"
-                android:layout_width="50dp"
-                android:layout_height="40dp"
-                android:background="@drawable/minus_button_off"
-                android:src="@drawable/minus_blue"
-                tools:ignore="ContentDescription" />
-
-            <TextView
-                android:id="@+id/cntpass"
-                android:layout_width="50dp"
-                android:layout_height="40dp"
-                android:background="@drawable/border_top_bottom"
+            <!--3-->
+            <LinearLayout
+                android:orientation="vertical"
                 android:layout_gravity="top"
-                android:text="1"
-                android:gravity="center_vertical | center_horizontal"
-                android:textColor="@color/black"
-                android:textSize="20sp" />
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-            <ImageButton
-                android:id="@+id/plusbut"
-                android:layout_width="50dp"
-                android:layout_height="40dp"
-                android:background="@drawable/plus_button_on"
-                android:src="@drawable/plus_white"
-                tools:ignore="ContentDescription" />
+                <Button
+                    android:id="@+id/btSearch"
+                    style="@style/NotTintedButton"
+                    android:layout_width="300dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/search_button_off"
+                    android:outlineSpotShadowColor="@color/white"
+                    android:shadowColor="@color/white"
+                    android:text="@string/label_search"
+                    android:textColor="@color/staff_blue"
+                    android:textSize="20sp" />
 
+                <TextView
+                    android:id="@+id/tvHomeSearchCurrent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Search for flights on the current date only"
+                    android:textAlignment="center" />
+
+                <!--4-->
+                <LinearLayout
+                    android:id="@+id/llHomeTryPremium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:orientation="horizontal"
+                    android:padding="0dp">
+
+                    <TextView
+                        android:id="@+id/tvHomeTryPremium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Try premium"
+                        android:textColor="@color/staff_blue"
+                        android:textSize="16sp" />
+
+                    <ImageView
+                        android:layout_width="15dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="top"
+                        android:layout_marginStart="10dp"
+                        android:scaleType="fitXY"
+                        android:paddingBottom="4dp"
+                        android:src="@drawable/prem" />
+
+                </LinearLayout>
+            <!--4-->
+
+            </LinearLayout>
+            <!--3-->
         </LinearLayout>
+        <!--2-->
 
-        <Button
-            android:id="@+id/btSearch"
-            style="@style/NotTintedButton"
-            android:layout_width="300dp"
-            android:layout_height="50dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="50dp"
-            android:background="@drawable/search_button_off"
-            android:outlineSpotShadowColor="@color/white"
-            android:shadowColor="@color/white"
-            android:text="@string/label_search"
-            android:textColor="@color/staff_blue"
-            android:textSize="20sp" />
-
-        <TextView
-            android:id="@+id/tvHomeSearchCurrent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="Search for flights on the current date only"
-            android:textAlignment="center" />
-
-        <LinearLayout
-            android:id="@+id/llHomeTryPremium"
-            android:layout_width="wrap_content"
-            android:layout_height="25dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="20dp"
-            android:orientation="horizontal"
-            android:padding="0dp">
-
-            <TextView
-                android:id="@+id/tvHomeTryPremium"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Try premium"
-                android:textColor="@color/staff_blue"
-                android:textSize="16sp" />
-
-            <ImageView
-                android:layout_width="15dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="10dp"
-                android:scaleType="fitXY"
-                android:paddingBottom="4dp"
-                android:src="@drawable/prem" />
-
-        </LinearLayout>
-
+        <!--2-->
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:layout_marginStart="30dp"
             android:layout_marginEnd="30dp"
             android:layout_marginBottom="20dp">
@@ -252,6 +298,7 @@
                 android:textColor="@color/black"
                 android:textSize="16sp" />
 
+            <!--3-->
             <LinearLayout
                 android:id="@+id/llPremiumPlan"
                 android:layout_gravity="bottom"
@@ -277,12 +324,15 @@
                     android:layout_height="wrap_content" />
 
             </LinearLayout>
+            <!--3-->
 
+            <!--3-->
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
+                <!--4-->
                 <LinearLayout
                     android:id="@+id/llHomeInvite"
                     android:orientation="horizontal"
@@ -309,48 +359,58 @@
                         />
 
                 </LinearLayout>
+                <!--4-->
+
             </LinearLayout>
+            <!--3-->
 
         </LinearLayout>
+        <!--2-->
 
         <TextView
             android:id="@+id/lbOriginId"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:layout_height="0dp"
             android:visibility="invisible" />
 
         <TextView
             android:id="@+id/lbDestinationId"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:layout_height="0dp"
             android:visibility="invisible" />
 
         <TextView
             android:id="@+id/lbOriginCode"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:layout_height="0dp"
             android:visibility="invisible" />
 
         <TextView
             android:id="@+id/lbDestinationCode"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:layout_height="0dp"
             android:visibility="invisible" />
 
         <TextView
             android:id="@+id/lbOriginCountry"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:layout_height="0dp"
             android:visibility="invisible" />
 
         <TextView
             android:id="@+id/lbDestinationCountry"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:layout_height="0dp"
             android:visibility="invisible" />
 
     </LinearLayout>
-
+    <!--1-->
 
     <FrameLayout
         android:id="@+id/spinner_home"

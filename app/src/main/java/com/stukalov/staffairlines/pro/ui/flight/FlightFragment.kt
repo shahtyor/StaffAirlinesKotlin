@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import android.os.Bundle
 import android.text.Html
 import android.text.method.LinkMovementMethod
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -26,6 +27,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.view.marginStart
 import androidx.lifecycle.lifecycleScope
+import com.adapty.Adapty
+import com.adapty.models.AdaptyProfileParameters
+import com.onesignal.OneSignal
 import com.stukalov.staffairlines.pro.Airline0
 import com.stukalov.staffairlines.pro.FlightWithPax
 import com.stukalov.staffairlines.pro.GetNonDirectType
@@ -36,7 +40,9 @@ import com.stukalov.staffairlines.pro.RType
 import com.stukalov.staffairlines.pro.ResultType
 import com.stukalov.staffairlines.pro.StaffMethods
 import com.stukalov.staffairlines.pro.ui.paywall.AdaptyController
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
@@ -80,6 +86,7 @@ class FlightFragment : Fragment() {
     lateinit var llOneAgentInfo: LinearLayout
     lateinit var tvOneAgentInfo: TextView
     lateinit var llSeatsInfo: LinearLayout
+    var acceptedValue: Boolean? = null
 
     val SM: StaffMethods = StaffMethods()
     val AdControl: AdaptyController = AdaptyController()
@@ -339,6 +346,25 @@ class FlightFragment : Fragment() {
         else {
             ofav.setImageResource(R.drawable.favoff)
         }
+
+        lifecycleScope.launch {
+            val accepted = withContext(Dispatchers.IO) {
+                OneSignal.Notifications.requestPermission(true)
+            }
+
+            if (accepted)
+            {
+                val id = OneSignal.User.pushSubscription.id
+                val builder = AdaptyProfileParameters.Builder().withCustomAttribute("oneSignalSubscriptionId", id)
+                Adapty.updateProfile(builder.build()) { error ->
+                    if (error != null) {
+                        Log.d("Adapty.updateProfile", error.toString())
+                    }
+                }
+            }
+
+            acceptedValue = accepted
+        }
     }
 
     fun SetPlan()
@@ -426,6 +452,7 @@ class FlightFragment : Fragment() {
     }
 
     fun Subscribe_Click(view: View) {
+
         if (!GlobalStuff.premiumAccess)  // показываем пэйвол
         {
             val spin_layout = view.findViewById<FrameLayout>(R.id.spinner_flight)
@@ -441,7 +468,7 @@ class FlightFragment : Fragment() {
                 .setNegativeButton("OK") { dial, id -> dial.cancel() }
                 .show()
         }
-        else {
+        else if (acceptedValue!!) {
             AlertDialog.Builder(view.context)
                 .setTitle("")
                 .setMessage("Do you want to subscribe to this flight?")
@@ -449,6 +476,11 @@ class FlightFragment : Fragment() {
                 .setNegativeButton("NO") { dialog, id -> dialog.cancel() }
                 .show()
         }
+    }
+
+    fun TestOneSignalPush()
+    {
+        var accepted = false
     }
 
     fun Request_Click(view: View)

@@ -4,6 +4,7 @@ import androidx.lifecycle.lifecycleScope
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
+import com.onesignal.OneSignal
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -305,7 +306,7 @@ class StaffMethods {
         val gson = Gson()
         try {
             LocData = gson.fromJson(Json, Array<Location>::class.java)
-            StaffApp.Locations = LocData.toList()
+            //StaffApp.Locations = LocData.toList()
 
             GlobalStuff.Locations = LocData.toList()
         }
@@ -365,6 +366,12 @@ class StaffMethods {
             }
 
             GlobalStuff.Permitted = tmp.toList()
+
+            if (GlobalStuff.Permitted.isEmpty()) {
+                OneSignal.InAppMessages.addTrigger("os_presetAC", "notExists")
+            } else {
+                OneSignal.InAppMessages.addTrigger("os_presetAC", "exists")
+            }
 
             SavePermitted()
         }

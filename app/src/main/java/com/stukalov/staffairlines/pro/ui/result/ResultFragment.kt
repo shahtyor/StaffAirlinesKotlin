@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import com.onesignal.OneSignal
 import com.stukalov.staffairlines.pro.DirectResultAdapter
 import com.stukalov.staffairlines.pro.Flight
 import com.stukalov.staffairlines.pro.GlobalStuff
@@ -64,8 +65,6 @@ class ResultFragment : Fragment() {
         GlobalStuff.setActionBar(true, true, result_title)
 
         val direct_lv: ListView = view.findViewById<ListView>(R.id.directlistview)
-        val tabTransfers = view.findViewById<LinearLayout>(R.id.TabTransfers)
-        val llResTab = view.findViewById<LinearLayout>(R.id.ResultsTab)
         val tvResInfo = view.findViewById<TextView>(R.id.tvResultInfo)
         val llFirstSegment = view.findViewById<LinearLayout>(R.id.llFirstSegment)
         val llFirstLayout = view.findViewById<LinearLayout>(R.id.llFirstLayout)
@@ -83,29 +82,29 @@ class ResultFragment : Fragment() {
 
         if (GlobalStuff.ResType == ResultType.Direct) {
             GlobalStuff.BackResType = null
-            llResTab.visibility = View.VISIBLE
             tvResInfo.visibility = View.GONE
             llFirstSegment.visibility = View.GONE
             btFinalNew.visibility = View.GONE
             llWaitInfoFinal.visibility = View.GONE
 
-            llResForListview.layoutParams.height = 1600
-            llResForListview.requestLayout()
+            //llResForListview.layoutParams.height = 1600
+            //llResForListview.requestLayout()
 
             resultadapter = DirectResultAdapter(view.context, GlobalStuff.ExtResult!!.DirectRes)
         }
         else if (GlobalStuff.ResType == ResultType.First) {
             GlobalStuff.BackResType = ResultType.First
-            llResTab.visibility = View.GONE
             tvResInfo.visibility = View.VISIBLE
-            llFirstSegment.visibility = View.GONE
+            llFirstSegment.visibility = View.VISIBLE
+
             btFinalNew.visibility = View.GONE
             llWaitInfoFinal.visibility = View.GONE
-            val infotxt = "Choose a FIRST FLIGHT " + GlobalStuff.OriginPoint!!.Code + "-" + GlobalStuff.ChangePoint
-            tvResInfo.setText(infotxt)
+            //val infotxt = "Choose a FIRST FLIGHT " + GlobalStuff.OriginPoint!!.Code + "-" + GlobalStuff.ChangePoint
+            //tvResInfo.setText(infotxt)
 
-            llResForListview.layoutParams.height = 1600
-            llResForListview.requestLayout()
+            //llResForListview.layoutParams.height = 1600
+            //llResForListview.requestLayout()
+            InitFirstSegment(view)
 
             var ListRes: List<Flight> = listOf()
             var NonRes: NonDirectResult? = null
@@ -123,7 +122,6 @@ class ResultFragment : Fragment() {
         else if (GlobalStuff.ResType == ResultType.Second)
         {
             GlobalStuff.BackResType = ResultType.First
-            llResTab.visibility = View.GONE
             tvResInfo.visibility = View.VISIBLE
             btFinalNew.visibility = View.GONE
             llWaitInfoFinal.visibility = View.GONE
@@ -131,8 +129,8 @@ class ResultFragment : Fragment() {
             tvResInfo.setText(infotxt)
 
             llFirstSegment.visibility = View.VISIBLE
-            llResForListview.layoutParams.height = 1300
-            llResForListview.requestLayout()
+            //llResForListview.layoutParams.height = 1300
+            //llResForListview.requestLayout()
 
             llFirstLayout.setBackgroundColor(ContextCompat.getColor(GlobalStuff.activity, R.color.lightgray))
             InitFirstSegment(view)
@@ -155,14 +153,13 @@ class ResultFragment : Fragment() {
         else if (GlobalStuff.ResType == ResultType.Final)
         {
             GlobalStuff.BackResType = ResultType.Second
-            llResTab.visibility = View.GONE
             tvResInfo.visibility = View.VISIBLE
             btFinalNew.visibility = View.VISIBLE
             llWaitInfoFinal.visibility = View.VISIBLE
             tvResInfo.visibility = View.GONE
 
-            llResForListview.layoutParams.height = 500
-            llResForListview.requestLayout()
+            //llResForListview.layoutParams.height = 500
+            //llResForListview.requestLayout()
 
             var waittext = ""
             if (GlobalStuff.FirstSegment != null && GlobalStuff.SecondSegment != null) {
@@ -201,7 +198,7 @@ class ResultFragment : Fragment() {
             GlobalStuff.navController.navigate(R.id.result_one, bundle)
         }
 
-        tabTransfers.setOnClickListener { view ->
+        /*tabTransfers.setOnClickListener { view ->
             if (!GlobalStuff.premiumAccess)  // показываем пэйвол
             {
                 spin_layout.isVisible = true
@@ -211,7 +208,7 @@ class ResultFragment : Fragment() {
             else {
                 GlobalStuff.navController.navigate(R.id.transferlayout, Bundle())
             }
-        }
+        }*/
 
         btFinalNew.setOnClickListener { view ->
             GlobalStuff.ResType = ResultType.Direct
@@ -301,10 +298,15 @@ class ResultFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         //(activity as AppCompatActivity?)!!.supportActionBar!!.show()
+        if (GlobalStuff.ResType == ResultType.Direct)
+        {
+            OneSignal.InAppMessages.addTrigger("os_open_screen", "resultSearch")
+        }
     }
 
     fun InitFirstSegment(view: View)
     {
+        val llFirstSegmentDet = view.findViewById<LinearLayout>(R.id.llFirstSegmentDet)
         val tv1resultIndo = view.findViewById<TextView>(R.id.firstResultInfo)
         val tv1date = view.findViewById<TextView>(R.id.first_date_for_result)
         val fl1FrameRat = view.findViewById<FrameLayout>(R.id.firstRatingFrame)
@@ -319,8 +321,12 @@ class ResultFragment : Fragment() {
         val tv1arrpoint = view.findViewById<TextView>(R.id.firstarrpoint)
         val tv1cntrat = view.findViewById<TextView>(R.id.firstcntrating)
 
+        llFirstSegmentDet.visibility = View.GONE
         var info1text = ""
-        if (GlobalStuff.ResType == ResultType.Second) {
+        if (GlobalStuff.ResType == ResultType.First) {
+            info1text = "Choose a FIRST FLIGHT " + GlobalStuff.OriginPoint!!.Code + "-" + GlobalStuff.ChangePoint
+        }
+        else if (GlobalStuff.ResType == ResultType.Second) {
             info1text = "Your FIRST FLIGHT " + GlobalStuff.OriginPoint!!.Code + "-" + GlobalStuff.ChangePoint
         }
         else {
@@ -329,73 +335,77 @@ class ResultFragment : Fragment() {
         }
         tv1resultIndo.setText(info1text)
 
-        val f = GlobalStuff.FirstSegment!!
-        val mc = "_" + f.MarketingCarrier.lowercase(Locale.ENGLISH)
-        val arrdep = f.DepartureDateTime.split("T")
-        val deptime = arrdep[1].substring(0, 5)
-        val arrarr = f.ArrivalDateTime.split("T")
-        val arrtime = arrarr[1].substring(0, 5)
-        val arrday = arrarr[0].split("-")[2].toInt()
-        var orig = f.Origin
-        if (!f.DepartureTerminal.isNullOrEmpty()) {
-            orig = orig + " (" + f.DepartureTerminal + ")"
+        if (GlobalStuff.ResType != ResultType.First) {
+            llFirstSegmentDet.visibility = View.VISIBLE
+            val f = GlobalStuff.FirstSegment!!
+            val mc = "_" + f.MarketingCarrier.lowercase(Locale.ENGLISH)
+            val arrdep = f.DepartureDateTime.split("T")
+            val deptime = arrdep[1].substring(0, 5)
+            val arrarr = f.ArrivalDateTime.split("T")
+            val arrtime = arrarr[1].substring(0, 5)
+            val arrday = arrarr[0].split("-")[2].toInt()
+            var orig = f.Origin
+            if (!f.DepartureTerminal.isNullOrEmpty()) {
+                orig = orig + " (" + f.DepartureTerminal + ")"
+            }
+            var dest = f.Destination
+            if (!f.ArrivalTerminal.isNullOrEmpty()) {
+                dest = dest + " (" + f.ArrivalTerminal + ")"
+            }
+
+            val identifier =
+                GlobalStuff.StaffRes.getIdentifier(
+                    mc,
+                    "drawable",
+                    "com.stukalov.staffairlines.pro"
+                )
+            val durt = GetTimeAsHM2(f.Duration)
+
+            var MarkColor: Int = 0
+            var MarkBack: Int = 0
+            if (f.RatingType == RType.Good) {
+                MarkColor = ContextCompat.getColor(GlobalStuff.activity, R.color.sa_green)
+                MarkBack = R.drawable.round_box_green
+            } else if (f.RatingType == RType.Medium) {
+                MarkColor = ContextCompat.getColor(GlobalStuff.activity, R.color.sa_yellow)
+                MarkBack = R.drawable.round_box_yellow
+            } else {
+                MarkColor = ContextCompat.getColor(GlobalStuff.activity, R.color.sa_red)
+                MarkBack = R.drawable.round_box_red
+            }
+
+            var nextDayVis: Int =
+                ContextCompat.getColor(GlobalStuff.activity, R.color.sa_full_transparent)
+            val dom = GlobalStuff.SearchDT?.dayOfMonth
+            if (dom != arrday) {
+                nextDayVis = ContextCompat.getColor(GlobalStuff.activity, R.color.black)
+            }
+
+            var visdate = View.GONE
+            if (f.DepDateTime.toLocalDate() == GlobalStuff.SearchDT) {
+                visdate = View.GONE
+            } else {
+                visdate = View.VISIBLE
+            }
+
+            val sdf = DateTimeFormatter.ofPattern("dd MMMM, yyyy")
+
+            iv1aclogo!!.setImageResource(identifier)
+            tv1acname!!.setText(f.MarketingName)
+            tv1timedep!!.setText(deptime)
+            tv1deppoint!!.setText(orig)
+            im1planepic!!.setImageResource(R.drawable.plane1)
+            tv1durtext!!.setText(durt)
+            tv1timearr!!.setText(arrtime)
+            tv1arrpoint!!.setText(dest)
+            tv1cntrat!!.setText(f.AllPlaces)
+            tv1cntrat!!.setTextColor(MarkColor)
+            tv1cntrat!!.setBackgroundResource(MarkBack)
+            fl1FrameRat!!.setBackgroundColor(MarkColor)
+            tv1nextday!!.setTextColor(nextDayVis)
+            tv1date!!.setText(sdf.format(f.DepDateTime))
+            tv1date!!.visibility = visdate
         }
-        var dest = f.Destination
-        if (!f.ArrivalTerminal.isNullOrEmpty()) {
-            dest = dest + " (" + f.ArrivalTerminal + ")"
-        }
-
-        val identifier =
-            GlobalStuff.StaffRes.getIdentifier(
-                mc,
-                "drawable",
-                "com.stukalov.staffairlines.pro"
-            )
-        val durt = GetTimeAsHM2(f.Duration)
-
-        var MarkColor: Int = 0
-        var MarkBack: Int = 0
-        if (f.RatingType == RType.Good) {
-            MarkColor = ContextCompat.getColor(GlobalStuff.activity, R.color.sa_green)
-            MarkBack = R.drawable.round_box_green
-        } else if (f.RatingType == RType.Medium) {
-            MarkColor = ContextCompat.getColor(GlobalStuff.activity, R.color.sa_yellow)
-            MarkBack = R.drawable.round_box_yellow
-        } else {
-            MarkColor = ContextCompat.getColor(GlobalStuff.activity, R.color.sa_red)
-            MarkBack = R.drawable.round_box_red
-        }
-
-        var nextDayVis: Int = ContextCompat.getColor(GlobalStuff.activity, R.color.sa_full_transparent)
-        val dom = GlobalStuff.SearchDT?.dayOfMonth
-        if (dom != arrday) {
-            nextDayVis = ContextCompat.getColor(GlobalStuff.activity, R.color.black)
-        }
-
-        var visdate = View.GONE
-        if (f.DepDateTime.toLocalDate() == GlobalStuff.SearchDT) {
-            visdate = View.GONE
-        } else {
-            visdate = View.VISIBLE
-        }
-
-        val sdf = DateTimeFormatter.ofPattern("dd MMMM, yyyy")
-
-        iv1aclogo!!.setImageResource(identifier)
-        tv1acname!!.setText(f.MarketingName)
-        tv1timedep!!.setText(deptime)
-        tv1deppoint!!.setText(orig)
-        im1planepic!!.setImageResource(R.drawable.plane1)
-        tv1durtext!!.setText(durt)
-        tv1timearr!!.setText(arrtime)
-        tv1arrpoint!!.setText(dest)
-        tv1cntrat!!.setText(f.AllPlaces)
-        tv1cntrat!!.setTextColor(MarkColor)
-        tv1cntrat!!.setBackgroundResource(MarkBack)
-        fl1FrameRat!!.setBackgroundColor(MarkColor)
-        tv1nextday!!.setTextColor(nextDayVis)
-        tv1date!!.setText(sdf.format(f.DepDateTime))
-        tv1date!!.visibility = visdate
     }
 
     fun GetNameChangePoint(f: Flight): String
