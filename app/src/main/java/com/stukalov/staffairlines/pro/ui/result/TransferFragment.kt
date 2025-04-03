@@ -5,15 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextView
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.stukalov.staffairlines.pro.Flight
+import androidx.viewpager.widget.ViewPager
+import com.google.android.material.tabs.TabLayout
 import com.stukalov.staffairlines.pro.GetNonDirectType
 import com.stukalov.staffairlines.pro.GlobalStuff
 import com.stukalov.staffairlines.pro.NonDirectResult
@@ -24,6 +22,7 @@ import com.stukalov.staffairlines.pro.TransferDetails
 import com.stukalov.staffairlines.pro.TransferPoint
 import com.stukalov.staffairlines.pro.TransferResultAdapter
 import com.stukalov.staffairlines.pro.databinding.FragmentTransferBinding
+import com.stukalov.staffairlines.pro.ui.paywall.AdaptyController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -36,6 +35,7 @@ class TransferFragment : Fragment() {
     lateinit var transferadapter: TransferResultAdapter
     lateinit var vView: View
     val SM: StaffMethods = StaffMethods()
+    val AdControl: AdaptyController = AdaptyController()
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -73,6 +73,11 @@ class TransferFragment : Fragment() {
         val spin_layout = view.findViewById<FrameLayout>(R.id.spinner_transfer)
 
         var tdet = GetTransferDetails()
+
+        if (!GlobalStuff.premiumAccess)
+        {
+            tvinfo.setText("")
+        }
 
         if (tdet.tp.isNotEmpty()) {
             tvinfo.setText("Choose a city to get a list of transfer flights")
@@ -171,59 +176,105 @@ class TransferFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
+        val tdet = GetTransferDetails()
+
+        if (tdet.tp.isNotEmpty()) {
+            val spin_layout = vView.findViewById<FrameLayout>(R.id.spinner_transfer)
+            val tvinfo: TextView = vView.findViewById(R.id.tvInfoTransfer)
+            val transfer_lv: ListView = vView.findViewById<ListView>(R.id.transferlistview)
+
+            //(activity as AppCompatActivity?)!!.supportActionBar!!.show()
+            GlobalStuff.setActionBar(true, true, GetTitle())
+            spin_layout.isVisible = false
+            tvinfo.setText("Choose a city to get a list of transfer flights")
+            transferadapter =
+                TransferResultAdapter(vView.context, tdet.tp, tdet.ndr)
+            transfer_lv.setAdapter(transferadapter)
+        }
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+        super.setUserVisibleHint(isVisibleToUser)
+
+        val v = isVisibleToUser
+        if (GlobalStuff.AdaptyPurchaseProcess && !v)
+        {
+            GlobalStuff.AdaptyPurchaseProcess = false
+            GlobalStuff.ExitPurchase = true
+            //GlobalStuff.navController.navigate(R.id.navigation_resulttrans)
+            GlobalStuff.tabRes?.getTabAt(0)?.select()
+        }
+        else if (!GlobalStuff.ExitPurchase && v)
+        {
+            LoadTransfer()
+        }
+    }
+
+    fun LoadTransfer()
+    {
         val tptmp = GetTransferDetails()
+        val spin_layout = vView.findViewById<FrameLayout>(R.id.spinner_transfer)
 
         if (tptmp.tp.isEmpty())
         {
-            val transfer_lv: ListView = vView.findViewById<ListView>(R.id.transferlistview)
-            val tvinfo: TextView = vView.findViewById(R.id.tvInfoTransfer)
-            val spin_layout = vView.findViewById<FrameLayout>(R.id.spinner_transfer)
+            if (!GlobalStuff.premiumAccess)  // показываем пэйвол
+            {
+                spin_layout.isVisible = true
+                GlobalStuff.AdaptyPurchaseProcess = true
+                AdControl.GetPaywallViewParams("test_main_action2")
+            }
+            else {
 
-            spin_layout.isVisible = true
-            //(activity as AppCompatActivity?)!!.supportActionBar!!.hide()
-            GlobalStuff.setActionBar(true, false, GetTitle())
+                val transfer_lv: ListView = vView.findViewById<ListView>(R.id.transferlistview)
+                val tvinfo: TextView = vView.findViewById(R.id.tvInfoTransfer)
 
-            tvinfo.setText("Searching for optimal stopovers...")
 
-            val permlist = SM.GetStringPermitt()
+                spin_layout.isVisible = true
+                //(activity as AppCompatActivity?)!!.supportActionBar!!.hide()
+                GlobalStuff.setActionBar(true, false, GetTitle())
 
-            lifecycleScope.launch {
-                val result = withContext(Dispatchers.IO) {
-                    SM.ExtendedSearch(
-                        GlobalStuff.OriginPoint!!.Code,
-                        GlobalStuff.DestinationPoint!!.Code,
-                        GlobalStuff.SearchDT!!,
-                        permlist,
-                        true,
-                        GetNonDirectType.auto,
-                        GlobalStuff.Pax,
-                        "USD",
-                        "EN",
-                        "USA",
-                        "",
-                        false,
-                        "3.0",
-                        "--"
-                    )
-                }
+                tvinfo.setText("Searching for optimal stopovers...")
 
-                if (result == "OK") {
+                val permlist = SM.GetStringPermitt()
 
-                    val tdet = GetTransferDetails()
-
-                    if (tdet.tp.isNotEmpty()) {
-
-                        //(activity as AppCompatActivity?)!!.supportActionBar!!.show()
-                        GlobalStuff.setActionBar(true, true, GetTitle())
-                        spin_layout.isVisible = false
-                        tvinfo.setText("Choose a city to get a list of transfer flights")
-                        transferadapter = TransferResultAdapter(vView.context, tdet.tp, tdet.ndr)
-                        transfer_lv.setAdapter(transferadapter)
+                lifecycleScope.launch {
+                    val result = withContext(Dispatchers.IO) {
+                        SM.ExtendedSearch(
+                            GlobalStuff.OriginPoint!!.Code,
+                            GlobalStuff.DestinationPoint!!.Code,
+                            GlobalStuff.SearchDT!!,
+                            permlist,
+                            true,
+                            GetNonDirectType.auto,
+                            GlobalStuff.Pax,
+                            "USD",
+                            "EN",
+                            "USA",
+                            "",
+                            false,
+                            "3.0",
+                            "--"
+                        )
                     }
-                }
-                else
-                {
-                    spin_layout.isVisible = false
+
+                    if (result == "OK") {
+
+                        val tdet = GetTransferDetails()
+
+                        if (tdet.tp.isNotEmpty()) {
+
+                            //(activity as AppCompatActivity?)!!.supportActionBar!!.show()
+                            GlobalStuff.setActionBar(true, true, GetTitle())
+                            spin_layout.isVisible = false
+                            tvinfo.setText("Choose a city to get a list of transfer flights")
+                            transferadapter =
+                                TransferResultAdapter(vView.context, tdet.tp, tdet.ndr)
+                            transfer_lv.setAdapter(transferadapter)
+                        }
+                    } else {
+                        spin_layout.isVisible = false
+                    }
                 }
             }
         }

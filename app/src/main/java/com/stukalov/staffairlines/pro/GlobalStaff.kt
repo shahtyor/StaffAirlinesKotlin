@@ -18,6 +18,7 @@ import com.adapty.models.AdaptyProfileParameters
 import com.adapty.ui.AdaptyUI
 import com.amplitude.android.Amplitude
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.material.tabs.TabLayout
 import com.onesignal.OneSignal
 import com.stukalov.staffairlines.pro.databinding.ActivityMainBinding
 import com.stukalov.staffairlines.pro.ui.home.HomeFragment
@@ -65,10 +66,13 @@ import java.time.LocalDate
         lateinit var StaffRes: Resources
         lateinit var supportFragManager: androidx.fragment.app.FragmentManager
         lateinit var prefs: SharedPreferences
+        var tabRes: TabLayout? = null
 
         var AdaptyProducts: List<AdaptyPaywallProduct> = listOf()
         var AdaptyConfig: AdaptyUI.LocalizedViewConfiguration? = null
         var AdaptyErr: AdaptyError? = null
+        var AdaptyPurchaseProcess: Boolean = false
+        var ExitPurchase: Boolean = false
 
         var AdaptyProfileID: String? = null
         var premiumAccess: Boolean = false

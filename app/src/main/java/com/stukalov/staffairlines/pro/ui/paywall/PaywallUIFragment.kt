@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.adapty.errors.AdaptyError
 import com.adapty.models.AdaptyPaywallProduct
 import com.adapty.models.AdaptyProfile
 import com.adapty.models.AdaptyPurchaseResult
@@ -47,6 +48,14 @@ class PaywallUiFragment : Fragment(R.layout.fragment_paywall_ui) {
         val viewConfig = viewConfiguration ?: return
 
         val eventListener = object: AdaptyUiDefaultEventListener() {
+
+            override fun onPurchaseFailure(
+                error: AdaptyError,
+                product: AdaptyPaywallProduct,
+                context: Context
+            ) {
+                super.onPurchaseFailure(error, product, context)
+            }
 
             override fun onPurchaseFinished(
                 purchaseResult: AdaptyPurchaseResult,
