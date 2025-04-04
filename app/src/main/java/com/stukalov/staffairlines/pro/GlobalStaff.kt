@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
+import androidx.viewpager2.widget.ViewPager2
 import com.adapty.Adapty
 import com.adapty.errors.AdaptyError
 import com.adapty.models.AdaptyPaywallProduct
@@ -27,8 +28,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
-    @SuppressLint("StaticFieldLeak")
+@SuppressLint("StaticFieldLeak")
     object GlobalStuff {
         var density: Float = 1.0F
         lateinit var navController: NavController
@@ -66,7 +68,6 @@ import java.time.LocalDate
         lateinit var StaffRes: Resources
         lateinit var supportFragManager: androidx.fragment.app.FragmentManager
         lateinit var prefs: SharedPreferences
-        var tabRes: TabLayout? = null
 
         var AdaptyProducts: List<AdaptyPaywallProduct> = listOf()
         var AdaptyConfig: AdaptyUI.LocalizedViewConfiguration? = null
@@ -146,5 +147,18 @@ import java.time.LocalDate
                     }
                 }
             }
+        }
+
+        fun GetTitle(): String
+        {
+            var result = "..."
+            if (OriginPoint != null && DestinationPoint != null) {
+
+                val formatter0 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                val orig = if (OriginPoint?.Code == null) OriginPoint?.Name?.substring(0, 3) else OriginPoint?.Code
+                val dest = if (DestinationPoint?.Code == null) DestinationPoint?.Name?.substring(0, 3) else DestinationPoint?.Code
+                result = orig + " - " + dest + ", " + SearchDT?.format(formatter0)
+            }
+            return result
         }
     }

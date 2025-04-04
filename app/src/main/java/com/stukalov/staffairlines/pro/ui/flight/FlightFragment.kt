@@ -192,9 +192,9 @@ class FlightFragment : Fragment() {
 
         if (f == null) return
 
-        val formatter0 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        val title = f.Origin + " - " + f.Destination + ", " + f.DepDateTime.format(formatter0)
-        GlobalStuff.setActionBar(true, true, title)
+        //val formatter0 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        //val title = f.Origin + " - " + f.Destination + ", " + f.DepDateTime.format(formatter0)
+        GlobalStuff.setActionBar(true, true, GlobalStuff.GetTitle())
         //(activity as AppCompatActivity).supportActionBar?.title = title
 
         val mc = "_" + f.MarketingCarrier.lowercase(Locale.ENGLISH)
@@ -303,8 +303,27 @@ class FlightFragment : Fragment() {
             MarkColor = ContextCompat.getColor(GlobalStuff.activity, R.color.sa_red)
         }
 
-        var strclass = "";
-        for (OneC in f.NumSeatsForBookingClass) {
+        var strclass = ""
+        for (i in 0..f.NumSeatsForBookingClass.lastIndex)
+        {
+            val OneC = f.NumSeatsForBookingClass[i]
+            var nbsp = ""
+            if (i < f.NumSeatsForBookingClass.lastIndex)
+            {
+                nbsp = "&nbsp;"
+            }
+
+            if (OneC[1] == '0')
+            {
+                strclass = strclass + "<font color=${Color.LTGRAY}>" + OneC + nbsp + "</font>"
+            }
+            else
+            {
+                strclass = strclass + "<font color=${Color.BLACK}>" + OneC + nbsp + "</font>"
+            }
+        }
+
+        /*for (OneC in f.NumSeatsForBookingClass) {
             if (OneC[1] == '0')
             {
                 strclass = strclass + "<font color=${Color.LTGRAY}>" + OneC + "&nbsp;</font>"
@@ -313,7 +332,7 @@ class FlightFragment : Fragment() {
             {
                 strclass = strclass + "<font color=${Color.BLACK}>" + OneC + "&nbsp;</font>"
             }
-        }
+        }*/
 
         val strflyzed = "<u>" + GlobalStuff.activity.getString(R.string.label_flyzed) + " " + f.MarketingName + "</u>"
 

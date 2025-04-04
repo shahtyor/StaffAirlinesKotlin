@@ -491,7 +491,7 @@ class HomeFragment : Fragment() {
         }
     }
 
-    fun add_to_history(Origin: String, Destination: String, OriginId: String, DestinationId: String, OriginName: String, DestinationName: String, SearchDt: Long, Pax: Int)
+    fun add_to_history(Origin: String?, Destination: String?, OriginId: String, DestinationId: String, OriginName: String, DestinationName: String, SearchDt: Long, Pax: Int)
     {
         val item: HistoryElement = HistoryElement(Origin, Destination, OriginId, DestinationId, OriginName, DestinationName, SearchDt, Pax)
         val exist = SM.ExistInHistory(item)
@@ -565,8 +565,8 @@ class HomeFragment : Fragment() {
                 lifecycleScope.launch {
                     val result = withContext(Dispatchers.IO) {
                         SM.ExtendedSearch(
-                            GlobalStuff.OriginPoint!!.Code,
-                            GlobalStuff.DestinationPoint!!.Code,
+                            GlobalStuff.OriginPoint!!.Id.toString(),
+                            GlobalStuff.DestinationPoint!!.Id.toString(),
                             GlobalStuff.SearchDT!!,
                             permlist,
                             false,
@@ -586,7 +586,7 @@ class HomeFragment : Fragment() {
                     if (result == "OK" && GlobalStuff.ExtResult != null) {
                         GlobalStuff.ResType = ResultType.Direct
                         GlobalStuff.BackResType = null
-                        GlobalStuff.navController.navigate(R.id.navigation_resulttrans, Bundle())
+                        GlobalStuff.navController.navigate(R.id.resultlayout, Bundle())
                     } else {
                         SetDisable(true)
                         spin_layout.isVisible = false

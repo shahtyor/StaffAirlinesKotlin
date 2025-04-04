@@ -52,7 +52,7 @@ class ProfileFragment : Fragment() {
         setupViewPager(viewPager)
 
         tabLayout.setupWithViewPager(viewPager)
-        viewPager.currentItem = tabLayout.selectedTabPosition
+        //viewPager.currentItem = tabLayout.selectedTabPosition
         tabLayout.refreshDrawableState()
         viewPager.refreshDrawableState()
     }

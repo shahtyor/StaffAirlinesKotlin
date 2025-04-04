@@ -1,5 +1,6 @@
 package com.stukalov.staffairlines.pro
 
+import android.util.Log
 import androidx.lifecycle.lifecycleScope
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -256,6 +257,37 @@ class StaffMethods {
             val kjgh = ex.message + "..." + ex.stackTrace
         }
         return SubscribeWithRemainResult(0, "", 0)
+    }
+
+    fun VoidProfile(id_user: String): VoidResult
+    {
+        try
+        {
+            val Uri: String = BaseUrl + "/token/Void?id_user=" + id_user
+
+            val request = Request.Builder().url(Uri).build()
+
+            val Json = RequestJson(client, request)
+
+            val result: VoidResult
+            val gson = Gson()
+
+            try
+            {
+                result = gson.fromJson(Json, VoidResult::class.java)
+
+                return result
+            }
+            catch (e: Exception)
+            {
+                Log.d("Error", e.message + "..." + e.stackTrace)
+            }
+        }
+        catch (ex: Exception)
+        {
+            Log.d("VoidProfile", ex.message + "..." + ex.stackTrace)
+        }
+        return VoidResult(false, "")
     }
 
     fun SendReportRequest(id_user: String, device_id: String, origin: String, destination: String, operating: String, flight: String, departure: LocalDateTime, pax: Int): ReportRequestStatus?

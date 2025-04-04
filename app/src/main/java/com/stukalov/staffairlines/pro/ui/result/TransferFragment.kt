@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextView
 import androidx.core.view.isVisible
@@ -35,7 +36,6 @@ class TransferFragment : Fragment() {
     lateinit var transferadapter: TransferResultAdapter
     lateinit var vView: View
     val SM: StaffMethods = StaffMethods()
-    val AdControl: AdaptyController = AdaptyController()
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -53,12 +53,12 @@ class TransferFragment : Fragment() {
         return root
     }
 
-    fun GetTitle(): String
+    /*fun GetTitle(): String
     {
         val formatter0 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val result_title = GlobalStuff.OriginPoint!!.Code + " - " + GlobalStuff.DestinationPoint!!.Code + ", " + GlobalStuff.SearchDT!!.format(formatter0)
         return result_title
-    }
+    }*/
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -66,10 +66,11 @@ class TransferFragment : Fragment() {
         vView = view
 
         //(activity as AppCompatActivity).supportActionBar?.title = result_title
-        GlobalStuff.setActionBar(true, true, GetTitle())
+        GlobalStuff.setActionBar(true, true, GlobalStuff.GetTitle())
 
         val tvinfo: TextView = view.findViewById(R.id.tvInfoTransfer)
         val transfer_lv: ListView = view.findViewById(R.id.transferlistview)
+        val tabDirect = view.findViewById<LinearLayout>(R.id.TabDirect)
         val spin_layout = view.findViewById<FrameLayout>(R.id.spinner_transfer)
 
         var tdet = GetTransferDetails()
@@ -112,16 +113,17 @@ class TransferFragment : Fragment() {
             {
                 //запрос
                 spin_layout.isVisible = true
+                tabDirect.isEnabled = false
                 transfer_lv.isEnabled = false
                 //(activity as AppCompatActivity?)!!.supportActionBar!!.hide()
-                GlobalStuff.setActionBar(true, false, GetTitle())
+                GlobalStuff.setActionBar(true, false, GlobalStuff.GetTitle())
 
                 val permlist = SM.GetStringPermitt()
                 lifecycleScope.launch {
                     val result = withContext(Dispatchers.IO) {
                         SM.GetNonDirectFlights(
-                            GlobalStuff.OriginPoint!!.Code,
-                            GlobalStuff.DestinationPoint!!.Code,
+                            GlobalStuff.OriginPoint!!.Id.toString(),
+                            GlobalStuff.DestinationPoint!!.Id.toString(),
                             trans.Origin,
                             GlobalStuff.SearchDT!!,
                             permlist,
@@ -138,10 +140,10 @@ class TransferFragment : Fragment() {
 
                         tdet = GetTransferDetails()
                         if (tdet.tp.isNotEmpty()) {
-
+                            tabDirect.isEnabled = true
                             transfer_lv.isEnabled = true
                             //(activity as AppCompatActivity?)!!.supportActionBar!!.show()
-                            GlobalStuff.setActionBar(true, true, GetTitle())
+                            GlobalStuff.setActionBar(true, true, GlobalStuff.GetTitle())
                             spin_layout.isVisible = false
                             tvinfo.setText("Choose a city to get a list of transfer flights")
                             transferadapter = TransferResultAdapter(vView.context, tdet.tp, tdet.ndr)
@@ -168,113 +170,76 @@ class TransferFragment : Fragment() {
             }
         }
 
-        /*tabDirect.setOnClickListener { view ->
+        tabDirect.setOnClickListener { view ->
             GlobalStuff.navController.navigate(R.id.resultlayout, Bundle())
-        }*/
+        }
     }
 
     override fun onResume() {
         super.onResume()
 
-        val tdet = GetTransferDetails()
-
-        if (tdet.tp.isNotEmpty()) {
-            val spin_layout = vView.findViewById<FrameLayout>(R.id.spinner_transfer)
-            val tvinfo: TextView = vView.findViewById(R.id.tvInfoTransfer)
-            val transfer_lv: ListView = vView.findViewById<ListView>(R.id.transferlistview)
-
-            //(activity as AppCompatActivity?)!!.supportActionBar!!.show()
-            GlobalStuff.setActionBar(true, true, GetTitle())
-            spin_layout.isVisible = false
-            tvinfo.setText("Choose a city to get a list of transfer flights")
-            transferadapter =
-                TransferResultAdapter(vView.context, tdet.tp, tdet.ndr)
-            transfer_lv.setAdapter(transferadapter)
-        }
-    }
-
-    @Deprecated("Deprecated in Java")
-    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
-        super.setUserVisibleHint(isVisibleToUser)
-
-        val v = isVisibleToUser
-        if (GlobalStuff.AdaptyPurchaseProcess && !v)
-        {
-            GlobalStuff.AdaptyPurchaseProcess = false
-            GlobalStuff.ExitPurchase = true
-            //GlobalStuff.navController.navigate(R.id.navigation_resulttrans)
-            GlobalStuff.tabRes?.getTabAt(0)?.select()
-        }
-        else if (!GlobalStuff.ExitPurchase && v)
-        {
-            LoadTransfer()
-        }
-    }
-
-    fun LoadTransfer()
-    {
         val tptmp = GetTransferDetails()
-        val spin_layout = vView.findViewById<FrameLayout>(R.id.spinner_transfer)
 
         if (tptmp.tp.isEmpty())
         {
-            if (!GlobalStuff.premiumAccess)  // показываем пэйвол
-            {
-                spin_layout.isVisible = true
-                GlobalStuff.AdaptyPurchaseProcess = true
-                AdControl.GetPaywallViewParams("test_main_action2")
-            }
-            else {
+            val transfer_lv: ListView = vView.findViewById<ListView>(R.id.transferlistview)
+            val tvinfo: TextView = vView.findViewById(R.id.tvInfoTransfer)
+            val spin_layout = vView.findViewById<FrameLayout>(R.id.spinner_transfer)
+            val tabDirect = vView.findViewById<LinearLayout>(R.id.TabDirect)
 
-                val transfer_lv: ListView = vView.findViewById<ListView>(R.id.transferlistview)
-                val tvinfo: TextView = vView.findViewById(R.id.tvInfoTransfer)
+            spin_layout.isVisible = true
+            tabDirect.isEnabled = false
+            //(activity as AppCompatActivity?)!!.supportActionBar!!.hide()
+            GlobalStuff.setActionBar(true, false, GlobalStuff.GetTitle())
 
+            tvinfo.setText("Searching for optimal stopovers...")
 
-                spin_layout.isVisible = true
-                //(activity as AppCompatActivity?)!!.supportActionBar!!.hide()
-                GlobalStuff.setActionBar(true, false, GetTitle())
+            val permlist = SM.GetStringPermitt()
 
-                tvinfo.setText("Searching for optimal stopovers...")
+            lifecycleScope.launch {
+                val result = withContext(Dispatchers.IO) {
+                    SM.ExtendedSearch(
+                        GlobalStuff.OriginPoint!!.Id.toString(),
+                        GlobalStuff.DestinationPoint!!.Id.toString(),
+                        GlobalStuff.SearchDT!!,
+                        permlist,
+                        true,
+                        GetNonDirectType.auto,
+                        GlobalStuff.Pax,
+                        "USD",
+                        "EN",
+                        "USA",
+                        "",
+                        false,
+                        "3.0",
+                        "--"
+                    )
+                }
 
-                val permlist = SM.GetStringPermitt()
+                if (result == "OK") {
 
-                lifecycleScope.launch {
-                    val result = withContext(Dispatchers.IO) {
-                        SM.ExtendedSearch(
-                            GlobalStuff.OriginPoint!!.Code,
-                            GlobalStuff.DestinationPoint!!.Code,
-                            GlobalStuff.SearchDT!!,
-                            permlist,
-                            true,
-                            GetNonDirectType.auto,
-                            GlobalStuff.Pax,
-                            "USD",
-                            "EN",
-                            "USA",
-                            "",
-                            false,
-                            "3.0",
-                            "--"
-                        )
-                    }
+                    val tdet = GetTransferDetails()
 
-                    if (result == "OK") {
+                    if (tdet.tp.isNotEmpty()) {
 
-                        val tdet = GetTransferDetails()
-
-                        if (tdet.tp.isNotEmpty()) {
-
-                            //(activity as AppCompatActivity?)!!.supportActionBar!!.show()
-                            GlobalStuff.setActionBar(true, true, GetTitle())
-                            spin_layout.isVisible = false
-                            tvinfo.setText("Choose a city to get a list of transfer flights")
-                            transferadapter =
-                                TransferResultAdapter(vView.context, tdet.tp, tdet.ndr)
-                            transfer_lv.setAdapter(transferadapter)
-                        }
-                    } else {
+                        tabDirect.isEnabled = true
+                        //(activity as AppCompatActivity?)!!.supportActionBar!!.show()
+                        GlobalStuff.setActionBar(true, true, GlobalStuff.GetTitle())
                         spin_layout.isVisible = false
+                        tvinfo.setText("Choose a city to get a list of transfer flights")
+                        transferadapter = TransferResultAdapter(vView.context, tdet.tp, tdet.ndr)
+                        transfer_lv.setAdapter(transferadapter)
                     }
+                    else
+                    {
+                        tabDirect.isEnabled = true
+                        spin_layout.isVisible = false
+                        tvinfo.setText("No results")
+                    }
+                }
+                else
+                {
+                    spin_layout.isVisible = false
                 }
             }
         }

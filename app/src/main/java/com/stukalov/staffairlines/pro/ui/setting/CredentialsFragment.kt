@@ -1,9 +1,11 @@
 package com.stukalov.staffairlines.pro.ui.setting
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import android.text.Html
 import android.text.method.LinkMovementMethod
@@ -17,6 +19,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.adapty.Adapty
+import com.adapty.models.AdaptyProfileParameters
 import com.appsflyer.AppsFlyerLib
 import com.onesignal.OneSignal
 import com.stukalov.staffairlines.pro.GlobalStuff
@@ -131,6 +134,16 @@ class CredentialsFragment : Fragment() {
             }
         }
 
+        tvCredDelete.setOnClickListener()
+        {
+            AlertDialog.Builder(context)
+                .setTitle("Delete profile?")
+                .setMessage("Deleting a profile will delete all your data, you will lose all your purchased or earned tokens. After deleting an account, they will not be refundable. Please be informed.")
+                .setPositiveButton("Delete") { dialog, id -> DeleteProfile(dialog, this.requireContext()) }
+                .setNegativeButton("Cancel") { dialog, id -> dialog.cancel() }
+                .show()
+        }
+
         if (GlobalStuff.customerID.isNullOrEmpty())
         {
             tvCredFirst.setText("To make requests to an agent, please logged in")
@@ -168,6 +181,71 @@ class CredentialsFragment : Fragment() {
             tvCredSubLost.setText(GlobalStuff.Remain.toString())
         } else {
             tvCredSubLost.setText("0")
+        }
+    }
+
+    fun DeleteProfile(dialog: DialogInterface, cont: Context)
+    {
+        //await PremiumFunctions.SendEvent("delete profile");
+
+        val aprof = AdaptyProfileParameters.Builder()
+            .withEmail(null)
+            .withFirstName(null)
+            .withLastName(null)
+            .withRemovedCustomAttribute("own_ac")
+
+        Adapty.updateProfile(aprof.build()) { error2 ->
+            if (error2 != null) {
+                AlertDialog.Builder(cont)
+                    .setTitle("Delete")
+                    .setMessage("Update profile failed: " + error2.message)
+                    .setNegativeButton("ok") { dialog, id -> dialog.cancel() }
+                    .show()
+            }
+            else
+            {
+                lifecycleScope.launch {
+                    val voidresult = withContext(Dispatchers.IO) {
+                        SM.VoidProfile(GlobalStuff.customerID!!)
+                    }
+
+                    if (voidresult.Success)
+                    {
+                        Adapty.logout { error ->
+                            if (error == null) {
+                                // successful logout
+                                GlobalStuff.customerProfile = null
+                                GlobalStuff.customerID = null
+                                GlobalStuff.customerEmail = null
+                                GlobalStuff.customerLastName = null
+                                GlobalStuff.customerFirstName = null
+
+                                GlobalStuff.googleInClient?.signOut()
+                                SM.SaveCustomerID()
+                                Init()
+
+                                AlertDialog.Builder(cont)
+                                    .setTitle("Delete")
+                                    .setMessage("Profile deleted successfully")
+                                    .setNegativeButton("ok") { dialog3, id -> dialog3.cancel() }
+                                    .show()
+                            }
+                        }
+
+                        OneSignal.logout()
+                        GlobalStuff.SaveOneSignalToAdapty()
+                    }
+                    else
+                    {
+                        //await PremiumFunctions.SendEventError(tmpID, "delete profile", res.Error, "");
+                        AlertDialog.Builder(cont)
+                            .setTitle("Delete")
+                            .setMessage(voidresult.Error)
+                            .setNegativeButton("OK") { dialog4, id -> dialog4.cancel() }
+                            .show()
+                    }
+                }
+            }
         }
     }
 

@@ -3,6 +3,7 @@ package com.stukalov.staffairlines.pro.ui.result
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,30 +13,20 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
-import com.google.android.material.tabs.TabLayout
 import com.onesignal.OneSignal
 import com.stukalov.staffairlines.pro.DirectResultAdapter
 import com.stukalov.staffairlines.pro.Flight
-import com.stukalov.staffairlines.pro.GetNonDirectType
 import com.stukalov.staffairlines.pro.GlobalStuff
 import com.stukalov.staffairlines.pro.NonDirectResult
 import com.stukalov.staffairlines.pro.R
 import com.stukalov.staffairlines.pro.RType
 import com.stukalov.staffairlines.pro.ResultType
 import com.stukalov.staffairlines.pro.StaffMethods
-import com.stukalov.staffairlines.pro.TransferDetails
-import com.stukalov.staffairlines.pro.TransferPoint
-import com.stukalov.staffairlines.pro.TransferResultAdapter
 import com.stukalov.staffairlines.pro.databinding.FragmentResultBinding
 import com.stukalov.staffairlines.pro.ui.paywall.AdaptyController
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.time.Duration
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -47,6 +38,7 @@ class ResultFragment : Fragment() {
     lateinit var resultadapter: DirectResultAdapter
     lateinit var btResCommercial: Button
     val SM: StaffMethods = StaffMethods()
+    val AdControl: AdaptyController = AdaptyController()
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -70,12 +62,15 @@ class ResultFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val formatter0 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        val result_title = GlobalStuff.OriginPoint!!.Code + " - " + GlobalStuff.DestinationPoint!!.Code + ", " + GlobalStuff.SearchDT!!.format(formatter0)
+        val result_title = GlobalStuff.GetTitle()
+            //GlobalStuff.OriginPoint!!.Code + " - " + GlobalStuff.DestinationPoint!!.Code + ", " + GlobalStuff.SearchDT!!.format(formatter0)
         //(activity as AppCompatActivity).supportActionBar?.title = result_title
         GlobalStuff.setActionBar(true, true, result_title)
 
         val tv1resultInfo = view.findViewById<TextView>(R.id.firstResultInfo)
         val direct_lv: ListView = view.findViewById<ListView>(R.id.directlistview)
+        val tabTransfers = view.findViewById<LinearLayout>(R.id.TabTransfers)
+        val llResTab = view.findViewById<LinearLayout>(R.id.ResultsTab)
         val tvResInfo = view.findViewById<TextView>(R.id.tvResultInfo)
         val llFirstSegment = view.findViewById<LinearLayout>(R.id.llFirstSegment)
         val llFirstLayout = view.findViewById<LinearLayout>(R.id.llFirstLayout)
@@ -84,7 +79,12 @@ class ResultFragment : Fragment() {
         val tvWaitInfoFinal = view.findViewById<TextView>(R.id.tvWaitInfoFinal)
         val spin_layout = view.findViewById<FrameLayout>(R.id.spinner_result)
         val llResForListview = view.findViewById<LinearLayout>(R.id.llResForListview)
+        val tvResCheckTransfer = view.findViewById<TextView>(R.id.tvResCheckTransfer)
+        val llResTryTransfer = view.findViewById<LinearLayout>(R.id.llResTryTransfer)
         btResCommercial = view.findViewById(R.id.btResCommercial)
+
+        tvResCheckTransfer.setText(Html.fromHtml("<u>Check transfer flights</u>"))
+        llResTryTransfer.visibility = View.GONE
 
         if (GlobalStuff.BackResType != null)
         {
@@ -93,19 +93,28 @@ class ResultFragment : Fragment() {
 
         if (GlobalStuff.ResType == ResultType.Direct) {
             GlobalStuff.BackResType = null
+            llResTab.visibility = View.VISIBLE
             tvResInfo.visibility = View.GONE
             llFirstSegment.visibility = View.GONE
             btFinalNew.visibility = View.GONE
             llWaitInfoFinal.visibility = View.GONE
             tv1resultInfo.visibility = View.GONE
+            tvResCheckTransfer.visibility - View.VISIBLE
+
+            if (GlobalStuff.ExtResult?.DirectRes.isNullOrEmpty())
+            {
+                llResTryTransfer.visibility = View.VISIBLE
+            }
 
             resultadapter = DirectResultAdapter(view.context, GlobalStuff.ExtResult!!.DirectRes)
         }
         else if (GlobalStuff.ResType == ResultType.First) {
             GlobalStuff.BackResType = ResultType.First
+            llResTab.visibility = View.GONE
             tvResInfo.visibility = View.VISIBLE
             llFirstSegment.visibility = View.GONE
             tv1resultInfo.visibility = View.VISIBLE
+            tvResCheckTransfer.visibility = View.GONE
 
             btFinalNew.visibility = View.GONE
             llWaitInfoFinal.visibility = View.GONE
@@ -132,6 +141,7 @@ class ResultFragment : Fragment() {
         else if (GlobalStuff.ResType == ResultType.Second)
         {
             GlobalStuff.BackResType = ResultType.First
+            llResTab.visibility = View.GONE
             tvResInfo.visibility = View.VISIBLE
             btFinalNew.visibility = View.GONE
             llWaitInfoFinal.visibility = View.GONE
@@ -139,6 +149,7 @@ class ResultFragment : Fragment() {
             tvResInfo.setText(infotxt)
             tv1resultInfo.visibility = View.VISIBLE
             llFirstSegment.visibility = View.VISIBLE
+            tvResCheckTransfer.visibility = View.GONE
 
             val info2text = "Your FIRST FLIGHT " + GlobalStuff.OriginPoint!!.Code + "-" + GlobalStuff.ChangePoint
             tv1resultInfo.setText(info2text)
@@ -164,11 +175,13 @@ class ResultFragment : Fragment() {
         else if (GlobalStuff.ResType == ResultType.Final)
         {
             GlobalStuff.BackResType = ResultType.Second
+            llResTab.visibility = View.GONE
             tvResInfo.visibility = View.VISIBLE
             btFinalNew.visibility = View.VISIBLE
             llWaitInfoFinal.visibility = View.VISIBLE
             tvResInfo.visibility = View.GONE
             tv1resultInfo.visibility = View.VISIBLE
+            tvResCheckTransfer.visibility = View.GONE
 
             val sdf22 = DateTimeFormatter.ofPattern("dd MMMM, yyyy")
             val info3text = "Your trip from " + GlobalStuff.OriginPoint!!.Code + " to " + GlobalStuff.DestinationPoint!!.Code + ", " + GlobalStuff.SearchDT!!.format(sdf22)
@@ -195,6 +208,11 @@ class ResultFragment : Fragment() {
 
         direct_lv.setAdapter(resultadapter)
 
+        if (GlobalStuff.ResType == ResultType.Direct && GlobalStuff.ExtResult?.DirectRes.isNullOrEmpty())
+        {
+            direct_lv.visibility = View.GONE
+        }
+
         direct_lv.setOnItemClickListener{parent, view, position, id ->
             val fl = parent.getItemAtPosition(position) as Flight
 
@@ -209,6 +227,31 @@ class ResultFragment : Fragment() {
             val bundle = Bundle()
             bundle.putString("ActionButton", "no")
             GlobalStuff.navController.navigate(R.id.result_one, bundle)
+        }
+
+        tabTransfers.setOnClickListener { view ->
+            if (!GlobalStuff.premiumAccess)  // показываем пэйвол
+            {
+                spin_layout.isVisible = true
+
+                AdControl.GetPaywallViewParams("test_main_action2")
+            }
+            else {
+                GlobalStuff.navController.navigate(R.id.transferlayout, Bundle())
+            }
+        }
+
+        tvResCheckTransfer.setOnClickListener() {
+            if (!GlobalStuff.premiumAccess)  // показываем пэйвол
+            {
+                spin_layout.isVisible = true
+
+                AdControl.GetPaywallViewParams("test_main_action2")
+            }
+            else {
+                GlobalStuff.navController.navigate(R.id.transferlayout, Bundle())
+            }
+
         }
 
         btFinalNew.setOnClickListener { view ->
@@ -390,14 +433,6 @@ class ResultFragment : Fragment() {
             tv1nextday!!.setTextColor(nextDayVis)
             tv1date!!.setText(sdf.format(f.DepDateTime))
             tv1date!!.visibility = visdate
-        }
-    }
-
-    @Deprecated("Deprecated in Java")
-    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
-        super.setUserVisibleHint(isVisibleToUser)
-        if (isVisibleToUser) {
-            GlobalStuff.ExitPurchase = false
         }
     }
 

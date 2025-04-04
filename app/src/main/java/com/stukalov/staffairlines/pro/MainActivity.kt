@@ -462,6 +462,7 @@ class MainActivity : AppCompatActivity() {
 
                         AdaptyGetProfile()
                         GlobalStuff.CF?.Init()
+                        GlobalStuff.navController.navigateUp()
                     }
                 }
 

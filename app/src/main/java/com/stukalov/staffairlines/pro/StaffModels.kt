@@ -1,5 +1,6 @@
 package com.stukalov.staffairlines.pro
 
+import android.text.BoringLayout
 import android.text.Spanned
 import androidx.constraintlayout.widget.Guideline
 import com.google.gson.annotations.SerializedName
@@ -81,7 +82,7 @@ data class Location(
 data class SelectedPoint(
     var Id: Int,
     var Name: String,
-    var Code: String,
+    var Code: String?,
     var PType: PointType,
     var CountryName: String)
 
@@ -212,8 +213,8 @@ class FlightInfo(
 
 class HistoryElement
 (
-    var Origin: String,
-    var Destination: String,
+    var Origin: String?,
+    var Destination: String?,
     var OriginId: String,
     var DestinationId: String,
     var OriginName: String,
@@ -397,6 +398,12 @@ class TokenCollection
     val NonSubscribeTokens: Int,
     val DebtSubscribeTokens: Int,
     val DebtNonSubscribeTokens: Int,
+    val Error: String
+)
+
+class VoidResult
+(
+    val Success: Boolean,
     val Error: String
 )
 

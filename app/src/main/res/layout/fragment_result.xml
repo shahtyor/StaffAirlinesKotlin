@@ -18,14 +18,76 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <!--2-->
+        <LinearLayout
+            android:id="@+id/ResultsTab"
+            android:baselineAligned="false"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="0dp"
+            tools:ignore="MissingConstraints">
+
+            <!--3-->
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                tools:ignore="UseCompoundDrawables">
+
+                <TextView
+                    android:text="DIRECT FLIGHTS"
+                    android:textAlignment="center"
+                    android:gravity="center"
+                    android:textSize="15sp"
+                    android:textColor="@color/staff_blue"
+                    android:layout_width="match_parent"
+                    android:layout_height="37dp" />
+                <ImageView
+                    android:background="@color/staff_blue"
+                    android:layout_width="match_parent"
+                    android:layout_height="3dp" />
+
+            </LinearLayout>
+            <!--3-->
+
+            <!--3-->
+            <LinearLayout
+                android:id="@+id/TabTransfers"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                tools:ignore="UseCompoundDrawables">
+
+                <TextView
+                    android:text="TRANSFERS"
+                    android:textAlignment="center"
+                    android:gravity="center"
+                    android:textSize="15sp"
+                    android:textColor="@color/black"
+                    android:layout_width="match_parent"
+                    android:layout_height="37dp" />
+                <ImageView
+                    android:background="@color/white"
+                    android:layout_width="match_parent"
+                    android:layout_height="3dp" />
+            </LinearLayout>
+            <!--3-->
+
+        </LinearLayout>
+        <!--2-->
+
         <TextView
             android:id="@+id/firstResultInfo"
             android:text="Your FIRST FLIGHT"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:layout_marginStart="20dp"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="10dp"
             android:textSize="14sp"
             android:textColor="@color/black"
+            android:textStyle="bold"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
@@ -36,7 +98,7 @@
             android:background="@color/white"
             android:layout_width="match_parent"
             android:padding="0dp"
-            android:layout_weight="2"
+            android:layout_weight="25"
             android:layout_margin="0dp"
             android:layout_height="0dp">
 
@@ -84,7 +146,7 @@
                         android:layout_height="25dp"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginLeft="0dp"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="15dp"
                         android:layout_marginRight="0dp"
                         tools:ignore="ContentDescription" />
 
@@ -225,7 +287,7 @@
                     <TextView
                         android:layout_marginTop="15dp"
                         android:layout_marginBottom="10dp"
-                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="5dp"
                         android:id="@+id/firstcntrating"
                         android:textSize="12sp"
                         android:textAlignment="center"
@@ -246,6 +308,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginStart="20dp"
                 android:textSize="14sp"
+                android:textStyle="bold"
                 android:textColor="@color/black"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
@@ -255,9 +318,9 @@
                 android:id="@+id/llWaitInfoFinal"
                 android:orientation="horizontal"
                 android:padding="0dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginStart="20dp"
-                android:layout_marginBottom="20dp"
+                android:layout_marginBottom="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -287,7 +350,7 @@
             android:layout_width="match_parent"
             android:orientation="vertical"
             android:padding="0dp"
-            android:layout_weight="8"
+            android:layout_weight="70"
             android:layout_margin="0dp"
             android:layout_height="0dp">
 
@@ -303,7 +366,35 @@
                 android:layout_marginTop="10dp"
                 tools:listitem="@layout/item_directlist" />
 
+            <!--3-->
+            <LinearLayout
+                android:id="@+id/llResTryTransfer"
+                android:orientation="vertical"
+                android:layout_marginTop="100dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:text="No results"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:textAlignment="center" />
+
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:text="Try to take a look at transfer flights"
+                    android:textColor="@color/black"
+                    android:textSize="14sp"
+                    android:textAlignment="center" />
+
             </LinearLayout>
+            <!--3-->
+
+        </LinearLayout>
         <!--2-->
 
         <!--2-->
@@ -311,8 +402,17 @@
             android:id="@+id/llForButtons"
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_weight="1"
-            android:layout_height="0dp">
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tvResCheckTransfer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Check transfer flights"
+                android:textAlignment="center"
+                android:textColor="@color/staff_blue"
+                android:textSize="18sp" />
 
             <Button
                 android:id="@+id/btResCommercial"
@@ -334,6 +434,8 @@
                 style="@style/NotTintedButton"
                 android:text="@string/label_new_search"
                 android:textSize="18sp"
+                android:paddingStart="50dp"
+                android:paddingEnd="50dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="10dp"
                 android:layout_gravity="center_horizontal"
