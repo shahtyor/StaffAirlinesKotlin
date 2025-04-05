@@ -22,7 +22,7 @@ android {
         applicationId "com.stukalov.staffairlines.pro"
         minSdk 26
         targetSdk 34
-        versionCode 43
+        versionCode 44
         versionName "2.0.1"
         ndk {
             abiFilters "armeabi-v7a", "x86_64", "arm64-v8a", "x86"

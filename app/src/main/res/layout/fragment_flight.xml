@@ -32,7 +32,8 @@
         <!--2-->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="20"
             android:layout_margin="0dp"
             android:orientation="horizontal"
             android:padding="0dp"
@@ -131,7 +132,8 @@
         <!--2-->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_weight="15"
+            android:layout_height="0dp"
             android:orientation="horizontal"
             android:layout_marginTop="5dp"
             >
@@ -165,7 +167,8 @@
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_weight="10"
+            android:layout_height="0dp">
 
             <TextView
                 android:id="@+id/engine_one"
@@ -182,7 +185,8 @@
             android:orientation="horizontal"
             android:layout_marginTop="5dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_weight="20"
+            android:layout_height="0dp">
 
             <!--3-->
             <LinearLayout
@@ -230,7 +234,8 @@
             android:orientation="horizontal"
             android:layout_marginTop="5dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_weight="8"
+            android:layout_height="0dp">
 
             <TextView
                 android:text="@string/label_in_flight"
@@ -256,7 +261,8 @@
             android:orientation="horizontal"
             android:layout_marginTop="5dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_weight="20"
+            android:layout_height="0dp">
 
             <!--3-->
             <LinearLayout
@@ -303,7 +309,8 @@
             android:orientation="vertical"
             android:layout_marginTop="5dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_weight="45"
+            android:layout_height="0dp">
 
             <TextView
                 android:id="@+id/tvOneAgentInfo"
@@ -419,7 +426,8 @@
             android:orientation="horizontal"
             android:layout_marginTop="5dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_weight="10"
+            android:layout_height="0dp">
 
             <TextView
                 android:text="Status:"
@@ -446,7 +454,8 @@
             android:orientation="vertical"
             android:layout_marginTop="5dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_weight="30"
+            android:layout_height="0dp">
 
             <TextView
                 android:text="@string/label_classes_available"
@@ -486,16 +495,17 @@
             android:layout_marginTop="5dp"
             android:layout_marginBottom="0dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_weight="25"
+            android:layout_height="0dp">
 
             <Button
                 android:id="@+id/btOneRequest"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="45dp"
                 style="@style/NotTintedButton"
                 android:text="REQUEST"
-                android:textSize="18sp"
+                android:textSize="16sp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginStart="5dp"
                 android:layout_marginEnd="5dp"
@@ -507,12 +517,12 @@
 
             <Button
                 android:id="@+id/btOneSubscribe"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="45dp"
                 style="@style/NotTintedButton"
                 android:text="SUBSCRIBE"
-                android:textSize="18sp"
+                android:textSize="16sp"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="5dp"
                 android:layout_gravity="center_horizontal"
@@ -543,15 +553,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <TextView
-            android:id="@+id/flyzed_one"
-            android:textSize="18sp"
-            android:layout_marginTop="5dp"
-            android:textColor="@color/staff_blue"
-            android:textAlignment="center"
-            android:layout_marginBottom="20dp"
+        <!--2-->
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_weight="25"
+            android:layout_height="0dp">
+
+            <TextView
+                android:id="@+id/flyzed_one"
+                android:textSize="18sp"
+                android:layout_marginTop="5dp"
+                android:textColor="@color/staff_blue"
+                android:textAlignment="center"
+                android:layout_marginBottom="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+        <!--2-->
 
     </LinearLayout>
     <!--1-->

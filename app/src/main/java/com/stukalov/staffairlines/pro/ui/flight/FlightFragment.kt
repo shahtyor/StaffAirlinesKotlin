@@ -106,7 +106,7 @@ class FlightFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val stf = DateTimeFormatter.ofPattern("HH:mm")
-        val sdf = DateTimeFormatter.ofPattern("DD MMM")
+        val sdf = DateTimeFormatter.ofPattern("dd MMM")
 
         alogo = view.findViewById(R.id.aclogo_one)
         aname = view.findViewById(R.id.acname_one)

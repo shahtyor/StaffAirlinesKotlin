@@ -379,9 +379,12 @@ class MainActivity : AppCompatActivity() {
                 )
             }
 
+            Log.d("OpenNotificationFlight", "OK")
             if (res == "OK" && GlobalStuff.FlInfo != null) {
+                Log.d("OpenNotificationFlight", "Step 1. " + GlobalStuff.FlInfo?.Flight?.FlightNumber!!)
                 GlobalStuff.OneResult = GlobalStuff.FlInfo?.Flight
                 SM.SaveAppToken()
+                Log.d("OpenNotificationFlight", "Step 2. " + GlobalStuff.OneResult?.FlightNumber!!)
                 GlobalStuff.navController.navigate(R.id.result_one)
             }
         }
