@@ -19,6 +19,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Arrays
+import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 class StaffMethods {
@@ -538,6 +539,26 @@ class StaffMethods {
             }
         }
     }
+
+    fun GetGUID(): String
+    {
+        var did: String? = ""
+        if (GlobalStuff.prefs.contains("deviceid")) {
+            did = GlobalStuff.prefs.getString("deviceid", null)
+        }
+
+        if (did.isNullOrEmpty())
+        {
+            val id = UUID.randomUUID()
+            did = id.toString()
+
+            val editor = GlobalStuff.prefs.edit()
+            editor.putString("deviceid", did).apply()
+        }
+
+        return did
+    }
+
 
     fun SaveAppToken()
     {

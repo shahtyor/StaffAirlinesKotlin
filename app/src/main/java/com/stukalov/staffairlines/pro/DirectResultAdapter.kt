@@ -2,6 +2,7 @@ package com.stukalov.staffairlines.pro
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,11 +19,9 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 
-class DirectResultAdapter(private val context: Context, private val Res: List<Flight>) : BaseAdapter() {
+class DirectResultAdapter(private val context: Context, private val Res: List<Flight>, private val Direct: Boolean) : BaseAdapter() {
 
     var CurDate: LocalDate = LocalDate.now().minusYears(5)
-    var CurPosition: Int = -100
-    var MaxPosition: Int = -100
 
     override fun getViewTypeCount(): Int {
         val count: Int
@@ -49,7 +48,7 @@ class DirectResultAdapter(private val context: Context, private val Res: List<Fl
         count = if (Res.size > 0) {
             Res.size
         } else {
-            1
+            0
         }
         return count
     }
@@ -89,6 +88,7 @@ class DirectResultAdapter(private val context: Context, private val Res: List<Fl
             holder.llWaitInfo = convertView.findViewById(R.id.llWaitInfo)
             holder.tvWaitInfo = convertView.findViewById(R.id.tvWaitInfo)
             holder.llFlightLayout = convertView.findViewById(R.id.llFlightLayout)
+            holder.tvResCheckTransfer = convertView.findViewById(R.id.tvResCheckTransfer)
 
             convertView.tag = holder
         } else {
@@ -99,94 +99,105 @@ class DirectResultAdapter(private val context: Context, private val Res: List<Fl
         if (Res.size > 0) {
             val f = Res[position]
 
-            val mc = "_" + f.MarketingCarrier.lowercase(Locale.ENGLISH)
-            val arrdep = f.DepartureDateTime.split("T")
-            val deptime = arrdep[1].substring(0, 5)
-            val depday = arrdep[0].split("-")[2].toInt()
-            val arrarr = f.ArrivalDateTime.split("T")
-            val arrtime = arrarr[1].substring(0, 5)
-            val arrday = arrarr[0].split("-")[2].toInt()
-            var orig = f.Origin
-            if (!f.DepartureTerminal.isNullOrEmpty()) {
-                orig = orig + " (" + f.DepartureTerminal + ")"
+            if (f.FlightNumber == "")
+            {
+                holder.tvdateoneres?.visibility = View.GONE
+                holder.tvResCheckTransfer?.visibility = View.VISIBLE
+                holder.llFlightLayout?.visibility = View.GONE
+                holder.tvResCheckTransfer?.setText(Html.fromHtml("<u>Check transfer flights</u>"))
             }
-            var dest = f.Destination
-            if (!f.ArrivalTerminal.isNullOrEmpty()) {
-                dest = dest + " (" + f.ArrivalTerminal + ")"
+            else {
+                val mc = "_" + f.MarketingCarrier.lowercase(Locale.ENGLISH)
+                val arrdep = f.DepartureDateTime.split("T")
+                val deptime = arrdep[1].substring(0, 5)
+                val depday = arrdep[0].split("-")[2].toInt()
+                val arrarr = f.ArrivalDateTime.split("T")
+                val arrtime = arrarr[1].substring(0, 5)
+                val arrday = arrarr[0].split("-")[2].toInt()
+                var orig = f.Origin
+                if (!f.DepartureTerminal.isNullOrEmpty()) {
+                    orig = orig + " (" + f.DepartureTerminal + ")"
+                }
+                var dest = f.Destination
+                if (!f.ArrivalTerminal.isNullOrEmpty()) {
+                    dest = dest + " (" + f.ArrivalTerminal + ")"
+                }
+
+                var waittext = ""
+                var llheight = 0
+                if (GlobalStuff.FirstSegment != null) {
+                    var waittime =
+                        Duration.between(GlobalStuff.FirstSegment!!.ArrDateTime, f.DepDateTime)
+                            .toMinutes().toInt()
+                    waittext = "Waiting time " + GetTimeAsHM2(waittime)
+                    llheight = 40
+                }
+
+                val identifier =
+                    GlobalStuff.StaffRes.getIdentifier(
+                        mc,
+                        "drawable",
+                        "com.stukalov.staffairlines.pro"
+                    )
+                val durt = GetTimeAsHM2(f.Duration)
+
+                var MarkColor: Int = 0
+                var MarkBack: Int = 0
+                if (f.RatingType == RType.Good) {
+                    MarkColor = ContextCompat.getColor(context, R.color.sa_green)
+                    MarkBack = R.drawable.round_box_green
+                } else if (f.RatingType == RType.Medium) {
+                    MarkColor = ContextCompat.getColor(context, R.color.sa_yellow)
+                    MarkBack = R.drawable.round_box_yellow
+                } else {
+                    MarkColor = ContextCompat.getColor(context, R.color.sa_red)
+                    MarkBack = R.drawable.round_box_red
+                }
+
+                var nextDayVis: Int = ContextCompat.getColor(context, R.color.sa_full_transparent)
+                if (depday != arrday) {
+                    nextDayVis = ContextCompat.getColor(context, R.color.black)
+                }
+
+                var waitvis = View.GONE
+                if (GlobalStuff.ResType == ResultType.Second) {
+                    waitvis = View.VISIBLE
+                }
+
+                var step = position
+                var visdate = View.GONE
+                if (f.DepDateTime.toLocalDate() == CurDate) {
+                    visdate = View.GONE
+                } else {
+                    CurDate = f.DepDateTime.toLocalDate()
+                    visdate = View.VISIBLE
+                }
+
+                val sdf = DateTimeFormatter.ofPattern("dd MMMM, yyyy")
+
+                holder.llFlightLayout?.visibility = View.VISIBLE
+                holder.tvResCheckTransfer?.visibility = View.GONE
+                holder.ivaclogo!!.setImageResource(identifier)
+                holder.tvacname!!.setText(f.MarketingName)
+                holder.tvtimedep!!.setText(deptime)
+                holder.tvdeppoint!!.setText(orig)
+                holder.ivplanepic!!.setImageResource(R.drawable.plane1)
+                holder.tvdurtext!!.setText(durt)
+                holder.tvtimearr!!.setText(arrtime)
+                holder.tvarrpoint!!.setText(dest)
+                holder.tvcntrat!!.setText(f.AllPlaces)
+                holder.tvcntrat!!.setTextColor(MarkColor)
+                holder.tvcntrat!!.setBackgroundResource(MarkBack)
+                holder.flframelay!!.setBackgroundColor(MarkColor)
+                holder.tvnextday!!.setTextColor(nextDayVis)
+                holder.tvdateoneres!!.setText(sdf.format(f.DepDateTime))
+                holder.tvdateoneres!!.visibility = visdate
+                holder.llWaitInfo!!.visibility = waitvis
+                holder.tvWaitInfo!!.setText(waittext)
+                val params = holder.llFlightLayout!!.getLayoutParams()
+                //params.height = params.height + llheight
+                holder.llFlightLayout!!.setLayoutParams(params)
             }
-
-            var waittext = ""
-            var llheight = 0
-            if (GlobalStuff.FirstSegment != null) {
-                var waittime =
-                    Duration.between(GlobalStuff.FirstSegment!!.ArrDateTime, f.DepDateTime)
-                        .toMinutes().toInt()
-                waittext = "Waiting time " + GetTimeAsHM2(waittime)
-                llheight = 40
-            }
-
-            val identifier =
-                GlobalStuff.StaffRes.getIdentifier(
-                    mc,
-                    "drawable",
-                    "com.stukalov.staffairlines.pro"
-                )
-            val durt = GetTimeAsHM2(f.Duration)
-
-            var MarkColor: Int = 0
-            var MarkBack: Int = 0
-            if (f.RatingType == RType.Good) {
-                MarkColor = ContextCompat.getColor(context, R.color.sa_green)
-                MarkBack = R.drawable.round_box_green
-            } else if (f.RatingType == RType.Medium) {
-                MarkColor = ContextCompat.getColor(context, R.color.sa_yellow)
-                MarkBack = R.drawable.round_box_yellow
-            } else {
-                MarkColor = ContextCompat.getColor(context, R.color.sa_red)
-                MarkBack = R.drawable.round_box_red
-            }
-
-            var nextDayVis: Int = ContextCompat.getColor(context, R.color.sa_full_transparent)
-            if (depday != arrday) {
-                nextDayVis = ContextCompat.getColor(context, R.color.black)
-            }
-
-            var waitvis = View.GONE
-            if (GlobalStuff.ResType == ResultType.Second) {
-                waitvis = View.VISIBLE
-            }
-
-            var step = position
-            var visdate = View.GONE
-            if (f.DepDateTime.toLocalDate() == CurDate) {
-                visdate = View.GONE
-            } else {
-                CurDate = f.DepDateTime.toLocalDate()
-                visdate = View.VISIBLE
-            }
-
-            val sdf = DateTimeFormatter.ofPattern("dd MMMM, yyyy")
-
-            holder.ivaclogo!!.setImageResource(identifier)
-            holder.tvacname!!.setText(f.MarketingName)
-            holder.tvtimedep!!.setText(deptime)
-            holder.tvdeppoint!!.setText(orig)
-            holder.ivplanepic!!.setImageResource(R.drawable.plane1)
-            holder.tvdurtext!!.setText(durt)
-            holder.tvtimearr!!.setText(arrtime)
-            holder.tvarrpoint!!.setText(dest)
-            holder.tvcntrat!!.setText(f.AllPlaces)
-            holder.tvcntrat!!.setTextColor(MarkColor)
-            holder.tvcntrat!!.setBackgroundResource(MarkBack)
-            holder.flframelay!!.setBackgroundColor(MarkColor)
-            holder.tvnextday!!.setTextColor(nextDayVis)
-            holder.tvdateoneres!!.setText(sdf.format(f.DepDateTime))
-            holder.tvdateoneres!!.visibility = visdate
-            holder.llWaitInfo!!.visibility = waitvis
-            holder.tvWaitInfo!!.setText(waittext)
-            val params = holder.llFlightLayout!!.getLayoutParams()
-            //params.height = params.height + llheight
-            holder.llFlightLayout!!.setLayoutParams(params)
         }
 
         return convertView
@@ -208,6 +219,7 @@ class DirectResultAdapter(private val context: Context, private val Res: List<Fl
         var llWaitInfo: LinearLayout? = null
         var tvWaitInfo: TextView? = null
         var llFlightLayout: LinearLayout? = null
+        var tvResCheckTransfer: TextView? = null
     }
 
     fun GetTimeAsHM2(minutes: Int): String {

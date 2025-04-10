@@ -21,6 +21,7 @@ import com.stukalov.staffairlines.pro.DirectResultAdapter
 import com.stukalov.staffairlines.pro.Flight
 import com.stukalov.staffairlines.pro.GlobalStuff
 import com.stukalov.staffairlines.pro.NonDirectResult
+import com.stukalov.staffairlines.pro.PlaceInfo
 import com.stukalov.staffairlines.pro.R
 import com.stukalov.staffairlines.pro.RType
 import com.stukalov.staffairlines.pro.ResultType
@@ -79,11 +80,10 @@ class ResultFragment : Fragment() {
         val tvWaitInfoFinal = view.findViewById<TextView>(R.id.tvWaitInfoFinal)
         val spin_layout = view.findViewById<FrameLayout>(R.id.spinner_result)
         val llResForListview = view.findViewById<LinearLayout>(R.id.llResForListview)
-        val tvResCheckTransfer = view.findViewById<TextView>(R.id.tvResCheckTransfer)
         val llResTryTransfer = view.findViewById<LinearLayout>(R.id.llResTryTransfer)
         btResCommercial = view.findViewById(R.id.btResCommercial)
 
-        tvResCheckTransfer.setText(Html.fromHtml("<u>Check transfer flights</u>"))
+        //tvResCheckTransfer.setText(Html.fromHtml("<u>Check transfer flights</u>"))
         llResTryTransfer.visibility = View.GONE
 
         if (GlobalStuff.BackResType != null)
@@ -99,14 +99,28 @@ class ResultFragment : Fragment() {
             btFinalNew.visibility = View.GONE
             llWaitInfoFinal.visibility = View.GONE
             tv1resultInfo.visibility = View.GONE
-            tvResCheckTransfer.visibility - View.VISIBLE
 
             if (GlobalStuff.ExtResult?.DirectRes.isNullOrEmpty())
             {
                 llResTryTransfer.visibility = View.VISIBLE
             }
+            else
+            {
+                val flast = GlobalStuff.ExtResult?.DirectRes?.last()
+                if (flast?.FlightNumber != "") {
+                    var tmplist = GlobalStuff.ExtResult?.DirectRes?.toMutableList()
+                    tmplist?.add(
+                        GlobalStuff.ExtResult?.DirectRes?.lastIndex?.plus(1)!!, Flight("", "", "", "", "",
+                            "", "", "", "", "", 0, 0, "",
+                            "", "", "", "", "", "", "", "",
+                            0, arrayOf(), 0, 0, 0, 0, "", 0, 0.0f, 0,
+                            "", PlaceInfo(0, 0, 0, "", 0, "", ""), false)
+                    )
+                    GlobalStuff.ExtResult?.DirectRes = tmplist?.toList()!!
+                }
+            }
 
-            resultadapter = DirectResultAdapter(view.context, GlobalStuff.ExtResult!!.DirectRes)
+            resultadapter = DirectResultAdapter(view.context, GlobalStuff.ExtResult!!.DirectRes, true)
         }
         else if (GlobalStuff.ResType == ResultType.First) {
             GlobalStuff.BackResType = ResultType.First
@@ -114,7 +128,6 @@ class ResultFragment : Fragment() {
             tvResInfo.visibility = View.VISIBLE
             llFirstSegment.visibility = View.GONE
             tv1resultInfo.visibility = View.VISIBLE
-            tvResCheckTransfer.visibility = View.GONE
 
             btFinalNew.visibility = View.GONE
             llWaitInfoFinal.visibility = View.GONE
@@ -136,7 +149,7 @@ class ResultFragment : Fragment() {
             {
                 ListRes = NonRes.To_airport_transfer
             }
-            resultadapter = DirectResultAdapter(view.context, ListRes)
+            resultadapter = DirectResultAdapter(view.context, ListRes, false)
         }
         else if (GlobalStuff.ResType == ResultType.Second)
         {
@@ -149,7 +162,6 @@ class ResultFragment : Fragment() {
             tvResInfo.setText(infotxt)
             tv1resultInfo.visibility = View.VISIBLE
             llFirstSegment.visibility = View.VISIBLE
-            tvResCheckTransfer.visibility = View.GONE
 
             val info2text = "Your FIRST FLIGHT " + GlobalStuff.OriginPoint!!.Code + "-" + GlobalStuff.ChangePoint
             tv1resultInfo.setText(info2text)
@@ -170,7 +182,7 @@ class ResultFragment : Fragment() {
                 val depmaxts = GlobalStuff.FirstSegment!!.ArrDateTime.plusHours(24)
                 ListRes = NonRes.From_airport_transfer.filter{ it -> it.DepDateTime >= depmints && it.DepDateTime <= depmaxts }
             }
-            resultadapter = DirectResultAdapter(view.context, ListRes)
+            resultadapter = DirectResultAdapter(view.context, ListRes, false)
         }
         else if (GlobalStuff.ResType == ResultType.Final)
         {
@@ -181,7 +193,6 @@ class ResultFragment : Fragment() {
             llWaitInfoFinal.visibility = View.VISIBLE
             tvResInfo.visibility = View.GONE
             tv1resultInfo.visibility = View.VISIBLE
-            tvResCheckTransfer.visibility = View.GONE
 
             val sdf22 = DateTimeFormatter.ofPattern("dd MMMM, yyyy")
             val info3text = "Your trip from " + GlobalStuff.OriginPoint!!.Code + " to " + GlobalStuff.DestinationPoint!!.Code + ", " + GlobalStuff.SearchDT!!.format(sdf22)
@@ -201,7 +212,7 @@ class ResultFragment : Fragment() {
             val ListRes: MutableList<Flight> = mutableListOf()
             ListRes.add(0, GlobalStuff.SecondSegment!!)
 
-            resultadapter = DirectResultAdapter(view.context, ListRes.toList())
+            resultadapter = DirectResultAdapter(view.context, ListRes.toList(), false)
         }
 
         SetCommercialButton()
@@ -216,9 +227,24 @@ class ResultFragment : Fragment() {
         direct_lv.setOnItemClickListener{parent, view, position, id ->
             val fl = parent.getItemAtPosition(position) as Flight
 
-            GlobalStuff.OneResult = fl
-            GlobalStuff.BackResType = null
-            GlobalStuff.navController.navigate(R.id.result_one)
+            if (fl.FlightNumber == "") {
+
+                if (!GlobalStuff.premiumAccess)  // показываем пэйвол
+                {
+                    spin_layout.isVisible = true
+
+                    AdControl.GetPaywallViewParams("test_main_action2")
+                }
+                else {
+                    GlobalStuff.navController.navigate(R.id.transferlayout, Bundle())
+                }
+
+            }
+            else {
+                GlobalStuff.OneResult = fl
+                GlobalStuff.BackResType = null
+                GlobalStuff.navController.navigate(R.id.result_one)
+            }
         }
 
         llFirstLayout.setOnClickListener { view ->
@@ -241,7 +267,7 @@ class ResultFragment : Fragment() {
             }
         }
 
-        tvResCheckTransfer.setOnClickListener() {
+        /*tvResCheckTransfer.setOnClickListener() {
             if (!GlobalStuff.premiumAccess)  // показываем пэйвол
             {
                 spin_layout.isVisible = true
@@ -252,7 +278,7 @@ class ResultFragment : Fragment() {
                 GlobalStuff.navController.navigate(R.id.transferlayout, Bundle())
             }
 
-        }
+        }*/
 
         btFinalNew.setOnClickListener { view ->
             GlobalStuff.ResType = ResultType.Direct

@@ -41,6 +41,7 @@ import java.time.format.DateTimeFormatter
         var FavoriteList = mutableListOf<FlightWithPax>()
         var HistoryList = mutableListOf<HistoryElement>()
         var NotificationData: Map<String, String> = mapOf()
+        var NotiData: NotificationData? = null
         var HF: HomeFragment? = null
         var CF: CredentialsFragment? = null
         var Token: String? = null
@@ -87,6 +88,10 @@ import java.time.format.DateTimeFormatter
         var customerLastName: String? = null
         var customerProfile: ProfileTokens? = null
         var adAction: AdaptyAction = AdaptyAction.None
+        var TestMessage: String = ""
+
+        var FirstSearchForm: Boolean = true
+        var DeviceID: String? = null
 
         fun setActionBar(visibility: Boolean, upEnable: Boolean, title: String)
         {

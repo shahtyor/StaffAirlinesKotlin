@@ -13,6 +13,7 @@ import android.util.Log
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.collection.emptyLongSet
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
@@ -148,13 +149,13 @@ class MainActivity : AppCompatActivity() {
 
         navController = findNavController(R.id.nav_host_fragment_activity_main)
 
-        lifecycleScope.launch {
+        /*lifecycleScope.launch {
             val jsonloc = withContext(Dispatchers.IO) { SM.LoadLocations() }
         }
 
         lifecycleScope.launch {
             val jsonair = withContext(Dispatchers.IO) { SM.LoadAirlines() }
-        }
+        }*/
 
         GlobalStuff.activity = this.baseContext
         GlobalStuff.mActivity = this
@@ -215,7 +216,16 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        ExtrasProcess()
+        Log.d("onCreate", "End")
+
+        if (GlobalStuff.NotiData != null)
+        {
+            OpenNotificationFlight(GlobalStuff.NotiData!!)
+        }
+        else
+        {
+            ExtrasProcess(intent.extras)
+        }
     }
 
     companion object {
@@ -296,7 +306,7 @@ class MainActivity : AppCompatActivity() {
         }
         catch (ex: Exception)
         {
-            val khj = "234"
+            Log.d("BuildProfileToken", ex.message + "..." + ex.stackTrace)
         }
     }
 
@@ -309,57 +319,67 @@ class MainActivity : AppCompatActivity() {
         GlobalStuff.googleInClient = signInClient
     }
 
-    fun loadSomeFragment(): Unit
+    /*fun loadSomeFragment(): Unit
     {
         val jmkh = "we"
-    }
+    }*/
 
-    private fun ExtrasProcess()
-    {
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH)
-        val data: NotificationData = NotificationData("", "", "", LocalDateTime.now(), 0, "", "")
+    private fun ExtrasProcess(extras: Bundle?) {
+        Log.d("ExtrasProcess", "Start")
+        GlobalStuff.TestMessage += "ExtrasProcess-Start"
 
-        if (intent.extras != null)
-        {
-            intent.extras!!.keySet().forEach { key ->
-                if (key != null)
-                {
-                    if (key == "type")
-                    {
-                        data.type = intent.extras?.getString(key)!!
-                    }
-                    else if (key == "origin")
-                    {
-                        data.origin = intent.extras?.getString(key)!!
-                    }
-                    else if (key == "destination")
-                    {
-                        data.destination = intent.extras?.getString(key)!!
-                    }
-                    else if (key == "departureDateTime")
-                    {
-                        data.departureDateTime = LocalDateTime.parse(intent.extras?.getString(key)!!, formatter)
-                    }
-                    else if (key == "paxAmount")
-                    {
-                        data.paxAmount = intent.extras?.getString(key)!!.toInt()
-                    }
-                    else if (key == "marketingCarrier")
-                    {
-                        data.marketingCarrier = intent.extras?.getString(key)!!
-                    }
-                    else if (key == "flightNumber")
-                    {
-                        data.flightNumber = intent.extras?.getString(key)!!
+        try {
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH)
+            val data: NotificationData = NotificationData("", "", "", LocalDateTime.now(), 0, "", "")
+
+            Log.d("ExtrasProcess", "Prepare")
+            GlobalStuff.TestMessage += "-Prepare"
+
+            if (extras != null) {
+                Log.d("ExtrasProcess", "extras != null")
+                GlobalStuff.TestMessage += "-Not null"
+
+                extras.keySet().forEach { key ->
+                    if (key != null) {
+                        if (key == "type") {
+                            data.type = intent.extras?.getString(key)!!
+                        } else if (key == "origin") {
+                            data.origin = intent.extras?.getString(key)!!
+                        } else if (key == "destination") {
+                            data.destination = intent.extras?.getString(key)!!
+                        } else if (key == "departureDateTime") {
+                            data.departureDateTime =
+                                LocalDateTime.parse(intent.extras?.getString(key)!!, formatter)
+                        } else if (key == "paxAmount") {
+                            data.paxAmount = intent.extras?.getString(key)!!.toInt()
+                        } else if (key == "marketingCarrier") {
+                            data.marketingCarrier = intent.extras?.getString(key)!!
+                        } else if (key == "flightNumber") {
+                            data.flightNumber = intent.extras?.getString(key)!!
+                        }
                     }
                 }
+
+                Log.d("ExtrasProcess", "End")
+                GlobalStuff.TestMessage += "-End"
+
+                OpenNotificationFlight(data)
             }
-            OpenNotificationFlight(data)
+            else {
+                Log.d("ExtrasProcess", "Null")
+                GlobalStuff.TestMessage += "-Null"
+            }
+
+        } catch (ex: Exception) {
+            Log.d("ExtrasProcess", ex.message + "..." + ex.stackTrace)
         }
     }
 
     fun OpenNotificationFlight(data: NotificationData)
     {
+        Log.d("OpenNotificationFlight", "Start")
+        GlobalStuff.TestMessage += ". OpenNotificationFlight-Start"
+
         if (data.paxAmount == 0)
         {
             data.paxAmount = 1;
@@ -380,11 +400,18 @@ class MainActivity : AppCompatActivity() {
             }
 
             Log.d("OpenNotificationFlight", "OK")
+            GlobalStuff.TestMessage += "-OK"
+
             if (res == "OK" && GlobalStuff.FlInfo != null) {
                 Log.d("OpenNotificationFlight", "Step 1. " + GlobalStuff.FlInfo?.Flight?.FlightNumber!!)
+                GlobalStuff.TestMessage += "-Step1"
+
                 GlobalStuff.OneResult = GlobalStuff.FlInfo?.Flight
                 SM.SaveAppToken()
                 Log.d("OpenNotificationFlight", "Step 2. " + GlobalStuff.OneResult?.FlightNumber!!)
+                GlobalStuff.TestMessage += "-Step2"
+                GlobalStuff.NotiData = null
+
                 GlobalStuff.navController.navigate(R.id.result_one)
             }
         }
@@ -463,8 +490,15 @@ class MainActivity : AppCompatActivity() {
                             }
                         }
 
+                        val p1 = GlobalStuff.premiumAccess
+
                         AdaptyGetProfile()
-                        GlobalStuff.CF?.Init()
+
+                        val p2 = GlobalStuff.premiumAccess
+
+                        if (GlobalStuff.CF != null) {
+                            GlobalStuff.CF?.Init()
+                        }
                         GlobalStuff.navController.navigateUp()
                     }
                 }

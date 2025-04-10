@@ -166,7 +166,7 @@ class CredentialsFragment : Fragment() {
             tvCredCoins.visibility = View.VISIBLE
             ivCredCoins.visibility = View.VISIBLE
 
-            if (GlobalStuff.premiumAccess && GlobalStuff.customerProfile != null)
+            if (GlobalStuff.premiumAccess)
             {
                 val sum = GlobalStuff.customerProfile!!.SubscribeTokens + GlobalStuff.customerProfile!!.NonSubscribeTokens
                 tvCredCoins.setText(sum.toString())

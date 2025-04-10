@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings.Global
 import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
@@ -20,6 +21,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.amplitude.core.events.BaseEvent
 import com.onesignal.OneSignal
 import com.stukalov.staffairlines.pro.GetNonDirectType
 import com.stukalov.staffairlines.pro.GlobalStuff
@@ -174,6 +176,12 @@ class HomeFragment : Fragment() {
         }
 
         GlobalStuff.HF = this
+
+        if (GlobalStuff.TestMessage.isNotEmpty())
+        {
+            val toast0 = Toast.makeText(context, GlobalStuff.TestMessage, Toast.LENGTH_LONG)
+            toast0.show()
+        }
     }
 
     /*fun SearchFun(SM: StaffMethods) = coroutineScope{
@@ -335,6 +343,25 @@ class HomeFragment : Fragment() {
 
         OneSignal.InAppMessages.addTrigger("os_open_screen", "formSearch")
 
+        if (GlobalStuff.FirstSearchForm)
+        {
+            var event = BaseEvent()
+            event.deviceId = GlobalStuff.DeviceID
+            event.eventType = "Search form show"
+            event.platform = "Android"
+            if (GlobalStuff.customerID != null) {
+                event.eventProperties = mutableMapOf<String, Any?>("UserID" to GlobalStuff.customerID)
+            }
+            event.userProperties = mutableMapOf<String, Any?>("Aircompany" to GlobalStuff.OwnAC, "paidStatus" to if (GlobalStuff.premiumAccess) "premiumAccess" else "free plan")
+
+            GlobalStuff.amplitude?.track(event)
+
+            //string DataJson = "[{,,," + SomeFunctions.GetDeviceInfo() + "," + suser + "}]";
+
+
+            GlobalStuff.FirstSearchForm = false
+        }
+
         if (GlobalStuff.OwnAC == null)
         {
             if (!GlobalStuff.HomeFromSelect) {
@@ -359,6 +386,25 @@ class HomeFragment : Fragment() {
             } else {
                 OneSignal.InAppMessages.addTrigger("os_presetAC", "exists")
             }
+        }
+
+        if (GlobalStuff.FirstSearchForm)
+        {
+            var event = BaseEvent()
+            event.deviceId = GlobalStuff.DeviceID
+            event.eventType = "Search form show"
+            event.platform = "Android"
+            if (GlobalStuff.customerID != null) {
+                event.eventProperties = mutableMapOf<String, Any?>("UserID" to GlobalStuff.customerID)
+            }
+            event.userProperties = mutableMapOf<String, Any?>("Aircompany" to GlobalStuff.OwnAC, "paidStatus" to if (GlobalStuff.premiumAccess) "premiumAccess" else "free plan")
+
+            GlobalStuff.amplitude?.track(event)
+
+            //string DataJson = "[{,,," + SomeFunctions.GetDeviceInfo() + "," + suser + "}]";
+
+
+            GlobalStuff.FirstSearchForm = false
         }
     }
 
