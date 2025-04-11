@@ -13,7 +13,6 @@ import android.util.Log
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.collection.emptyLongSet
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
@@ -137,7 +136,7 @@ class MainActivity : AppCompatActivity() {
                 GlobalStuff.subscriptionId = null;
             }
 
-            BuildProfileToken(profile.customAttributes, premium)
+            //BuildProfileToken(profile.customAttributes, premium)
 
             if (GlobalStuff.HF != null) {
                 GlobalStuff.HF!!.SetPlan()
@@ -234,7 +233,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun AdaptyGetProfile()
+    fun AdaptyGetProfile(initCF: Boolean = false)
     {
         Adapty.getProfile { result ->
             when (result) {
@@ -258,8 +257,31 @@ class MainActivity : AppCompatActivity() {
 
                     BuildProfileToken(profile.customAttributes, premium)
 
-                    if (GlobalStuff.HF != null) {
-                        GlobalStuff.HF!!.SetPlan()
+                    if (!GlobalStuff.Token.isNullOrEmpty()) {
+                        lifecycleScope.launch {
+                            val rem = withContext(Dispatchers.IO) { SM.RemainSubscribe(GlobalStuff.Token!!) }
+
+                            if (rem != null) {
+                                GlobalStuff.Remain = rem.count
+
+                                if (GlobalStuff.HF != null) {
+                                    GlobalStuff.HF?.SetPlan()
+                                }
+
+                                if (initCF)
+                                {
+                                    if (GlobalStuff.CF != null) {
+                                        GlobalStuff.CF?.Init()
+                                    }
+                                    GlobalStuff.navController.navigateUp()
+                                }
+                            }
+                        }
+                    }
+                    else {
+                        if (GlobalStuff.HF != null) {
+                            GlobalStuff.HF!!.SetPlan()
+                        }
                     }
                 }
                 is AdaptyResult.Error -> {
@@ -299,7 +321,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 catch (e: Exception)
                 {
-                    val lk = "24"
+                    Log.d("BuildProfileToken", e.message + "..." + e.stackTrace)
                 }
                 GlobalStuff.customerProfile = ProfileTokens(isub, inon, prem, "", "", so1)
             }
@@ -319,25 +341,17 @@ class MainActivity : AppCompatActivity() {
         GlobalStuff.googleInClient = signInClient
     }
 
-    /*fun loadSomeFragment(): Unit
-    {
-        val jmkh = "we"
-    }*/
-
     private fun ExtrasProcess(extras: Bundle?) {
         Log.d("ExtrasProcess", "Start")
-        GlobalStuff.TestMessage += "ExtrasProcess-Start"
 
         try {
             val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH)
             val data: NotificationData = NotificationData("", "", "", LocalDateTime.now(), 0, "", "")
 
             Log.d("ExtrasProcess", "Prepare")
-            GlobalStuff.TestMessage += "-Prepare"
 
             if (extras != null) {
                 Log.d("ExtrasProcess", "extras != null")
-                GlobalStuff.TestMessage += "-Not null"
 
                 extras.keySet().forEach { key ->
                     if (key != null) {
@@ -361,13 +375,11 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 Log.d("ExtrasProcess", "End")
-                GlobalStuff.TestMessage += "-End"
 
                 OpenNotificationFlight(data)
             }
             else {
                 Log.d("ExtrasProcess", "Null")
-                GlobalStuff.TestMessage += "-Null"
             }
 
         } catch (ex: Exception) {
@@ -378,7 +390,6 @@ class MainActivity : AppCompatActivity() {
     fun OpenNotificationFlight(data: NotificationData)
     {
         Log.d("OpenNotificationFlight", "Start")
-        GlobalStuff.TestMessage += ". OpenNotificationFlight-Start"
 
         if (data.paxAmount == 0)
         {
@@ -400,16 +411,13 @@ class MainActivity : AppCompatActivity() {
             }
 
             Log.d("OpenNotificationFlight", "OK")
-            GlobalStuff.TestMessage += "-OK"
 
             if (res == "OK" && GlobalStuff.FlInfo != null) {
                 Log.d("OpenNotificationFlight", "Step 1. " + GlobalStuff.FlInfo?.Flight?.FlightNumber!!)
-                GlobalStuff.TestMessage += "-Step1"
 
                 GlobalStuff.OneResult = GlobalStuff.FlInfo?.Flight
                 SM.SaveAppToken()
                 Log.d("OpenNotificationFlight", "Step 2. " + GlobalStuff.OneResult?.FlightNumber!!)
-                GlobalStuff.TestMessage += "-Step2"
                 GlobalStuff.NotiData = null
 
                 GlobalStuff.navController.navigate(R.id.result_one)
@@ -461,16 +469,6 @@ class MainActivity : AppCompatActivity() {
                 OneSignal.login(cMD5)
                 GlobalStuff.SaveOneSignalToAdapty()
 
-                if (!GlobalStuff.Token.isNullOrEmpty()) {
-                    lifecycleScope.launch {
-                        val rem = withContext(Dispatchers.IO) { SM.RemainSubscribe(GlobalStuff.Token!!) }
-
-                        if (rem != null) {
-                            GlobalStuff.Remain = rem.count
-                        }
-                    }
-                }
-
                 Adapty.identify(cMD5) { error ->
                     if (error == null) {
 
@@ -486,20 +484,18 @@ class MainActivity : AppCompatActivity() {
                             }
                             else
                             {
-                                //GlobalStuff.navController.navigateUp()
+                                val p1 = GlobalStuff.premiumAccess
+
+                                AdaptyGetProfile(true)
+
+                                val p2 = GlobalStuff.premiumAccess
+
+                                /*if (GlobalStuff.CF != null) {
+                                    GlobalStuff.CF?.Init()
+                                }
+                                GlobalStuff.navController.navigateUp()*/
                             }
                         }
-
-                        val p1 = GlobalStuff.premiumAccess
-
-                        AdaptyGetProfile()
-
-                        val p2 = GlobalStuff.premiumAccess
-
-                        if (GlobalStuff.CF != null) {
-                            GlobalStuff.CF?.Init()
-                        }
-                        GlobalStuff.navController.navigateUp()
                     }
                 }
 

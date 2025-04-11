@@ -100,6 +100,16 @@ class ResultFragment : Fragment() {
             llWaitInfoFinal.visibility = View.GONE
             tv1resultInfo.visibility = View.GONE
 
+            //Открылась страница с результатами прямых перелетов
+            val event = GlobalStuff.GetBaseEvent("Direct show", true)
+            event.eventProperties = mutableMapOf("Variants" to GlobalStuff.ExtResult?.DirectRes?.count(),
+                "Variants_red" to GlobalStuff.ExtResult?.DirectRes?.filter { x -> x.Rating == RType.Bad.value }?.count(),
+                "Variants_yellow" to GlobalStuff.ExtResult?.DirectRes?.filter { x -> x.Rating == RType.Medium.value }?.count(),
+                "Variants_green" to GlobalStuff.ExtResult?.DirectRes?.filter { x -> x.Rating == RType.Good.value }?.count(),
+                "price from ms" to if (GlobalStuff.ExtResult?.DirectInfo != null && GlobalStuff.ExtResult?.DirectInfo?.Amount!! > 0) "yes" else "no",
+                "UserID" to if (GlobalStuff.customerID == null) "-" else GlobalStuff.customerID)
+            GlobalStuff.amplitude?.track(event)
+
             if (GlobalStuff.ExtResult?.DirectRes.isNullOrEmpty())
             {
                 llResTryTransfer.visibility = View.VISIBLE
@@ -140,7 +150,7 @@ class ResultFragment : Fragment() {
 
             var ListRes: List<Flight> = listOf()
             var NonRes: NonDirectResult? = null
-            val ListNonDir = GlobalStuff.ExtResult!!.NonDirectRes!!.filter{ it -> it.Transfer == GlobalStuff.ChangePoint }
+            val ListNonDir = GlobalStuff.ExtResult!!.NonDirectRes.filter{ it -> it.Transfer == GlobalStuff.ChangePoint }
             if (ListNonDir != null && ListNonDir.isNotEmpty())
             {
                 NonRes = ListNonDir[0]
@@ -149,6 +159,17 @@ class ResultFragment : Fragment() {
             {
                 ListRes = NonRes.To_airport_transfer
             }
+
+            //Открылась страница с результатами первого сегмента кривого варианта
+            val event = GlobalStuff.GetBaseEvent("Non direct show first", true)
+            event.eventProperties = mutableMapOf("Variants" to ListRes.count(),
+                "Variants_red" to ListRes.filter { x -> x.Rating == RType.Bad.value }.count(),
+                "Variants_yellow" to ListRes.filter { x-> x.Rating == RType.Medium.value }.count(),
+                "Variants_green" to ListRes.filter { x -> x.Rating == RType.Good.value }.count(),
+                "price from ms" to if (NonRes?.ToTransferInfo != null && NonRes?.ToTransferInfo?.Amount!! > 0) "yes" else "no",
+                "UserID" to if (GlobalStuff.customerID == null) "-" else GlobalStuff.customerID)
+            GlobalStuff.amplitude?.track(event)
+
             resultadapter = DirectResultAdapter(view.context, ListRes, false)
         }
         else if (GlobalStuff.ResType == ResultType.Second)
@@ -182,6 +203,17 @@ class ResultFragment : Fragment() {
                 val depmaxts = GlobalStuff.FirstSegment!!.ArrDateTime.plusHours(24)
                 ListRes = NonRes.From_airport_transfer.filter{ it -> it.DepDateTime >= depmints && it.DepDateTime <= depmaxts }
             }
+
+            //Открылась страница с результатами второго сегмента кривого варианта
+            val event = GlobalStuff.GetBaseEvent("Non direct show second", true)
+            event.eventProperties = mutableMapOf("Variants" to ListRes.count(),
+                "Variants_red" to ListRes.filter { x -> x.Rating == RType.Bad.value }.count(),
+                "Variants_yellow" to ListRes.filter { x-> x.Rating == RType.Medium.value }.count(),
+                "Variants_green" to ListRes.filter { x -> x.Rating == RType.Good.value }.count(),
+                "price from ms" to if (NonRes?.FromTransferInfo != null && NonRes?.FromTransferInfo?.Amount!! > 0) "yes" else "no",
+                "UserID" to if (GlobalStuff.customerID == null) "-" else GlobalStuff.customerID)
+            GlobalStuff.amplitude?.track(event)
+
             resultadapter = DirectResultAdapter(view.context, ListRes, false)
         }
         else if (GlobalStuff.ResType == ResultType.Final)
@@ -211,6 +243,12 @@ class ResultFragment : Fragment() {
 
             val ListRes: MutableList<Flight> = mutableListOf()
             ListRes.add(0, GlobalStuff.SecondSegment!!)
+
+            //форма с выбранным вариантом
+            val event = GlobalStuff.GetBaseEvent("Selected variant show", true)
+            event.eventProperties = mutableMapOf("Selected ac" to "[" + GlobalStuff.FirstSegment?.MarketingCarrier + "," + GlobalStuff.SecondSegment?.MarketingCarrier + "]",
+                "UserID" to if (GlobalStuff.customerID == null) "-" else GlobalStuff.customerID)
+            GlobalStuff.amplitude?.track(event)
 
             resultadapter = DirectResultAdapter(view.context, ListRes.toList(), false)
         }
@@ -267,24 +305,16 @@ class ResultFragment : Fragment() {
             }
         }
 
-        /*tvResCheckTransfer.setOnClickListener() {
-            if (!GlobalStuff.premiumAccess)  // показываем пэйвол
-            {
-                spin_layout.isVisible = true
-
-                AdControl.GetPaywallViewParams("test_main_action2")
-            }
-            else {
-                GlobalStuff.navController.navigate(R.id.transferlayout, Bundle())
-            }
-
-        }*/
-
         btFinalNew.setOnClickListener { view ->
             GlobalStuff.ResType = ResultType.Direct
             GlobalStuff.BackResType = null
             GlobalStuff.FirstSegment = null
             GlobalStuff.SecondSegment = null
+
+            //нажата кнопка Новый поиск на форме выбранного варианта с пересадкой
+            val event = GlobalStuff.GetBaseEvent("New search button", true, true)
+            GlobalStuff.amplitude?.track(event)
+
             GlobalStuff.navController.navigate(R.id.main_frag)
         }
     }
@@ -338,6 +368,11 @@ class ResultFragment : Fragment() {
                 var dlink: String = ""
                 if (GlobalStuff.ResType == ResultType.Direct && Exres.DirectInfo != null && Exres.DirectInfo.Link != null)
                 {
+                    val event = GlobalStuff.GetBaseEvent("click ms button")
+                    event.eventProperties = mutableMapOf("price from ms" to if (GlobalStuff.ExtResult?.DirectInfo != null && GlobalStuff.ExtResult?.DirectInfo?.Amount!! > 0) "yes" else "no",
+                        "flow" to "direct", "UserID" to if (GlobalStuff.customerID == null) "-" else GlobalStuff.customerID)
+                    GlobalStuff.amplitude?.track(event)
+
                     dlink = Exres.DirectInfo.Link
                 }
                 else if (Exres.NonDirectRes != null)
@@ -347,6 +382,11 @@ class ResultFragment : Fragment() {
                     {
                         if (ndr.ToTransferInfo != null && ndr.ToTransferInfo.Link != null)
                         {
+                            val event = GlobalStuff.GetBaseEvent("click ms button")
+                            event.eventProperties = mutableMapOf("price from ms" to if (ndr.ToTransferInfo != null && ndr.ToTransferInfo.Amount > 0) "yes" else "no",
+                                "flow" to "transfer1", "UserID" to if (GlobalStuff.customerID == null) "-" else GlobalStuff.customerID)
+                            GlobalStuff.amplitude?.track(event)
+
                             dlink = ndr.ToTransferInfo.Link
                         }
                     }
@@ -354,6 +394,11 @@ class ResultFragment : Fragment() {
                     {
                         if (ndr.FromTransferInfo != null && ndr.FromTransferInfo.Amount > 0)
                         {
+                            val event = GlobalStuff.GetBaseEvent("click ms button")
+                            event.eventProperties = mutableMapOf("price from ms" to if (ndr.FromTransferInfo != null && ndr.FromTransferInfo.Amount > 0) "yes" else "no",
+                                "flow" to "transfer2", "UserID" to if (GlobalStuff.customerID == null) "-" else GlobalStuff.customerID)
+                            GlobalStuff.amplitude?.track(event)
+
                             dlink = ndr.FromTransferInfo.Link
                         }
                     }

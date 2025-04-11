@@ -36,6 +36,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
+import java.time.Period
 import java.time.format.DateTimeFormatter
 
 
@@ -176,12 +177,6 @@ class HomeFragment : Fragment() {
         }
 
         GlobalStuff.HF = this
-
-        if (GlobalStuff.TestMessage.isNotEmpty())
-        {
-            val toast0 = Toast.makeText(context, GlobalStuff.TestMessage, Toast.LENGTH_LONG)
-            toast0.show()
-        }
     }
 
     /*fun SearchFun(SM: StaffMethods) = coroutineScope{
@@ -343,7 +338,7 @@ class HomeFragment : Fragment() {
 
         OneSignal.InAppMessages.addTrigger("os_open_screen", "formSearch")
 
-        if (GlobalStuff.FirstSearchForm)
+        /*if (GlobalStuff.FirstSearchForm)
         {
             var event = BaseEvent()
             event.deviceId = GlobalStuff.DeviceID
@@ -356,11 +351,8 @@ class HomeFragment : Fragment() {
 
             GlobalStuff.amplitude?.track(event)
 
-            //string DataJson = "[{,,," + SomeFunctions.GetDeviceInfo() + "," + suser + "}]";
-
-
             GlobalStuff.FirstSearchForm = false
-        }
+        }*/
 
         if (GlobalStuff.OwnAC == null)
         {
@@ -390,19 +382,10 @@ class HomeFragment : Fragment() {
 
         if (GlobalStuff.FirstSearchForm)
         {
-            var event = BaseEvent()
-            event.deviceId = GlobalStuff.DeviceID
-            event.eventType = "Search form show"
-            event.platform = "Android"
-            if (GlobalStuff.customerID != null) {
-                event.eventProperties = mutableMapOf<String, Any?>("UserID" to GlobalStuff.customerID)
-            }
+            val event = GlobalStuff.GetBaseEvent("Search form show", false, true)
             event.userProperties = mutableMapOf<String, Any?>("Aircompany" to GlobalStuff.OwnAC, "paidStatus" to if (GlobalStuff.premiumAccess) "premiumAccess" else "free plan")
 
             GlobalStuff.amplitude?.track(event)
-
-            //string DataJson = "[{,,," + SomeFunctions.GetDeviceInfo() + "," + suser + "}]";
-
 
             GlobalStuff.FirstSearchForm = false
         }
@@ -566,6 +549,10 @@ class HomeFragment : Fragment() {
         shareIntent.setType("text/html")
         shareIntent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml("Seems that it useful tool for planning nonrev travel. This is the link for downloading mobile application Staff Airlines from AppStore or Google Play:<br/>https://staffairlines.com/download"))
         startActivity(Intent.createChooser(shareIntent, "I use Staff Airlines app for planning my nonrev travel"))
+
+        val event = GlobalStuff.GetBaseEvent("Share app from search form", true, true)
+        GlobalStuff.amplitude?.track(event)
+
         GlobalStuff.navController.navigate(R.id.main_frag, Bundle())
     }
 
@@ -600,13 +587,14 @@ class HomeFragment : Fragment() {
 
                 val permlist = SM.GetStringPermitt()
 
-                // Отладка
-                /*var event = BaseEvent()
-                event.eventType = "Test 1803 event"
-                event.userId = "shahtyor_test"
-                event.eventProperties = mutableMapOf<String, Any?>("title" to "Test event", "desc" to "desc event")
-                event.userProperties = mutableMapOf<String, Any?>("name" to "shahtyor")
-                GlobalStuff.amplitude?.track(event)*/
+                // Пользователь запустил поиск
+                val event = GlobalStuff.GetBaseEvent("Extended search started", true)
+                event.eventProperties = mutableMapOf<String, Any?>("Origin" to if (GlobalStuff.OriginPoint?.Code == null) GlobalStuff.OriginPoint?.Id.toString() else GlobalStuff.OriginPoint?.Code,
+                    "Destination" to if (GlobalStuff.DestinationPoint?.Code == null) GlobalStuff.DestinationPoint?.Id.toString() else GlobalStuff.DestinationPoint?.Code,
+                    "Date" to Period.between(GlobalStuff.SearchDT, LocalDate.now()).days, "Passengers" to GlobalStuff.Pax,
+                    "Country origin" to GlobalStuff.OriginPoint?.CountryName, "Country destination" to GlobalStuff.DestinationPoint?.CountryName,
+                    "UserID" to if (GlobalStuff.customerID == null) "-" else GlobalStuff.customerID)
+                GlobalStuff.amplitude?.track(event)
 
                 lifecycleScope.launch {
                     val result = withContext(Dispatchers.IO) {
@@ -630,6 +618,14 @@ class HomeFragment : Fragment() {
                     }
 
                     if (result == "OK" && GlobalStuff.ExtResult != null) {
+
+                        val event = GlobalStuff.GetBaseEvent("Results of extended search", true)
+                        event.eventProperties = mutableMapOf<String, Any?>("Directs" to if (GlobalStuff.ExtResult?.DirectRes == null) 0 else GlobalStuff.ExtResult?.DirectRes?.count(),
+                            "Transfers total" to if (GlobalStuff.ExtResult?.TransferPoints == null) 0 else GlobalStuff.ExtResult?.TransferPoints?.count(),
+                            "Transfers with results" to if (GlobalStuff.ExtResult?.ResultTransferPoints == null) 0 else GlobalStuff.ExtResult?.ResultTransferPoints?.count(),
+                            "UserID" to if (GlobalStuff.customerID == null) "-" else GlobalStuff.customerID)
+                        GlobalStuff.amplitude?.track(event)
+
                         GlobalStuff.ResType = ResultType.Direct
                         GlobalStuff.BackResType = null
                         GlobalStuff.navController.navigate(R.id.resultlayout, Bundle())

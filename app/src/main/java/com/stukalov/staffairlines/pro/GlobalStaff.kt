@@ -18,6 +18,7 @@ import com.adapty.models.AdaptyPaywallProduct
 import com.adapty.models.AdaptyProfileParameters
 import com.adapty.ui.AdaptyUI
 import com.amplitude.android.Amplitude
+import com.amplitude.core.events.BaseEvent
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.material.tabs.TabLayout
 import com.onesignal.OneSignal
@@ -88,7 +89,6 @@ import java.time.format.DateTimeFormatter
         var customerLastName: String? = null
         var customerProfile: ProfileTokens? = null
         var adAction: AdaptyAction = AdaptyAction.None
-        var TestMessage: String = ""
 
         var FirstSearchForm: Boolean = true
         var DeviceID: String? = null
@@ -165,5 +165,25 @@ import java.time.format.DateTimeFormatter
                 result = orig + " - " + dest + ", " + SearchDT?.format(formatter0)
             }
             return result
+        }
+
+        fun GetBaseEvent(eType: String, userAircompany: Boolean = false, eventUserID: Boolean = false): BaseEvent
+        {
+            val event = BaseEvent()
+            event.eventType = eType
+            event.deviceId = DeviceID
+            event.platform = "Android"
+
+            if (userAircompany)
+            {
+                event.userProperties = mutableMapOf<String, Any?>("Aircompany" to OwnAC?.Code)
+            }
+
+            if (eventUserID && !customerID.isNullOrEmpty())
+            {
+                event.eventProperties = mutableMapOf<String, Any?>("UserID" to customerID)
+            }
+
+            return event
         }
     }

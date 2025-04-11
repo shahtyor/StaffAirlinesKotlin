@@ -76,18 +76,15 @@ class SplashActivity : AppCompatActivity() {
 
     private fun ExtrasProcess(extras: Bundle?) {
         Log.d("ExtrasProcess", "Start")
-        GlobalStuff.TestMessage += "ExtrasProcess-Start"
 
         try {
             val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH)
             val data: NotificationData = NotificationData("", "", "", LocalDateTime.now(), 0, "", "")
 
             Log.d("ExtrasProcess", "Prepare")
-            GlobalStuff.TestMessage += "-Prepare"
 
             if (extras != null) {
                 Log.d("ExtrasProcess", "extras != null")
-                GlobalStuff.TestMessage += "-Not null"
 
                 extras.keySet().forEach { key ->
                     if (key != null) {
@@ -111,14 +108,12 @@ class SplashActivity : AppCompatActivity() {
                 }
 
                 Log.d("ExtrasProcess", "End")
-                GlobalStuff.TestMessage += "-End"
 
                 GlobalStuff.NotiData = data
                 //OpenNotificationFlight(data)
             }
             else {
                 Log.d("ExtrasProcess", "Null")
-                GlobalStuff.TestMessage += "-Null"
             }
 
         } catch (ex: Exception) {

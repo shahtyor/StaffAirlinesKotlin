@@ -114,9 +114,11 @@ class CredentialsFragment : Fragment() {
                 GlobalStuff.navController.navigate(R.id.login_frag, Bundle())
             }
             else {
+                val t0 = GlobalStuff.premiumAccess
                 Adapty.logout { error ->
                     if (error == null) {
                         // successful logout
+                        GlobalStuff.premiumAccess = t0
                         GlobalStuff.customerProfile = null
                         GlobalStuff.customerID = null
                         GlobalStuff.customerEmail = null
@@ -168,8 +170,10 @@ class CredentialsFragment : Fragment() {
 
             if (GlobalStuff.premiumAccess)
             {
-                val sum = GlobalStuff.customerProfile!!.SubscribeTokens + GlobalStuff.customerProfile!!.NonSubscribeTokens
-                tvCredCoins.setText(sum.toString())
+                if (GlobalStuff.customerProfile != null) {
+                    val sum = GlobalStuff.customerProfile?.SubscribeTokens?.plus(GlobalStuff.customerProfile?.NonSubscribeTokens!!)
+                    tvCredCoins.setText(sum.toString())
+                }
             }
             else
             {
