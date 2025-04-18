@@ -164,6 +164,10 @@ class DirectResultAdapter(private val context: Context, private val Res: List<Fl
                     waitvis = View.VISIBLE
                 }
 
+                if (position == 0)
+                {
+                    CurDate = LocalDate.now().minusYears(5)
+                }
                 var step = position
                 var visdate = View.GONE
                 if (f.DepDateTime.toLocalDate() == CurDate) {
@@ -190,8 +194,8 @@ class DirectResultAdapter(private val context: Context, private val Res: List<Fl
                 holder.tvcntrat!!.setBackgroundResource(MarkBack)
                 holder.flframelay!!.setBackgroundColor(MarkColor)
                 holder.tvnextday!!.setTextColor(nextDayVis)
-                holder.tvdateoneres!!.setText(sdf.format(f.DepDateTime))
-                holder.tvdateoneres!!.visibility = visdate
+                holder.tvdateoneres?.setText(sdf.format(f.DepDateTime))
+                holder.tvdateoneres?.visibility = visdate
                 holder.llWaitInfo!!.visibility = waitvis
                 holder.tvWaitInfo!!.setText(waittext)
                 val params = holder.llFlightLayout!!.getLayoutParams()

@@ -257,6 +257,12 @@ class TransferDetails
     var ndr: List<NonDirectResult>,
 )
 
+class TransferExtra
+(
+   var to: List<Flight>,
+   var from: List<Flight>
+)
+
 class CarouselData
 (
     var title: String,

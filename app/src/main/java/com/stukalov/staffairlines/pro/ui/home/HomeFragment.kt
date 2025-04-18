@@ -359,10 +359,18 @@ class HomeFragment : Fragment() {
             if (!GlobalStuff.HomeFromSelect) {
                 GlobalStuff.FirstLaunch = true
                 GlobalStuff.SaveOneSignalToAdapty()
-                GlobalStuff.HomeFromSelect = false
+                GlobalStuff.HomeFromSelect = true
             }
 
-            GlobalStuff.navController.navigate(R.id.carousel_frag, Bundle())
+            if (!GlobalStuff.CarouselShowed) {
+                GlobalStuff.CarouselShowed = true
+                GlobalStuff.navController.navigate(R.id.carousel_frag, Bundle())
+            }
+            else
+            {
+                GlobalStuff.actionBar?.show()
+                GlobalStuff.navController.navigate(R.id.sel_ac_frag, Bundle())
+            }
         }
         else
         {

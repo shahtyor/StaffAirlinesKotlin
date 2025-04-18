@@ -20,6 +20,7 @@ import com.stukalov.staffairlines.pro.R
 import com.stukalov.staffairlines.pro.ResultType
 import com.stukalov.staffairlines.pro.StaffMethods
 import com.stukalov.staffairlines.pro.TransferDetails
+import com.stukalov.staffairlines.pro.TransferExtra
 import com.stukalov.staffairlines.pro.TransferPoint
 import com.stukalov.staffairlines.pro.TransferResultAdapter
 import com.stukalov.staffairlines.pro.databinding.FragmentTransferBinding
@@ -27,6 +28,8 @@ import com.stukalov.staffairlines.pro.ui.paywall.AdaptyController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.LocalDate
+import java.time.Period
 import java.time.format.DateTimeFormatter
 
 
@@ -89,6 +92,12 @@ class TransferFragment : Fragment() {
         transfer_lv.setOnItemClickListener{parent, view, position, id ->
             val trans = parent.getItemAtPosition(position) as TransferPoint
 
+            //Выбрана локация пересадки
+            val event = GlobalStuff.GetBaseEvent("Transfer location selected", true)
+            event.eventProperties = mutableMapOf("Transfer location selected" to trans.Origin,
+                "With results" to if (GlobalStuff.ExtResult?.NonDirectRes.isNullOrEmpty()) "false" else "true",
+                "UserID" to if (GlobalStuff.customerID == null) "-" else GlobalStuff.customerID)
+
             var reqtodo = true
             val ExtRes = GlobalStuff.ExtResult
             if (ExtRes != null)
@@ -119,6 +128,17 @@ class TransferFragment : Fragment() {
                 GlobalStuff.setActionBar(true, false, GlobalStuff.GetTitle())
 
                 val permlist = SM.GetStringPermitt()
+
+                //Пользователь запустил поиск через выбранную локацию пересадки (только если результатов поиска еще нет)
+                val event2 = GlobalStuff.GetBaseEvent("Nondirect search started", true)
+                event2.eventProperties = mutableMapOf<String, Any?>("Origin" to if (GlobalStuff.OriginPoint?.Code == null) GlobalStuff.OriginPoint?.Id.toString() else GlobalStuff.OriginPoint?.Code,
+                    "Destination" to if (GlobalStuff.DestinationPoint?.Code == null) GlobalStuff.DestinationPoint?.Id.toString() else GlobalStuff.DestinationPoint?.Code,
+                    "Date" to Period.between(GlobalStuff.SearchDT, LocalDate.now()).days, "Passengers" to GlobalStuff.Pax,
+                    "Location for transfer" to trans.Origin,
+                    "Country origin" to GlobalStuff.OriginPoint?.CountryName, "Country destination" to GlobalStuff.DestinationPoint?.CountryName,
+                    "UserID" to if (GlobalStuff.customerID == null) "-" else GlobalStuff.customerID)
+                GlobalStuff.amplitude?.track(event2)
+
                 lifecycleScope.launch {
                     val result = withContext(Dispatchers.IO) {
                         SM.GetNonDirectFlights(
@@ -140,6 +160,14 @@ class TransferFragment : Fragment() {
 
                         tdet = GetTransferDetails()
                         if (tdet.tp.isNotEmpty()) {
+
+                            //Пользователь получил результаты поиска через выбранную локацию пересадки
+                            val textra = GetTransferExtra(trans.Origin)
+                            val event3 = GlobalStuff.GetBaseEvent("Results of nondirect search", true)
+                            event3.eventProperties = mutableMapOf("Variants_1" to if (textra != null) textra.to.count() else 0,
+                                "Variants_2" to if (textra != null) textra.from.count() else 0,
+                                "UserID" to if (GlobalStuff.customerID == null) "-" else GlobalStuff.customerID)
+
                             tabDirect.isEnabled = true
                             transfer_lv.isEnabled = true
                             //(activity as AppCompatActivity?)!!.supportActionBar!!.show()
@@ -196,6 +224,15 @@ class TransferFragment : Fragment() {
 
             val permlist = SM.GetStringPermitt()
 
+            // Пользователь запустил поиск
+            val event = GlobalStuff.GetBaseEvent("Extended search started", true)
+            event.eventProperties = mutableMapOf<String, Any?>("Origin" to if (GlobalStuff.OriginPoint?.Code == null) GlobalStuff.OriginPoint?.Id.toString() else GlobalStuff.OriginPoint?.Code,
+                "Destination" to if (GlobalStuff.DestinationPoint?.Code == null) GlobalStuff.DestinationPoint?.Id.toString() else GlobalStuff.DestinationPoint?.Code,
+                "Date" to Period.between(GlobalStuff.SearchDT, LocalDate.now()).days, "Passengers" to GlobalStuff.Pax,
+                "Country origin" to GlobalStuff.OriginPoint?.CountryName, "Country destination" to GlobalStuff.DestinationPoint?.CountryName,
+                "UserID" to if (GlobalStuff.customerID == null) "-" else GlobalStuff.customerID)
+            GlobalStuff.amplitude?.track(event)
+
             lifecycleScope.launch {
                 val result = withContext(Dispatchers.IO) {
                     SM.ExtendedSearch(
@@ -218,9 +255,21 @@ class TransferFragment : Fragment() {
 
                 if (result == "OK") {
 
+                    val event0 = GlobalStuff.GetBaseEvent("Results of extended search", true)
+                    event0.eventProperties = mutableMapOf<String, Any?>("Directs" to if (GlobalStuff.ExtResult?.DirectRes == null) 0 else GlobalStuff.ExtResult?.DirectRes?.count(),
+                        "Transfers total" to if (GlobalStuff.ExtResult?.TransferPoints == null) 0 else GlobalStuff.ExtResult?.TransferPoints?.count(),
+                        "Transfers with results" to if (GlobalStuff.ExtResult?.ResultTransferPoints == null) 0 else GlobalStuff.ExtResult?.ResultTransferPoints?.count(),
+                        "UserID" to if (GlobalStuff.customerID == null) "-" else GlobalStuff.customerID)
+                    GlobalStuff.amplitude?.track(event0)
+
                     val tdet = GetTransferDetails()
 
                     if (tdet.tp.isNotEmpty()) {
+
+                        val event2 = GlobalStuff.GetBaseEvent("Transfer show", true)
+                        event2.eventProperties = mutableMapOf("Transfers total" to tdet.tp.count().toString(),
+                            "Transfers with results" to tdet.ndr.count().toString(), "UserID" to if (GlobalStuff.customerID == null) "-" else GlobalStuff.customerID)
+                        GlobalStuff.amplitude?.track(event2)
 
                         tabDirect.isEnabled = true
                         //(activity as AppCompatActivity?)!!.supportActionBar!!.show()
@@ -242,6 +291,20 @@ class TransferFragment : Fragment() {
                     spin_layout.isVisible = false
                 }
             }
+        }
+    }
+
+    fun GetTransferExtra(change: String): TransferExtra?
+    {
+        val ExRes = GlobalStuff.ExtResult
+        if (ExRes != null)
+        {
+            val filt = ExRes.NonDirectRes.filter{ x -> x.Transfer == change }.first()
+            return TransferExtra(filt.To_airport_transfer, filt.From_airport_transfer)
+        }
+        else
+        {
+            return null
         }
     }
 

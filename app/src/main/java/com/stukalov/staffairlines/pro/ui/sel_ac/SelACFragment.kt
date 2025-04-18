@@ -142,15 +142,33 @@ class SelACFragment : Fragment() {
         }
     }
 
-    fun NextStep(dialog: DialogInterface, cont: Context, ac: Airline0, )
+    fun NextStep(dialog: DialogInterface, cont: Context, ac: Airline0)
     {
         dialog.cancel()
 
-        AlertDialog.Builder(cont)
-            .setTitle("Congratulations!")
-            .setMessage("Now you can start using the app. Please note, that you will find all represented airlines in the app by default. If want to limit the range of available airlines, please send us list of allowed airlines for your staff at hello@staffairlines.com. Any format is OK. We will add these carriers to the preset for " + ac.Airline + ".")
-            .setNegativeButton("ok") { dialog, id -> NextStep2(dialog, ac) }
-            .show()
+        lifecycleScope.launch {
+            val jsonperm = withContext(Dispatchers.IO) { SM.GetPermittedAC(ac.Code) }
+
+            if (!jsonperm.isNullOrEmpty())
+            {
+                if (GlobalStuff.Permitted.isEmpty())
+                {
+                    AlertDialog.Builder(cont)
+                        .setTitle("Congratulations!")
+                        .setMessage("Now you can start using the app. Please note, that you will find all represented airlines in the app by default. If want to limit the range of available airlines, please send us list of allowed airlines for your staff at hello@staffairlines.com. Any format is OK. We will add these carriers to the preset for " + ac.Airline + ".")
+                        .setNegativeButton("ok") { dialog, id -> NextStep2(dialog, ac) }
+                        .show()
+                }
+                else
+                {
+                    AlertDialog.Builder(cont)
+                        .setTitle("Success")
+                        .setMessage(ac.Airline + " set as your airline.")
+                        .setNegativeButton("ok") { dialog, id -> NextStep2(dialog, ac) }
+                        .show()
+                }
+            }
+        }
     }
 
     fun NextStep2(dialog: DialogInterface, ac: Airline0) {
@@ -161,9 +179,9 @@ class SelACFragment : Fragment() {
 
         OneSignal.InAppMessages.addTrigger("os_ownAC", ac.Code)
 
-        lifecycleScope.launch {
+        /*lifecycleScope.launch {
             val jsonperm = withContext(Dispatchers.IO) { SM.GetPermittedAC(GlobalStuff.OwnAC!!.Code) }
-        }
+        }*/
 
         if (strmode == "home")
         {

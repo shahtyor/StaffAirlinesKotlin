@@ -85,6 +85,7 @@ class CarouselFragment : Fragment() {
             if (GlobalStuff.Airlines.size > 0)
             {
                 GlobalStuff.actionBar?.show()
+                GlobalStuff.navController.popBackStack(R.id.main_frag, true)
                 GlobalStuff.navController.navigate(R.id.sel_ac_frag, bundle)
             }
             else {

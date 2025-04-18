@@ -427,6 +427,8 @@ class FlightFragment : Fragment() {
     }
 
     fun action_click_one(view: View) {
+        val f = GlobalStuff.OneResult!!
+
         if (GlobalStuff.ResType == ResultType.Direct) {
             GlobalStuff.BackResType = null
             GlobalStuff.navController.navigate(R.id.navigation_home)    //Переход на начало поиска
@@ -436,6 +438,12 @@ class FlightFragment : Fragment() {
             GlobalStuff.FirstSegment = GlobalStuff.OneResult!!
             GlobalStuff.ResType = ResultType.Second
             GlobalStuff.BackResType = null
+
+            val event = GlobalStuff.GetBaseEvent("First segment selected", true)
+            event.eventProperties = mutableMapOf("Rating" to f.RatingType.name, "Ac" to f.OperatingCarrier,
+                "UserID" to if (GlobalStuff.customerID == null) "-" else GlobalStuff.customerID)
+            GlobalStuff.amplitude?.track(event)
+
             GlobalStuff.navController.navigate(R.id.resultlayout)     //Переходим к выбору второго сегмента
         }
         else if (GlobalStuff.ResType == ResultType.Second)
@@ -443,21 +451,91 @@ class FlightFragment : Fragment() {
             GlobalStuff.SecondSegment = GlobalStuff.OneResult!!
             GlobalStuff.ResType = ResultType.Final
             GlobalStuff.BackResType = null
+
+            val event = GlobalStuff.GetBaseEvent("Second segment selected", true)
+            event.eventProperties = mutableMapOf("Rating" to f.RatingType.name, "Ac" to f.OperatingCarrier,
+                "UserID" to if (GlobalStuff.customerID == null) "-" else GlobalStuff.customerID)
+            GlobalStuff.amplitude?.track(event)
+
             GlobalStuff.navController.navigate(R.id.resultlayout)     //Переходим к показу полета с пересадкой
+        }
+    }
+
+    fun SendEventsShowDetails()
+    {
+        if (GlobalStuff.OneResult != null) {
+            val f = GlobalStuff.OneResult!!
+
+            var typeEvent = ""
+            if (GlobalStuff.ResType == ResultType.Direct) {
+                typeEvent = "Details show direct"
+            } else if (GlobalStuff.ResType == ResultType.First) {
+                typeEvent = "Details show nondirect first"
+            } else if (GlobalStuff.ResType == ResultType.Second) {
+                typeEvent = "Details show nondirect second"
+            }
+
+            var sforecastrat = "";
+            if (f.Forecast <= 1) {
+                sforecastrat = "Bad";
+            } else if (f.Forecast <= 2) {
+                sforecastrat = "So-so";
+            } else {
+                sforecastrat = "Good";
+            }
+
+            var dataSAFromAgent = false
+            var dataClassesFromAgent = false
+            var ageDataFromAgent = 0
+            if (f.AgentInfo != null) {
+                if (f.AgentInfo.CntSAPassenger != null) dataSAFromAgent = true
+                if (f.AgentInfo.EconomyPlaces != null) dataClassesFromAgent = true
+                ageDataFromAgent = f.AgentInfo.TimePassed
+            }
+
+            val event = GlobalStuff.GetBaseEvent(typeEvent, true)
+            event.eventProperties = mutableMapOf<String, Any?>(
+                "ac" to f.OperatingCarrier,
+                "Rating" to f.RatingType.name,
+                "ForecastRating" to sforecastrat,
+                "ForecastAccuracy" to f.Accuracy,
+                "dataSAFromAgent" to replaceBoolValue(dataSAFromAgent),
+                "dataClassesFromAgent" to replaceBoolValue(dataClassesFromAgent),
+                "ageDataFromAgent" to ageDataFromAgent,
+                "agents" to replaceBoolValue(f.Reporters),
+                "UserID" to if (GlobalStuff.customerID == null) "-" else GlobalStuff.customerID
+            )
+            GlobalStuff.amplitude?.track(event)
+        }
+    }
+
+    fun replaceBoolValue(value: Boolean): String
+    {
+        if (value)
+        {
+            return "yes"
+        }
+        else
+        {
+            return "no"
         }
     }
 
     override fun onResume() {
         super.onResume()
 
-        //(activity as AppCompatActivity?)!!.supportActionBar!!.show()
+        SendEventsShowDetails()
     }
 
     fun flyzed_click(view: View) {
         val bundle = Bundle()
         bundle.putString(
-            "zed_href", "http://www.flyzed.info/" + GlobalStuff.OneResult!!.MarketingCarrier + "#index"
+            "zed_href", "http://www.flyzed.info/" + GlobalStuff.OneResult?.MarketingCarrier + "#index"
             )
+
+        val event = GlobalStuff.GetBaseEvent("Сlick ZED button", true)
+        event.eventProperties = mutableMapOf("Ac" to GlobalStuff.OneResult?.MarketingCarrier, "UserID" to if (GlobalStuff.customerID == null) "-" else GlobalStuff.customerID)
+
         GlobalStuff.navController.navigate(R.id.show_zed_frag, bundle)
     }
 
@@ -640,6 +718,12 @@ class FlightFragment : Fragment() {
                         .setNegativeButton("OK") { dialog4, id -> dialog4.cancel() }
                         .show()
                 }
+
+                //нажата Подписка
+                val event = GlobalStuff.GetBaseEvent("Subscribe", true)
+                event.eventProperties = mutableMapOf<String, Any?>("Result" to if (subresult.alert.isNullOrEmpty()) "Success" else subresult.alert,
+                    "UserID" to if (GlobalStuff.customerID == null) "-" else GlobalStuff.customerID)
+                GlobalStuff.amplitude?.track(event)
             }
         }
     }
@@ -660,10 +744,24 @@ class FlightFragment : Fragment() {
                 val filt = GlobalStuff.FavoriteList.filter { it.Fl.DepartureDateTime == GlobalStuff.OneResult!!.DepartureDateTime && it.Fl.FlightNumber == GlobalStuff.OneResult!!.FlightNumber && it.Fl.MarketingCarrier == GlobalStuff.OneResult!!.MarketingCarrier }
                 GlobalStuff.FavoriteList.remove(filt[0])
 
+                val event = GlobalStuff.GetBaseEvent("Remove favorite", true)
+                event.eventProperties = mutableMapOf<String, Any?>(
+                    "Favourites" to GlobalStuff.FavoriteList.count(),
+                    "Screen" to "detail", "Swipe" to "none",
+                    "UserID" to if (GlobalStuff.customerID == null) "-" else GlobalStuff.customerID)
+                GlobalStuff.amplitude?.track(event)
+
                 ofav.setImageResource(R.drawable.favoff)
             }
             else {
                 GlobalStuff.FavoriteList.add(0, FWP)
+
+                val event = GlobalStuff.GetBaseEvent("Add favorite", true)
+                event.eventProperties = mutableMapOf<String, Any?>(
+                    "Favourites" to GlobalStuff.FavoriteList.count(),
+                    "Screen" to "detail", "Swipe" to "none",
+                    "UserID" to if (GlobalStuff.customerID == null) "-" else GlobalStuff.customerID)
+                GlobalStuff.amplitude?.track(event)
 
                 ofav.setImageResource(R.drawable.favon)
             }

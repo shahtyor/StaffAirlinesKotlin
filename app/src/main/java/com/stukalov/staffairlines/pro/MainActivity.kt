@@ -207,11 +207,13 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        lifecycleScope.launch {
-            val rem = withContext(Dispatchers.IO) { SM.RemainSubscribe(GlobalStuff.Token!!) }
+        if (GlobalStuff.Token != null) {
+            lifecycleScope.launch {
+                val rem = withContext(Dispatchers.IO) { SM.RemainSubscribe(GlobalStuff.Token!!) }
 
-            if (rem != null) {
-                GlobalStuff.Remain = rem.count
+                if (rem != null) {
+                    GlobalStuff.Remain = rem.count
+                }
             }
         }
 
@@ -413,14 +415,22 @@ class MainActivity : AppCompatActivity() {
             Log.d("OpenNotificationFlight", "OK")
 
             if (res == "OK" && GlobalStuff.FlInfo != null) {
-                Log.d("OpenNotificationFlight", "Step 1. " + GlobalStuff.FlInfo?.Flight?.FlightNumber!!)
+                if (GlobalStuff.FlInfo?.Flight != null) {
+                    Log.d(
+                        "OpenNotificationFlight",
+                        "Step 1. " + GlobalStuff.FlInfo?.Flight?.FlightNumber!!
+                    )
 
-                GlobalStuff.OneResult = GlobalStuff.FlInfo?.Flight
-                SM.SaveAppToken()
-                Log.d("OpenNotificationFlight", "Step 2. " + GlobalStuff.OneResult?.FlightNumber!!)
-                GlobalStuff.NotiData = null
+                    GlobalStuff.OneResult = GlobalStuff.FlInfo?.Flight
+                    SM.SaveAppToken()
+                    Log.d(
+                        "OpenNotificationFlight",
+                        "Step 2. " + GlobalStuff.OneResult?.FlightNumber!!
+                    )
+                    GlobalStuff.NotiData = null
 
-                GlobalStuff.navController.navigate(R.id.result_one)
+                    GlobalStuff.navController.navigate(R.id.result_one)
+                }
             }
         }
     }

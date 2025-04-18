@@ -1,5 +1,8 @@
 package com.stukalov.staffairlines.pro.ui.favourites
 
+import android.app.AlertDialog
+import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +14,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.stukalov.staffairlines.pro.FavouritesAdapter
+import com.stukalov.staffairlines.pro.FlightInfo
 import com.stukalov.staffairlines.pro.FlightWithPax
 import com.stukalov.staffairlines.pro.GlobalStuff
 import com.stukalov.staffairlines.pro.R
@@ -26,10 +30,13 @@ class FavouritesFragment : Fragment() {
 
     private var _binding: FragmentFavouritesBinding? = null
     lateinit var favadapter: FavouritesAdapter
+    lateinit var fav_lv: ListView
 
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+    val SM: StaffMethods = StaffMethods()
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,9 +55,7 @@ class FavouritesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val SM: StaffMethods = StaffMethods()
-
-        val fav_lv: ListView = view.findViewById<ListView>(R.id.favlistview)
+        fav_lv = view.findViewById<ListView>(R.id.favlistview)
         val spin_layout = view.findViewById<FrameLayout>(R.id.spinner_favour)
 
         SM.ReadFavorites()
@@ -78,7 +83,7 @@ class FavouritesFragment : Fragment() {
                     )
                 }
 
-                if (result == "OK" && GlobalStuff.FlInfo != null) {
+                if (result == "OK" && GlobalStuff.FlInfo != null && GlobalStuff.FlInfo?.Alert.isNullOrEmpty()) {
 
                     val filt = GlobalStuff.FavoriteList.filter { it.Fl.DepartureDateTime == fl.Fl.DepartureDateTime && it.Fl.FlightNumber == fl.Fl.FlightNumber && it.Fl.MarketingCarrier == fl.Fl.MarketingCarrier }
                     if (filt.size > 0)
@@ -94,15 +99,37 @@ class FavouritesFragment : Fragment() {
                 else
                 {
                     spin_layout.isVisible = false
-                    var serr: String = ""
+
+                    AlertDialog.Builder(view.context)
+                        .setTitle("Alert!")
+                        .setMessage(GlobalStuff.FlInfo?.Alert)
+                        .setNegativeButton("ok") { dialog, id -> DelFav(dialog, fl, view.context) }
+                        .show()
+                    /*var serr: String = ""
                     if (GlobalStuff.ExtResult == null)
                     {
                         serr = " , er=null"
                     }
                     val toast = Toast.makeText(context, result + serr, Toast.LENGTH_LONG)
-                    toast.show()
+                    toast.show()*/
+
                 }
             }
+        }
+    }
+
+    fun DelFav(dialog: DialogInterface, fl: FlightWithPax, cont: Context)
+    {
+        dialog.cancel()
+
+        val filt = GlobalStuff.FavoriteList.filter { it.Fl.DepartureDateTime == fl.Fl.DepartureDateTime && it.Fl.FlightNumber == fl.Fl.FlightNumber && it.Fl.MarketingCarrier == fl.Fl.MarketingCarrier }
+        if (filt.size > 0)
+        {
+            GlobalStuff.FavoriteList.remove(filt[0])
+            SM.SaveFavorites()
+
+            favadapter = FavouritesAdapter(cont, GlobalStuff.FavoriteList)
+            fav_lv.setAdapter(favadapter)
         }
     }
 

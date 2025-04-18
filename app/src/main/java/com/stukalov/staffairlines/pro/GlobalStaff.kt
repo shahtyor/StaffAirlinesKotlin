@@ -49,6 +49,7 @@ import java.time.format.DateTimeFormatter
         var FirstLaunch: Boolean = true
         var HomeFromSelect: Boolean = false
         var Remain: Int = 5
+        var CarouselShowed = false
 
         lateinit var activity: Context
         lateinit var mActivity: MainActivity
