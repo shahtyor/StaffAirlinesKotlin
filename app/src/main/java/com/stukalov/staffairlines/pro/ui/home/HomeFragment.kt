@@ -354,8 +354,7 @@ class HomeFragment : Fragment() {
             GlobalStuff.FirstSearchForm = false
         }*/
 
-        if (GlobalStuff.OwnAC == null)
-        {
+        if (GlobalStuff.OwnAC == null) {
             if (!GlobalStuff.HomeFromSelect) {
                 GlobalStuff.FirstLaunch = true
                 GlobalStuff.SaveOneSignalToAdapty()
@@ -363,17 +362,22 @@ class HomeFragment : Fragment() {
             }
 
             if (!GlobalStuff.CarouselShowed) {
+
+                //Первый запуск приложения
+                val today = LocalDate.now()
+                val event = GlobalStuff.GetBaseEvent("First launch", false, true)
+                event.userProperties = mutableMapOf("YYYY" to today.year.toString(),
+                    "MM" to today.monthValue.toString().padStart(2, '0'),
+                    "DD" to today.dayOfMonth.toString().padStart(2, '0'))
+                GlobalStuff.amplitude?.track(event)
+
                 GlobalStuff.CarouselShowed = true
                 GlobalStuff.navController.navigate(R.id.carousel_frag, Bundle())
-            }
-            else
-            {
+            } else {
                 GlobalStuff.actionBar?.show()
                 GlobalStuff.navController.navigate(R.id.sel_ac_frag, Bundle())
             }
-        }
-        else
-        {
+        } else {
             if (!GlobalStuff.HomeFromSelect) {
                 GlobalStuff.FirstLaunch = false
                 GlobalStuff.SaveOneSignalToAdapty()
@@ -388,15 +392,15 @@ class HomeFragment : Fragment() {
             }
         }
 
-        if (GlobalStuff.FirstSearchForm)
-        {
-            val event = GlobalStuff.GetBaseEvent("Search form show", false, true)
-            event.userProperties = mutableMapOf<String, Any?>("Aircompany" to GlobalStuff.OwnAC, "paidStatus" to if (GlobalStuff.premiumAccess) "premiumAccess" else "free plan")
+        val event = GlobalStuff.GetBaseEvent("Search form show", false, true)
+        event.userProperties = mutableMapOf<String, Any?>(
+            "Aircompany" to GlobalStuff.OwnAC,
+            "paidStatus" to if (GlobalStuff.premiumAccess) "premiumAccess" else "free plan"
+        )
 
-            GlobalStuff.amplitude?.track(event)
+        GlobalStuff.amplitude?.track(event)
 
-            GlobalStuff.FirstSearchForm = false
-        }
+        GlobalStuff.FirstSearchForm = false
     }
 
     override fun onStop() {

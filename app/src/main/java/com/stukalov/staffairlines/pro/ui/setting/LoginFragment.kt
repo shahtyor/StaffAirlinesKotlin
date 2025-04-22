@@ -63,6 +63,9 @@ class LoginFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+
+        val event = GlobalStuff.GetBaseEvent("show login form", true, true)
+        GlobalStuff.amplitude?.track(event)
     }
 
     override fun onDestroyView() {

@@ -69,12 +69,31 @@ class CarouselFragment : Fragment() {
         val CarItem3 = CarouselData("Create a backup plan in seconds", "board3", Html.fromHtml(txt3))
         val CarData: ArrayList<CarouselData> = arrayListOf(CarItem1, CarItem2, CarItem3)
 
+        val Names = arrayListOf("Color_and_number", "Bell", "Transfer")
+
         viewPager.adapter = CarouselAdapter(CarData)
 
         var tabLayout: TabLayout = view.findViewById(R.id.tab_layout_car);
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             //Some implementation...
         }.attach()
+
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                val pos = tab?.position
+
+                val event = GlobalStuff.GetBaseEvent("Show screen onboarding", false, false)
+                event.eventProperties = mutableMapOf("N_screen" to pos?.plus(1), "Type_info" to Names[pos!!],
+                    "UserID" to if (GlobalStuff.customerID == null) "-" else GlobalStuff.customerID)
+                GlobalStuff.amplitude?.track(event)
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+            }
+        })
 
         btBegin.setOnClickListener()
         {
@@ -86,6 +105,11 @@ class CarouselFragment : Fragment() {
             {
                 GlobalStuff.actionBar?.show()
                 GlobalStuff.navController.popBackStack(R.id.main_frag, true)
+
+                //GetStarted
+                val event = GlobalStuff.GetBaseEvent("Get started", false, true)
+                GlobalStuff.amplitude?.track(event)
+
                 GlobalStuff.navController.navigate(R.id.sel_ac_frag, bundle)
             }
             else {

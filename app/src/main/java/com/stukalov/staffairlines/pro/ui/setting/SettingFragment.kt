@@ -56,6 +56,10 @@ class SettingFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+
+        // Открылась форма настроек
+        val event = GlobalStuff.GetBaseEvent("Settings open", true, true)
+        GlobalStuff.amplitude?.track(event)
     }
 
     override fun onDestroyView() {

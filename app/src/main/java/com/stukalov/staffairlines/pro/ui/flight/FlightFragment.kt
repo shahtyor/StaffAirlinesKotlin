@@ -200,21 +200,15 @@ class FlightFragment : Fragment() {
         val mc = "_" + f.MarketingCarrier.lowercase(Locale.ENGLISH)
         val identifier = GlobalStuff.StaffRes.getIdentifier(mc, "drawable", "com.stukalov.staffairlines.pro")
 
-        var OriginNameExt = f.DepartureName + " (" + f.Origin + ")"
-        if (!f.DepartureTerminal.isNullOrEmpty())
-        {
-            OriginNameExt = OriginNameExt + ", Terminal " + f.DepartureTerminal
-        }
+        var OriginNameExt = f.DepartureName + " (" + f.Origin + ")" + if (!f.DepartureTerminal.isNullOrEmpty()) ", Terminal " + f.DepartureTerminal else "" + if (f.OriginDistance != null) ", " + f.OriginDistance.toString() + " km to airport" else ""
+
         if (!f.DepartureCityName.isNullOrEmpty())
         {
             OriginNameExt = f.DepartureCityName + ", " + OriginNameExt
         }
 
-        var DestinationNameExt = f.ArrivalName + " (" + f.Destination + ")"
-        if (!f.ArrivalTerminal.isNullOrEmpty())
-        {
-            DestinationNameExt = DestinationNameExt + ", Terminal " + f.ArrivalTerminal
-        }
+        var DestinationNameExt = f.ArrivalName + " (" + f.Destination + ")" + if (!f.DepartureTerminal.isNullOrEmpty()) ", Terminal " + f.DepartureTerminal else "" + if (f.DestinationDistance != null) ", " + f.DestinationDistance.toString() + " km to airport" else ""
+
         if (!f.ArrivalCityName.isNullOrEmpty())
         {
             DestinationNameExt = f.ArrivalCityName + ", " + DestinationNameExt

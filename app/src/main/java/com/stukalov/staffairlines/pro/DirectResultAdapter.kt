@@ -89,6 +89,8 @@ class DirectResultAdapter(private val context: Context, private val Res: List<Fl
             holder.tvWaitInfo = convertView.findViewById(R.id.tvWaitInfo)
             holder.llFlightLayout = convertView.findViewById(R.id.llFlightLayout)
             holder.tvResCheckTransfer = convertView.findViewById(R.id.tvResCheckTransfer)
+            holder.tvdepdistance = convertView.findViewById(R.id.depdistance)
+            holder.tvarrdistance = convertView.findViewById(R.id.arrdistance)
 
             convertView.tag = holder
         } else {
@@ -198,9 +200,29 @@ class DirectResultAdapter(private val context: Context, private val Res: List<Fl
                 holder.tvdateoneres?.visibility = visdate
                 holder.llWaitInfo!!.visibility = waitvis
                 holder.tvWaitInfo!!.setText(waittext)
-                val params = holder.llFlightLayout!!.getLayoutParams()
+                if (f.OriginDistance != null)
+                {
+                    val odist = f.OriginDistance.toString() + " km"
+                    holder.tvdepdistance?.setText(odist)
+                    holder.tvdepdistance?.visibility = View.VISIBLE
+                }
+                else
+                {
+                    holder.tvdepdistance?.visibility = View.GONE
+                }
+                if (f.DestinationDistance != null)
+                {
+                    val ddist = f.DestinationDistance.toString() + " km"
+                    holder.tvarrdistance?.setText(ddist)
+                    holder.tvarrdistance?.visibility = View.VISIBLE
+                }
+                else
+                {
+                    holder.tvarrdistance?.visibility = View.GONE
+                }
+                //val params = holder.llFlightLayout!!.getLayoutParams()
                 //params.height = params.height + llheight
-                holder.llFlightLayout!!.setLayoutParams(params)
+                //holder.llFlightLayout!!.setLayoutParams(params)
             }
         }
 
@@ -224,6 +246,8 @@ class DirectResultAdapter(private val context: Context, private val Res: List<Fl
         var tvWaitInfo: TextView? = null
         var llFlightLayout: LinearLayout? = null
         var tvResCheckTransfer: TextView? = null
+        var tvdepdistance: TextView? = null
+        var tvarrdistance: TextView? = null
     }
 
     fun GetTimeAsHM2(minutes: Int): String {

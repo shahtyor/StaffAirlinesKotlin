@@ -273,7 +273,7 @@ class MainActivity : AppCompatActivity() {
                                 if (initCF)
                                 {
                                     if (GlobalStuff.CF != null) {
-                                        GlobalStuff.CF?.Init()
+                                        GlobalStuff.CF?.Init(GlobalStuff.CF?.requireContext()!!)
                                     }
                                     GlobalStuff.navController.navigateUp()
                                 }

@@ -67,6 +67,10 @@ class HistoryFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+
+        val event = GlobalStuff.GetBaseEvent("History", true, true)
+        GlobalStuff.amplitude?.track(event)
+
         GlobalStuff.setActionBar(true, false, "History")
     }
 

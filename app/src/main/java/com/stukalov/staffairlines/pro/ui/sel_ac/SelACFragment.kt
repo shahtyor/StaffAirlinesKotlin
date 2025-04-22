@@ -179,6 +179,10 @@ class SelACFragment : Fragment() {
 
         OneSignal.InAppMessages.addTrigger("os_ownAC", ac.Code)
 
+        //Пользователь выбрал ак
+        val event = GlobalStuff.GetBaseEvent("My ac selected", true, true)
+        GlobalStuff.amplitude?.track(event)
+
         /*lifecycleScope.launch {
             val jsonperm = withContext(Dispatchers.IO) { SM.GetPermittedAC(GlobalStuff.OwnAC!!.Code) }
         }*/

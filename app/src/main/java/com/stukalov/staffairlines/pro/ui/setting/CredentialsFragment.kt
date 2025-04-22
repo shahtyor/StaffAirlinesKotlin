@@ -6,6 +6,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.DialogInterface
+import android.content.pm.PackageInfo
 import android.os.Bundle
 import android.text.Html
 import android.text.method.LinkMovementMethod
@@ -76,11 +77,13 @@ class CredentialsFragment : Fragment() {
         ivCredCoins = view.findViewById(R.id.ivCredCoins)
         tvCredSubLost = view.findViewById(R.id.tvCredSubLost)
 
+        val pInfo: PackageInfo = view.context.getPackageManager()!!.getPackageInfo(view.context.getPackageName(), 0)
+
         ivCredID.setOnClickListener()
         {
             val clipboard =
                 GlobalStuff.mActivity.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clip = ClipData.newPlainText("ID", GlobalStuff.customerID?.removeRange(0, 2))
+            val clip = ClipData.newPlainText("ID", pInfo.versionName + "." + pInfo.versionCode + ":" + GlobalStuff.customerID?.removeRange(0, 2))
             clipboard.setPrimaryClip(clip)
             Toast.makeText(GlobalStuff.activity, "Copied!", Toast.LENGTH_LONG).show()
         }
@@ -102,11 +105,11 @@ class CredentialsFragment : Fragment() {
         tvCredSecond.setLinkTextColor(GlobalStuff.StaffRes.getColor(R.color.staff_blue, null))
         tvCredSecond.setTextColor(GlobalStuff.StaffRes.getColor(R.color.black, null))
 
-        Init()
+        Init(view.context)
         GlobalStuff.CF = this
     }
 
-    fun Init()
+    fun Init(context: Context)
     {
         tvCredLogin.setOnClickListener()
         {
@@ -127,7 +130,7 @@ class CredentialsFragment : Fragment() {
 
                         GlobalStuff.googleInClient?.signOut()
                         SM.SaveCustomerID()
-                        Init()
+                        Init(context)
                     }
                 }
                 AppsFlyerLib.getInstance().setCustomerUserId(null)
@@ -162,7 +165,11 @@ class CredentialsFragment : Fragment() {
             tvCredFirst.setText("You have successfully logged in via Google")
             tvCredLogin.setText(Html.fromHtml("<u>Log out</u>"))
             tvCredSecond.visibility = View.VISIBLE
-            tvCredID.setText("ID for support: " + GlobalStuff.customerID?.removeRange(0, 2))
+
+            val pInfo: PackageInfo = context.getPackageManager()!!.getPackageInfo(context.getPackageName(), 0)
+            //String version = pInfo.versionName;
+
+            tvCredID.setText("ID for support: " + pInfo.versionName + "." + pInfo.versionCode + ":" + GlobalStuff.customerID?.removeRange(0, 2))
             llCredID.visibility = View.VISIBLE
             tvCredDelete.visibility = View.VISIBLE
             tvCredCoins.visibility = View.VISIBLE
@@ -226,7 +233,7 @@ class CredentialsFragment : Fragment() {
 
                                 GlobalStuff.googleInClient?.signOut()
                                 SM.SaveCustomerID()
-                                Init()
+                                Init(cont)
 
                                 AlertDialog.Builder(cont)
                                     .setTitle("Delete")
