@@ -552,6 +552,7 @@ class HomeFragment : Fragment() {
         spin_layout.isVisible = true
 
         SetDisable(false)
+        GlobalStuff.PointOfShow = "Try premium"
 
         AdControl.GetPaywallViewParams("test_main_action2")
     }
@@ -577,6 +578,7 @@ class HomeFragment : Fragment() {
                 spin_layout.isVisible = true
 
                 SetDisable(false)
+                GlobalStuff.PointOfShow = "Next day search option"
 
                 AdControl.GetPaywallViewParams("test_main_action2")
             }

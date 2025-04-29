@@ -17,6 +17,8 @@ class AdaptyController {
             when (result) {
                 is AdaptyResult.Success -> {
                     val paywall = result.value
+                    GlobalStuff.AdaptyPaywallID = paywall.placementId
+                    GlobalStuff.AdaptyPaywallRev = paywall.revision
 
                     Adapty.getPaywallProducts(paywall) { resprod ->
                         when (resprod) {

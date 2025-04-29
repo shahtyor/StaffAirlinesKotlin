@@ -270,6 +270,7 @@ class ResultFragment : Fragment() {
                 if (!GlobalStuff.premiumAccess)  // показываем пэйвол
                 {
                     spin_layout.isVisible = true
+                    GlobalStuff.PointOfShow = "Transfer option"
 
                     AdControl.GetPaywallViewParams("test_main_action2")
                 }
@@ -297,6 +298,7 @@ class ResultFragment : Fragment() {
             if (!GlobalStuff.premiumAccess)  // показываем пэйвол
             {
                 spin_layout.isVisible = true
+                GlobalStuff.PointOfShow = "Transfer option"
 
                 AdControl.GetPaywallViewParams("test_main_action2")
             }

@@ -474,6 +474,12 @@ class MainActivity : AppCompatActivity() {
                 GlobalStuff.customerFirstName = acct.givenName
                 GlobalStuff.customerLastName = acct.familyName
                 AppsFlyerLib.getInstance().setCustomerUserId(cMD5)
+                GlobalStuff.amplitude?.setUserId(cMD5)
+
+                val event = GlobalStuff.GetBaseEvent("login", true, false)
+                event.eventProperties = mutableMapOf("type_system" to "google",
+                    "UserID" to if (GlobalStuff.customerID == null) "-" else GlobalStuff.customerID)
+                GlobalStuff.amplitude?.track(event)
 
                 SM.SaveCustomerID()
                 OneSignal.login(cMD5)

@@ -79,6 +79,9 @@ import java.time.format.DateTimeFormatter
         var ExitPurchase: Boolean = false
 
         var AdaptyProfileID: String? = null
+        var AdaptyPaywallID: String? = null
+        var AdaptyPaywallRev: Int? = null
+        var PointOfShow: String? = null
         var premiumAccess: Boolean = false
         var subscriptionId: String? = null
         var googleInClient: GoogleSignInClient? = null

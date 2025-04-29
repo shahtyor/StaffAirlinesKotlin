@@ -2,6 +2,8 @@ package com.stukalov.staffairlines.pro
 
 import android.util.Log
 import androidx.lifecycle.lifecycleScope
+import com.adapty.errors.AdaptyError
+import com.adapty.models.AdaptyPaywallProduct
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
@@ -680,5 +682,82 @@ class StaffMethods {
         val filt = GlobalStuff.HistoryList.filter { it.OriginId == H.OriginId && it.DestinationId == H.DestinationId && it.SearchDate == H.SearchDate && it.Pax ==  H.Pax }
         if (filt.size > 0) result = true
         return result
+    }
+
+    fun SendToAmpClickPaywall(paywallId: String, product: String, productId: String, introOffer: String, typeIntroOffer: String, descIntroOffer: String, pointOfShow: String)
+    {
+        val event = GlobalStuff.GetBaseEvent("click paywall", true, false)
+        event.eventProperties = mutableMapOf("paywallId" to paywallId,
+                "product" to product,
+                "productId" to productId,
+                "introOffer" to introOffer,
+                "typeIntroOffer" to typeIntroOffer,
+                "descIntroOffer" to descIntroOffer,
+                "pointOfShow" to pointOfShow,
+                "UserID" to if (GlobalStuff.customerID == null) "-" else GlobalStuff.customerID)
+        GlobalStuff.amplitude?.track(event)
+    }
+
+    fun SendToAmpPurchasePaywall(paywallId: String, product: String, productId: String, introOffer: String, typeIntroOffer: String, descIntroOffer: String, pointOfShow: String)
+    {
+        val event = GlobalStuff.GetBaseEvent("purchase paywall", true, false)
+        event.eventProperties = mutableMapOf("paywallId" to paywallId,
+            "product" to product,
+            "productId" to productId,
+            "introOffer" to introOffer,
+            "typeIntroOffer" to typeIntroOffer,
+            "descIntroOffer" to descIntroOffer,
+            "pointOfShow" to pointOfShow,
+            "UserID" to if (GlobalStuff.customerID == null) "-" else GlobalStuff.customerID)
+        GlobalStuff.amplitude?.track(event)
+    }
+
+    fun SendToAmpErrorPaywall(error: AdaptyError, product: AdaptyPaywallProduct) {
+        val descProduct =
+            product.vendorProductId + "|" + product.price.localizedString + "|" + product.subscriptionDetails?.localizedSubscriptionPeriod
+
+        val event = GlobalStuff.GetBaseEvent("purchase error paywall", true, false)
+        event.eventProperties = mutableMapOf(
+            "paywallId" to product.paywallName,
+            "product" to descProduct,
+            "productId" to product.vendorProductId,
+            "introOffer" to product.subscriptionDetails?.introductoryOfferEligibility,
+            "typeIntroOffer" to "typeIntroOffer",
+            "descIntroOffer" to "descIntroOffer",
+            "Message" to error.message,
+            "Source" to error.toString(),
+            "AdaptyErrorCode" to error.adaptyErrorCode.toString(),
+            "StackTrace" to error.stackTrace.toString(),
+            "pointOfShow" to GlobalStuff.PointOfShow,
+            "UserID" to if (GlobalStuff.customerID == null) "-" else GlobalStuff.customerID)
+        GlobalStuff.amplitude?.track(event)
+    }
+
+    fun SendToAmpErrorRestore(error: AdaptyError)
+    {
+        val event = GlobalStuff.GetBaseEvent("restore error", true, false)
+        event.eventProperties = mutableMapOf("Message" to error.message,
+            "Source" to error.toString(),
+            "AdaptyErrorCode" to error.adaptyErrorCode.toString(),
+            "StackTrace" to error.stackTrace.toString(),
+            "pointOfShow" to GlobalStuff.PointOfShow,
+            "UserID" to if (GlobalStuff.customerID == null) "-" else GlobalStuff.customerID)
+        GlobalStuff.amplitude?.track(event)
+    }
+
+    fun SendEventClickAgentRequest(ac: String, estimateSeats: String, classesList: String, estimateStatus: String, timeDepart: String, isAgentData: Boolean, forecastStatus: String, ageDataFromAgent: Int?)
+    {
+        val event = GlobalStuff.GetBaseEvent("click request agent", true, false)
+        event.eventProperties = mutableMapOf("ac" to ac,
+            "estimateSeats" to estimateSeats,
+            "classesList" to classesList,
+            "estimateStatus" to estimateStatus,
+            "now" to LocalDateTime.now(),
+            "timeDepart" to timeDepart,
+            "forecastStatus" to forecastStatus,
+            "isAgentData" to isAgentData,
+            "ageDataFromAgent" to ageDataFromAgent,
+            "UserID" to if (GlobalStuff.customerID == null) "-" else GlobalStuff.customerID)
+        GlobalStuff.amplitude?.track(event)
     }
 }

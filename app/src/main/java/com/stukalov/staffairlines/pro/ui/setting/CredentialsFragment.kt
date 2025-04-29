@@ -94,6 +94,9 @@ class CredentialsFragment : Fragment() {
                 val tok = withContext(Dispatchers.IO) { SM.GenToken(GlobalStuff.customerID!!) }
 
                 if (tok != null) {
+                    val event = GlobalStuff.GetBaseEvent("generate UID", true, true)
+                    GlobalStuff.amplitude?.track(event)
+
                     strtoken = tok.token
                     tvCredSecond.setText(Html.fromHtml("If you want to become an agent, post flight load data and get your own benefits, go to the <a href='https://t.me/DevStaffCommunityBot?start=" + strtoken + "' style='color: #8ebf42'><u>telegram bot</u></a>. More about agents read <a href='https://staffairlines.com/flightclub'><u>here</u></a>."))
                 }
@@ -127,6 +130,9 @@ class CredentialsFragment : Fragment() {
                         GlobalStuff.customerEmail = null
                         GlobalStuff.customerLastName = null
                         GlobalStuff.customerFirstName = null
+
+                        val event = GlobalStuff.GetBaseEvent("logout", true, true)
+                        GlobalStuff.amplitude?.track(event)
 
                         GlobalStuff.googleInClient?.signOut()
                         SM.SaveCustomerID()
@@ -205,6 +211,9 @@ class CredentialsFragment : Fragment() {
             .withLastName(null)
             .withRemovedCustomAttribute("own_ac")
 
+        val event = GlobalStuff.GetBaseEvent("delete profile", true, true)
+        GlobalStuff.amplitude?.track(event)
+
         Adapty.updateProfile(aprof.build()) { error2 ->
             if (error2 != null) {
                 AlertDialog.Builder(cont)
@@ -212,6 +221,12 @@ class CredentialsFragment : Fragment() {
                     .setMessage("Update profile failed: " + error2.message)
                     .setNegativeButton("ok") { dialog, id -> dialog.cancel() }
                     .show()
+
+                val ev = GlobalStuff.GetBaseEvent("error", true, false)
+                ev.eventProperties = mutableMapOf("error" to error2.message,
+                    "module" to "delete profile",
+                    "par1" to error2.adaptyErrorCode.toString())
+                GlobalStuff.amplitude?.track(ev)
             }
             else
             {

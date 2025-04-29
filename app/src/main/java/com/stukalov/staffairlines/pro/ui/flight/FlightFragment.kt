@@ -469,13 +469,15 @@ class FlightFragment : Fragment() {
                 typeEvent = "Details show nondirect second"
             }
 
-            var sforecastrat = "";
+            var sforecastrat = ""
+            if (f.Forecast == 0.0f)
+                sforecastrat = "None"
             if (f.Forecast <= 1) {
-                sforecastrat = "Bad";
+                sforecastrat = "Red"
             } else if (f.Forecast <= 2) {
-                sforecastrat = "So-so";
+                sforecastrat = "Yellow"
             } else {
-                sforecastrat = "Good";
+                sforecastrat = "Green"
             }
 
             var dataSAFromAgent = false
@@ -539,6 +541,7 @@ class FlightFragment : Fragment() {
         {
             val spin_layout = view.findViewById<FrameLayout>(R.id.spinner_flight)
             spin_layout.isVisible = true
+            GlobalStuff.PointOfShow = "Subscribe option"
 
             AdControl.GetPaywallViewParams("test_main_action2")
         }
@@ -567,12 +570,17 @@ class FlightFragment : Fragment() {
 
     fun Request_Click(view: View)
     {
-        //await PremiumFunctions.SendEventClickAgentRequest(DirectFlight.OperatingCarrier, DirectFlight.AllPlaces, "{" + string.Join(",", DirectFlight.NumSeatsForBookingClass) + "}", (int)DirectFlight.Rating, DateTime.Now, DirectFlight.DepartureDateTime.ToString(), DirectFlight.AgentInfo != null, DirectFlight.Forecast.ToString(), DirectFlight.AgentInfo != null ? DirectFlight.AgentInfo.TimePassed : 0);
         val f = GlobalStuff.OneResult!!
+
+        SM.SendEventClickAgentRequest(f.OperatingCarrier, f.RatingType.name, f.NumSeatsForBookingClass.joinToString(","), f.Rating.toString(), f.DepartureDateTime, if (f.AgentInfo != null) true else false, f.Forecast.toString(), if (f.AgentInfo != null) f.AgentInfo.TimePassed else -1)
 
         if (f.Reporters == false)
         {
-            //await PremiumFunctions.SendEventNoAgentPopup(DirectFlight.OperatingCarrier);
+            val event = GlobalStuff.GetBaseEvent("no agent popup", true, false)
+            event.eventProperties = mutableMapOf("ac" to f.OperatingCarrier,
+                "UserID" to if (GlobalStuff.customerID == null) "-" else GlobalStuff.customerID)
+            GlobalStuff.amplitude?.track(event)
+
             AlertDialog.Builder(view.context)
                 .setTitle("Post request")
                 .setMessage("Unfortunately, there are no registered " + f.OperatingName + " staff yet who could help with data on the actual load on flight.\nDetails on staffairlines.com")
@@ -619,6 +627,7 @@ class FlightFragment : Fragment() {
             // кидаем на пэйвол
             val spin_layout = view.findViewById<FrameLayout>(R.id.spinner_flight)
             spin_layout.isVisible = true
+            GlobalStuff.PointOfShow = "Agent option"
 
             AdControl.GetPaywallViewParams("test_main_action2")        }
     }

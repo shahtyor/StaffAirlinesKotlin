@@ -40,6 +40,11 @@ class LoginFragment : Fragment() {
         val cvGoogleLogin = view.findViewById<CardView>(R.id.cvGoogleLogin)
         cvGoogleLogin.setOnClickListener()
         {
+            val event = GlobalStuff.GetBaseEvent("click login", true, false)
+            event.eventProperties = mutableMapOf("type_system" to "google",
+                "UserID" to if (GlobalStuff.customerID == null) "-" else GlobalStuff.customerID)
+            GlobalStuff.amplitude?.track(event)
+
             login()
         }
     }
