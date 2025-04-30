@@ -27,6 +27,7 @@ import androidx.lifecycle.lifecycleScope
 import com.adapty.Adapty
 import com.adapty.models.AdaptyProfileParameters
 import com.onesignal.OneSignal
+import com.stukalov.staffairlines.pro.Flight
 import com.stukalov.staffairlines.pro.FlightWithPax
 import com.stukalov.staffairlines.pro.GlobalStuff
 import com.stukalov.staffairlines.pro.ProfileTokens
@@ -188,7 +189,16 @@ class FlightFragment : Fragment() {
             Subscribe_Click(view)
         }
 
-        var f = GlobalStuff.OneResult
+        var f: Flight? = null
+        if (GlobalStuff.ResType == ResultType.Second) {
+            f = if (GlobalStuff.SecondSegment == null) GlobalStuff.OneResult else GlobalStuff.SecondSegment
+        }
+        else if (GlobalStuff.ResType == ResultType.First) {
+            f = if (GlobalStuff.FirstSegment == null) GlobalStuff.OneResult else GlobalStuff.FirstSegment
+        }
+        else {
+            f = GlobalStuff.OneResult
+        }
 
         if (f == null) return
 

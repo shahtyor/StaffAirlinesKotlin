@@ -4,9 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    android:id="@+id/showpermitt"
-    tools:context=".ui.sel_ac.ShowPermittFragment">
+    android:background="@color/white">
 
     <LinearLayout
         android:background="@color/white"
@@ -17,37 +15,32 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/perText1"
-            android:text="Permitted Airlines For S7"
-            android:textAlignment="center"
+            android:text="Permitted airlines for "
             android:textColor="@color/black"
-            android:textSize="18sp"
+            android:textSize="20sp"
             android:layout_marginTop="10dp"
-            android:textStyle="bold"
+            android:textAlignment="center"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <TextView
-            android:id="@+id/perText2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
             android:layout_marginTop="10dp"
-            android:layout_marginBottom="20dp"
-            android:text="There will be only these airlines in the search results."
-            android:textSize="15sp"
-            />
+            android:layout_marginBottom="10dp"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
 
         <ListView
-            android:id="@+id/permittlistview"
+            android:id="@+id/lvpermittpopup"
             android:isScrollContainer="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="0dp"
             android:layout_marginRight="0dp"
-            tools:listitem="@layout/item_aclist"
-            />
+            tools:listitem="@layout/item_aclist" />
 
     </LinearLayout>
 

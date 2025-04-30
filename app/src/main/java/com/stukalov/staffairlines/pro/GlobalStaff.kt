@@ -11,7 +11,6 @@ import android.widget.TextView
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
-import androidx.viewpager2.widget.ViewPager2
 import com.adapty.Adapty
 import com.adapty.errors.AdaptyError
 import com.adapty.models.AdaptyPaywallProduct
@@ -20,7 +19,6 @@ import com.adapty.ui.AdaptyUI
 import com.amplitude.android.Amplitude
 import com.amplitude.core.events.BaseEvent
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.material.tabs.TabLayout
 import com.onesignal.OneSignal
 import com.stukalov.staffairlines.pro.databinding.ActivityMainBinding
 import com.stukalov.staffairlines.pro.ui.home.HomeFragment
@@ -50,6 +48,7 @@ import java.time.format.DateTimeFormatter
         var HomeFromSelect: Boolean = false
         var Remain: Int = 5
         var CarouselShowed = false
+        var UsePermitted = true
 
         lateinit var activity: Context
         lateinit var mActivity: MainActivity

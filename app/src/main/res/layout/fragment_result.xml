@@ -79,6 +79,83 @@
         </LinearLayout>
         <!--2-->
 
+        <FrameLayout
+            android:id="@+id/flPermitted"
+            android:background="@drawable/round_box_light_gray"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:minHeight="40dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/useraclogo1"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:foregroundGravity="center_vertical"
+                android:src="@drawable/_af"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="0dp"
+                android:layout_marginEnd="10dp"
+                tools:ignore="ContentDescription" />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="0dp"
+                android:layout_weight="10"
+                android:layout_height="match_parent" >
+
+                <TextView
+                    android:id="@+id/tvForSwitch10"
+                    android:textColor="@color/black"
+                    android:textSize="12sp"
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/tvForSwitch1"
+                    android:textColor="@color/staff_blue"
+                    android:textSize="12sp"
+                    android:text="Permitted airlines"
+                    android:layout_gravity="center_vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/tvForSwitch12"
+                    android:textColor="@color/black"
+                    android:textSize="12sp"
+                    android:text="for AA staff only"
+                    android:layout_marginEnd="10dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <Switch
+                android:id="@+id/switch1"
+                android:layout_weight="3"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:switchMinWidth="60dp"
+                android:thumbTint="@drawable/switch_thumb_selector"
+                android:trackTint="@drawable/switch_track_selector"
+                android:trackTintMode="screen"
+                tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+        </LinearLayout>
+
+        </FrameLayout>
+
         <TextView
             android:id="@+id/firstResultInfo"
             android:text="Your FIRST FLIGHT"

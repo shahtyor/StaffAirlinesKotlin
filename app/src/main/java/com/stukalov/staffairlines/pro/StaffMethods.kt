@@ -1,6 +1,11 @@
 package com.stukalov.staffairlines.pro
 
+import android.content.Context
+import android.os.Bundle
 import android.util.Log
+import android.widget.FrameLayout
+import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.adapty.errors.AdaptyError
 import com.adapty.models.AdaptyPaywallProduct
@@ -19,6 +24,7 @@ import java.io.IOException
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.Period
 import java.time.format.DateTimeFormatter
 import java.util.Arrays
 import java.util.UUID
@@ -575,6 +581,19 @@ class StaffMethods {
         }
     }
 
+    fun SaveUsePermitted()
+    {
+        val editor = GlobalStuff.prefs.edit()
+        editor.putString("use_permitted", GlobalStuff.UsePermitted.toString()).apply()
+    }
+
+    fun GetUsePermitted()
+    {
+        if (GlobalStuff.prefs.contains("use_permitted")) {
+            GlobalStuff.UsePermitted = GlobalStuff.prefs.getString("use_permitted", null).toBoolean()
+        }
+    }
+
     fun SaveCustomerID()
     {
         val editor = GlobalStuff.prefs.edit()
@@ -629,7 +648,11 @@ class StaffMethods {
 
     fun GetStringPermitt(): String
     {
-        val res = GlobalStuff.Permitted.joinToString ("-") { it.Code }
+        var res = GlobalStuff.Permitted.joinToString ("-") { it.Code }
+        if (!GlobalStuff.UsePermitted)
+        {
+            res = ""
+        }
         return res
     }
 
@@ -759,5 +782,107 @@ class StaffMethods {
             "ageDataFromAgent" to ageDataFromAgent,
             "UserID" to if (GlobalStuff.customerID == null) "-" else GlobalStuff.customerID)
         GlobalStuff.amplitude?.track(event)
+    }
+
+    fun GetStringStatus(status: Boolean): String
+    {
+        if (status) {
+            return "on"
+        } else {
+            return "off"
+        }
+    }
+
+    fun GetStringPoint(point: Int): String
+    {
+        when (point) {
+            0 -> return "direct"
+            1 -> return "transfer"
+            else -> return "schedule"
+        }
+    }
+
+    fun GetStringExistPreset(): String
+    {
+        if (GlobalStuff.Permitted.isEmpty())
+        {
+            return "dont exist"
+        }
+        else
+        {
+            return "exist"
+        }
+    }
+
+    fun sendEventSwitcherPresetFilter(newsStatus: Boolean, point: Int)
+    {
+        val event = GlobalStuff.GetBaseEvent("switcher preset filter change", true, false)
+        event.eventProperties = mutableMapOf("newsStatus" to GetStringStatus(newsStatus),
+            "ownAC" to GlobalStuff.OwnAC?.Code,
+            "point" to GetStringPoint(point))
+        GlobalStuff.amplitude?.track(event)
+    }
+
+    fun sendEventClickPermittedAirlines()
+    {
+        val event = GlobalStuff.GetBaseEvent("click permitted airlines", true, false)
+        event.eventProperties = mutableMapOf("statusPresetFilter" to GetStringStatus(GlobalStuff.UsePermitted),
+            "existPreset" to GetStringExistPreset(),
+            "ownAC" to GlobalStuff.OwnAC?.Code)
+        GlobalStuff.amplitude?.track(event)
+    }
+
+    fun GetTransferDetails(): TransferDetails
+    {
+        var tpcnt = 0
+        var rtpcnt = 0
+        var tp: List<TransferPoint> = listOf()
+        var rtp: List<TransferPoint> = listOf()
+        var tpsource: List<TransferPoint> = listOf()
+        var ndrsource: List<NonDirectResult> = listOf()
+        val ExRes = GlobalStuff.ExtResult
+        if (ExRes != null)
+        {
+            if (ExRes.TransferPoints != null) {
+                tp = ExRes.TransferPoints
+            }
+            if (ExRes.ResultTransferPoints != null) {
+                rtp = ExRes.ResultTransferPoints
+            }
+            if (tp != null) {
+                tpcnt = tp.size
+            }
+            if (rtp != null) {
+                rtpcnt = rtp.size
+            }
+            if (ExRes.NonDirectRes != null) {
+                ndrsource = ExRes.NonDirectRes
+            }
+
+            if (rtpcnt == 0)
+            {
+                tpsource = tp
+            }
+            else
+            {
+                tpsource = rtp
+            }
+        }
+        val res = TransferDetails(tpsource, ndrsource)
+        return res
+    }
+
+    fun GetTransferExtra(change: String): TransferExtra?
+    {
+        val ExRes = GlobalStuff.ExtResult
+        if (ExRes != null)
+        {
+            val filt = ExRes.NonDirectRes.filter{ x -> x.Transfer == change }.first()
+            return TransferExtra(filt.To_airport_transfer, filt.From_airport_transfer)
+        }
+        else
+        {
+            return null
+        }
     }
 }

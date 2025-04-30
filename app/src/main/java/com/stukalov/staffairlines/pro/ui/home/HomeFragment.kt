@@ -1,11 +1,9 @@
 package com.stukalov.staffairlines.pro.ui.home
 
+import android.content.Context
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
-import android.provider.Settings.Global
 import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
@@ -21,7 +19,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.amplitude.core.events.BaseEvent
 import com.onesignal.OneSignal
 import com.stukalov.staffairlines.pro.GetNonDirectType
 import com.stukalov.staffairlines.pro.GlobalStuff
@@ -599,62 +596,67 @@ class HomeFragment : Fragment() {
                     tbCntPass.text.toString().toInt()
                 )
 
-                val permlist = SM.GetStringPermitt()
+                RunExtendedSearch(view.context, spin_layout)
+            }
+        }
+    }
 
-                // Пользователь запустил поиск
-                val event = GlobalStuff.GetBaseEvent("Extended search started", true)
-                event.eventProperties = mutableMapOf<String, Any?>("Origin" to if (GlobalStuff.OriginPoint?.Code == null) GlobalStuff.OriginPoint?.Id.toString() else GlobalStuff.OriginPoint?.Code,
-                    "Destination" to if (GlobalStuff.DestinationPoint?.Code == null) GlobalStuff.DestinationPoint?.Id.toString() else GlobalStuff.DestinationPoint?.Code,
-                    "Date" to Period.between(GlobalStuff.SearchDT, LocalDate.now()).days, "Passengers" to GlobalStuff.Pax,
-                    "Country origin" to GlobalStuff.OriginPoint?.CountryName, "Country destination" to GlobalStuff.DestinationPoint?.CountryName,
+    fun RunExtendedSearch(context: Context, spin_layout: FrameLayout)
+    {
+        val permlist = SM.GetStringPermitt()
+
+        // Пользователь запустил поиск
+        val event = GlobalStuff.GetBaseEvent("Extended search started", true)
+        event.eventProperties = mutableMapOf<String, Any?>("Origin" to if (GlobalStuff.OriginPoint?.Code == null) GlobalStuff.OriginPoint?.Id.toString() else GlobalStuff.OriginPoint?.Code,
+            "Destination" to if (GlobalStuff.DestinationPoint?.Code == null) GlobalStuff.DestinationPoint?.Id.toString() else GlobalStuff.DestinationPoint?.Code,
+            "Date" to Period.between(GlobalStuff.SearchDT, LocalDate.now()).days, "Passengers" to GlobalStuff.Pax,
+            "Country origin" to GlobalStuff.OriginPoint?.CountryName, "Country destination" to GlobalStuff.DestinationPoint?.CountryName,
+            "UserID" to if (GlobalStuff.customerID == null) "-" else GlobalStuff.customerID)
+        GlobalStuff.amplitude?.track(event)
+
+        lifecycleScope.launch {
+            val result = withContext(Dispatchers.IO) {
+                SM.ExtendedSearch(
+                    GlobalStuff.OriginPoint!!.Id.toString(),
+                    GlobalStuff.DestinationPoint!!.Id.toString(),
+                    GlobalStuff.SearchDT!!,
+                    permlist,
+                    false,
+                    GetNonDirectType.off,
+                    GlobalStuff.Pax,
+                    "USD",
+                    "EN",
+                    "USA",
+                    "",
+                    false,
+                    "3.0",
+                    "--",
+                    GlobalStuff.customerID
+                )
+            }
+
+            if (result == "OK" && GlobalStuff.ExtResult != null) {
+
+                val event = GlobalStuff.GetBaseEvent("Results of extended search", true)
+                event.eventProperties = mutableMapOf<String, Any?>("Directs" to if (GlobalStuff.ExtResult?.DirectRes == null) 0 else GlobalStuff.ExtResult?.DirectRes?.count(),
+                    "Transfers total" to if (GlobalStuff.ExtResult?.TransferPoints == null) 0 else GlobalStuff.ExtResult?.TransferPoints?.count(),
+                    "Transfers with results" to if (GlobalStuff.ExtResult?.ResultTransferPoints == null) 0 else GlobalStuff.ExtResult?.ResultTransferPoints?.count(),
                     "UserID" to if (GlobalStuff.customerID == null) "-" else GlobalStuff.customerID)
                 GlobalStuff.amplitude?.track(event)
 
-                lifecycleScope.launch {
-                    val result = withContext(Dispatchers.IO) {
-                        SM.ExtendedSearch(
-                            GlobalStuff.OriginPoint!!.Id.toString(),
-                            GlobalStuff.DestinationPoint!!.Id.toString(),
-                            GlobalStuff.SearchDT!!,
-                            permlist,
-                            false,
-                            GetNonDirectType.off,
-                            GlobalStuff.Pax,
-                            "USD",
-                            "EN",
-                            "USA",
-                            "",
-                            false,
-                            "3.0",
-                            "--",
-                            GlobalStuff.customerID
-                        )
-                    }
+                GlobalStuff.ResType = ResultType.Direct
+                GlobalStuff.BackResType = null
+                GlobalStuff.navController.navigate(R.id.resultlayout, Bundle())
+            } else {
+                SetDisable(true)
+                spin_layout.isVisible = false
 
-                    if (result == "OK" && GlobalStuff.ExtResult != null) {
-
-                        val event = GlobalStuff.GetBaseEvent("Results of extended search", true)
-                        event.eventProperties = mutableMapOf<String, Any?>("Directs" to if (GlobalStuff.ExtResult?.DirectRes == null) 0 else GlobalStuff.ExtResult?.DirectRes?.count(),
-                            "Transfers total" to if (GlobalStuff.ExtResult?.TransferPoints == null) 0 else GlobalStuff.ExtResult?.TransferPoints?.count(),
-                            "Transfers with results" to if (GlobalStuff.ExtResult?.ResultTransferPoints == null) 0 else GlobalStuff.ExtResult?.ResultTransferPoints?.count(),
-                            "UserID" to if (GlobalStuff.customerID == null) "-" else GlobalStuff.customerID)
-                        GlobalStuff.amplitude?.track(event)
-
-                        GlobalStuff.ResType = ResultType.Direct
-                        GlobalStuff.BackResType = null
-                        GlobalStuff.navController.navigate(R.id.resultlayout, Bundle())
-                    } else {
-                        SetDisable(true)
-                        spin_layout.isVisible = false
-
-                        var serr: String = ""
-                        if (GlobalStuff.ExtResult == null) {
-                            serr = " , er=null"
-                        }
-                        val toast = Toast.makeText(context, result + serr, Toast.LENGTH_LONG)
-                        toast.show()
-                    }
+                var serr: String = ""
+                if (GlobalStuff.ExtResult == null) {
+                    serr = " , er=null"
                 }
+                val toast = Toast.makeText(context, result + serr, Toast.LENGTH_LONG)
+                toast.show()
             }
         }
     }

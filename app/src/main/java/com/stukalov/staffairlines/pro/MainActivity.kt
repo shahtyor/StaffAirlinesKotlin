@@ -113,6 +113,8 @@ class MainActivity : AppCompatActivity() {
         if (GlobalStuff.customerID != null)
         {
             amplitude.setUserId(GlobalStuff.customerID)
+            val userprop = mutableMapOf("preset filter" to SM.GetStringStatus(GlobalStuff.UsePermitted))
+            amplitude.identify(userprop)
             //AppsFlyerLib.getInstance().setCustomerUserId(GlobalStuff.customerID)
             AppsFlyerLib.getInstance().setCustomerIdAndLogSession(GlobalStuff.customerID, this)
             OneSignal.login(GlobalStuff.customerID!!)
