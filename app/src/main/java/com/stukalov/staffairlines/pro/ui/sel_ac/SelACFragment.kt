@@ -153,6 +153,8 @@ class SelACFragment : Fragment() {
             {
                 if (GlobalStuff.Permitted.isEmpty())
                 {
+                    OneSignal.InAppMessages.addTrigger("os_presetAC", "notExists")
+
                     AlertDialog.Builder(cont)
                         .setTitle("Congratulations!")
                         .setMessage("Now you can start using the app. Please note, that you will find all represented airlines in the app by default. If want to limit the range of available airlines, please send us list of allowed airlines for your staff at hello@staffairlines.com. Any format is OK. We will add these carriers to the preset for " + ac.Airline + ".")
@@ -161,6 +163,8 @@ class SelACFragment : Fragment() {
                 }
                 else
                 {
+                    OneSignal.InAppMessages.addTrigger("os_presetAC", "exists")
+
                     AlertDialog.Builder(cont)
                         .setTitle("Success")
                         .setMessage(ac.Airline + " set as your airline.")

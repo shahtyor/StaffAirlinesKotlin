@@ -381,12 +381,12 @@ class HomeFragment : Fragment() {
                 GlobalStuff.HomeFromSelect = false
             }
 
-            OneSignal.InAppMessages.addTrigger("os_ownAC", GlobalStuff.OwnAC!!.Code)
+            /*OneSignal.InAppMessages.addTrigger("os_ownAC", GlobalStuff.OwnAC!!.Code)
             if (GlobalStuff.Permitted.isEmpty()) {
                 OneSignal.InAppMessages.addTrigger("os_presetAC", "notExists")
             } else {
                 OneSignal.InAppMessages.addTrigger("os_presetAC", "exists")
-            }
+            }*/
         }
 
         val event = GlobalStuff.GetBaseEvent("Search form show", false, true)

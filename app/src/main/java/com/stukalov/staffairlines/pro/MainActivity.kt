@@ -203,6 +203,14 @@ class MainActivity : AppCompatActivity() {
         SM.ReadFavorites()
         SM.ReadHistory()
 
+        if (GlobalStuff.OwnAC != null) {
+            OneSignal.InAppMessages.addTrigger("os_ownAC", GlobalStuff.OwnAC!!.Code)
+            OneSignal.InAppMessages.addTrigger(
+                "os_presetAC",
+                if (GlobalStuff.Permitted.isEmpty()) "notExists" else "exists"
+            )
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ActivityCompat.checkSelfPermission(this, POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, arrayOf(POST_NOTIFICATIONS), REQUEST_CODE_POST_NOTIFICATIONS)
