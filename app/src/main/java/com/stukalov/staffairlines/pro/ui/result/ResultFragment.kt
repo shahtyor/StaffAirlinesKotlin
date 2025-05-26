@@ -34,6 +34,8 @@ import com.stukalov.staffairlines.pro.ResultType
 import com.stukalov.staffairlines.pro.StaffMethods
 import com.stukalov.staffairlines.pro.databinding.FragmentResultBinding
 import com.stukalov.staffairlines.pro.ui.paywall.AdaptyController
+import com.survicate.surveys.Survicate
+import com.survicate.surveys.traits.UserTrait
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -51,6 +53,7 @@ class ResultFragment : Fragment() {
     lateinit var btResCommercial: Button
     val SM: StaffMethods = StaffMethods()
     val AdControl: AdaptyController = AdaptyController()
+    val SCREEN_NAME = "resultSearch"
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -73,6 +76,8 @@ class ResultFragment : Fragment() {
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        Survicate.enterScreen(SCREEN_NAME)
 
         val formatter0 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val result_title = GlobalStuff.GetTitle()
@@ -119,6 +124,9 @@ class ResultFragment : Fragment() {
             switch1.setOnCheckedChangeListener()
             { _, isChecked ->
                 GlobalStuff.UsePermitted = isChecked
+                GlobalStuff.featureUsedFilterPreset += 1
+                Survicate.setUserTrait(UserTrait("featureUsedFilterPreset", GlobalStuff.featureUsedFilterPreset))
+                SM.SaveFeatureData()
                 SM.SaveUsePermitted()
                 SM.sendEventSwitcherPresetFilter(isChecked, 0)
 
@@ -615,6 +623,7 @@ class ResultFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        Survicate.leaveScreen(SCREEN_NAME)
         _binding = null
     }
 

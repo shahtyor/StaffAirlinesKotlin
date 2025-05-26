@@ -68,6 +68,7 @@ class SplashActivity : AppCompatActivity() {
         }
 
         SM.GetUsePermitted()
+        SM.GetFeatureData()
 
         /*Handler(Looper.getMainLooper()).postDelayed({
             val intent = Intent(this, MainActivity::class.java)

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     android:id="@+id/selpoint"
-    tools:context=".ui.sel_point.SelACFragment">
+    tools:context=".ui.sel_point.SelPointFragment">
 
     <LinearLayout
         android:background="@color/white"

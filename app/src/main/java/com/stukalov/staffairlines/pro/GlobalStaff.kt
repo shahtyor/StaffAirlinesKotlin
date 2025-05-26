@@ -27,6 +27,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @SuppressLint("StaticFieldLeak")
@@ -50,6 +51,11 @@ import java.time.format.DateTimeFormatter
         var CarouselShowed = false
         var UsePermitted = true
 
+        var featureUsedFilterPreset: Int = 0
+        var featureUsedSchedule : Int = 0
+        var TypeUserForSurvicate = "test"
+        //var TypeUserForSurvicate = "prod"
+
         lateinit var activity: Context
         lateinit var mActivity: MainActivity
         lateinit var binding: ActivityMainBinding
@@ -70,6 +76,12 @@ import java.time.format.DateTimeFormatter
         lateinit var StaffRes: Resources
         lateinit var supportFragManager: androidx.fragment.app.FragmentManager
         lateinit var prefs: SharedPreferences
+
+        var appSessionsCount: Int = 0
+        var appSessionsCountGlobal: Int = 0
+        var firstOpenDate: LocalDateTime? = null
+        var firstOpenDateGlobal: LocalDateTime? = null
+        var ratingEventsCount: Int = 0
 
         var AdaptyProducts: List<AdaptyPaywallProduct> = listOf()
         var AdaptyConfig: AdaptyUI.LocalizedViewConfiguration? = null
@@ -95,6 +107,7 @@ import java.time.format.DateTimeFormatter
 
         var FirstSearchForm: Boolean = true
         var DeviceID: String? = null
+        val AskRatingTimer = StoppableTimer(5000)
 
         fun setActionBar(visibility: Boolean, upEnable: Boolean, title: String)
         {

@@ -16,6 +16,8 @@ import com.adapty.ui.listeners.AdaptyUiTagResolver
 import com.stukalov.staffairlines.pro.GlobalStuff
 import com.stukalov.staffairlines.pro.R
 import com.stukalov.staffairlines.pro.StaffMethods
+import com.survicate.surveys.Survicate
+import com.survicate.surveys.traits.UserTrait
 
 class PaywallUiFragment : Fragment(R.layout.fragment_paywall_ui) {
 
@@ -79,16 +81,23 @@ class PaywallUiFragment : Fragment(R.layout.fragment_paywall_ui) {
                     val profile = purchaseResult.profile
                     GlobalStuff.AdaptyProfileID = profile.profileId
                     val premium = profile.accessLevels["premium"]
+                    val OldPremiumAccess = GlobalStuff.premiumAccess
 
                     if (premium?.isActive == true)
                     {
                         GlobalStuff.premiumAccess = true
                         GlobalStuff.subscriptionId = premium.vendorProductId
+                        if (!OldPremiumAccess) {
+                            Survicate.setUserTrait(UserTrait("paidStatus", "premiumAccess"))
+                        }
                     }
                     else
                     {
-                        GlobalStuff.premiumAccess = false;
-                        GlobalStuff.subscriptionId = null;
+                        GlobalStuff.premiumAccess = false
+                        GlobalStuff.subscriptionId = null
+                        if (OldPremiumAccess) {
+                            Survicate.setUserTrait(UserTrait("paidStatus", "free plan"))
+                        }
                     }
                     if (GlobalStuff.HF != null) {
                         GlobalStuff.HF!!.SetPlan()

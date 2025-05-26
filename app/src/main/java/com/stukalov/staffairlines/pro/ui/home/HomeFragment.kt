@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.text.Html
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +20,8 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.adapty.Adapty
+import com.adapty.utils.AdaptyResult
 import com.onesignal.OneSignal
 import com.stukalov.staffairlines.pro.GetNonDirectType
 import com.stukalov.staffairlines.pro.GlobalStuff
@@ -29,6 +32,8 @@ import com.stukalov.staffairlines.pro.ResultType
 import com.stukalov.staffairlines.pro.StaffMethods
 import com.stukalov.staffairlines.pro.databinding.FragmentHomeBinding
 import com.stukalov.staffairlines.pro.ui.paywall.AdaptyController
+import com.survicate.surveys.Survicate
+import com.survicate.surveys.traits.UserTrait
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -70,6 +75,7 @@ class HomeFragment : Fragment() {
     lateinit var tvHomeSearchCurrent: TextView
     val SM: StaffMethods = StaffMethods()
     val AdControl: AdaptyController = AdaptyController()
+    val SCREEN_NAME = "formSearch"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -89,6 +95,8 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        Survicate.enterScreen(SCREEN_NAME)
 
         tbOrigin = view.findViewById<TextView>(R.id.origin)
         tbDestination = view.findViewById<TextView>(R.id.destination)
@@ -362,6 +370,13 @@ class HomeFragment : Fragment() {
 
                 //Первый запуск приложения
                 val today = LocalDate.now()
+
+                val traits = listOf(
+                    UserTrait("YYYY", today.year.toString()),
+                    UserTrait("MM", today.monthValue.toString())
+                )
+                Survicate.setUserTraits(traits)
+
                 val event = GlobalStuff.GetBaseEvent("First launch", false, true)
                 event.userProperties = mutableMapOf("YYYY" to today.year.toString(),
                     "MM" to today.monthValue.toString().padStart(2, '0'),
@@ -398,6 +413,7 @@ class HomeFragment : Fragment() {
         GlobalStuff.amplitude?.track(event)
 
         GlobalStuff.FirstSearchForm = false
+        Log.d("HomeFragment", "onResume")
     }
 
     override fun onStop() {
@@ -407,6 +423,7 @@ class HomeFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        Survicate.leaveScreen(SCREEN_NAME)
         _binding = null
     }
 
@@ -567,6 +584,8 @@ class HomeFragment : Fragment() {
     }
 
     fun search_click(view: View) {
+
+        SM.IncRatingEventsCount()
 
         if (GlobalStuff.OriginPoint != null && GlobalStuff.DestinationPoint != null) {
 

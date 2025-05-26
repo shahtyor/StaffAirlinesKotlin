@@ -35,7 +35,9 @@ import com.stukalov.staffairlines.pro.R
 import com.stukalov.staffairlines.pro.RType
 import com.stukalov.staffairlines.pro.ResultType
 import com.stukalov.staffairlines.pro.StaffMethods
+import com.stukalov.staffairlines.pro.StoppableTimer
 import com.stukalov.staffairlines.pro.ui.paywall.AdaptyController
+import com.survicate.surveys.Survicate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -82,6 +84,7 @@ class FlightFragment : Fragment() {
 
     val SM: StaffMethods = StaffMethods()
     val AdControl: AdaptyController = AdaptyController()
+    val SCREEN_NAME = "flightDetails"
 
     companion object {
         fun newInstance() = FlightFragment()
@@ -105,6 +108,8 @@ class FlightFragment : Fragment() {
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        Survicate.enterScreen(SCREEN_NAME)
 
         val stf = DateTimeFormatter.ofPattern("HH:mm")
         val sdf = DateTimeFormatter.ofPattern("dd MMM")
@@ -166,26 +171,35 @@ class FlightFragment : Fragment() {
 
         btOneAction.setOnClickListener()
         {
+            GlobalStuff.AskRatingTimer.resume()
+            GlobalStuff.AskRatingTimer.stop()
             action_click_one(view)
         }
 
         ofav.setOnClickListener()
         {
+            GlobalStuff.AskRatingTimer.resume()
             fav_click(view)
         }
 
         oflyzed.setOnClickListener()
         {
+            GlobalStuff.AskRatingTimer.resume()
+            GlobalStuff.AskRatingTimer.stop()
             flyzed_click(view)
         }
 
         btOneRequest.setOnClickListener()
         {
+            GlobalStuff.AskRatingTimer.resume()
+            GlobalStuff.AskRatingTimer.stop()
             Request_Click(view)
         }
 
         btOneSubscribe.setOnClickListener()
         {
+            GlobalStuff.AskRatingTimer.resume()
+            GlobalStuff.AskRatingTimer.stop()
             Subscribe_Click(view)
         }
 
@@ -529,8 +543,22 @@ class FlightFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        GlobalStuff.AskRatingTimer.start()
 
         SendEventsShowDetails()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        GlobalStuff.AskRatingTimer.resume()
+        GlobalStuff.AskRatingTimer.stop()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        GlobalStuff.AskRatingTimer.resume()
+        GlobalStuff.AskRatingTimer.stop()
+        Survicate.leaveScreen(SCREEN_NAME)
     }
 
     fun flyzed_click(view: View) {

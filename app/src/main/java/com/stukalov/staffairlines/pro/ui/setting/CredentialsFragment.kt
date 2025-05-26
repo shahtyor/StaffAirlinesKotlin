@@ -27,6 +27,8 @@ import com.stukalov.staffairlines.pro.GlobalStuff
 import com.stukalov.staffairlines.pro.R
 import com.stukalov.staffairlines.pro.StaffMethods
 import com.stukalov.staffairlines.pro.databinding.FragmentCredentialsBinding
+import com.survicate.surveys.Survicate
+import com.survicate.surveys.traits.UserTrait
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -130,6 +132,14 @@ class CredentialsFragment : Fragment() {
                         GlobalStuff.customerEmail = null
                         GlobalStuff.customerLastName = null
                         GlobalStuff.customerFirstName = null
+
+                        val traits = listOf(
+                            UserTrait("user_id", ""),
+                            UserTrait("first_name", ""),
+                            UserTrait("last_name", ""),
+                            UserTrait("email", "")
+                        )
+                        Survicate.setUserTraits(traits)
 
                         val event = GlobalStuff.GetBaseEvent("logout", true, true)
                         GlobalStuff.amplitude?.track(event)

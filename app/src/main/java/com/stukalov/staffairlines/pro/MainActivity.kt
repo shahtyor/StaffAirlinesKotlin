@@ -39,7 +39,14 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.messaging.FirebaseMessaging
 import com.onesignal.OneSignal
+import com.survicate.surveys.Survicate
 import com.stukalov.staffairlines.pro.databinding.ActivityMainBinding
+import com.survicate.surveys.QuestionAnsweredEvent
+import com.survicate.surveys.SurveyClosedEvent
+import com.survicate.surveys.SurveyCompletedEvent
+import com.survicate.surveys.SurveyDisplayedEvent
+import com.survicate.surveys.SurvicateEventListener
+import com.survicate.surveys.traits.UserTrait
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -62,6 +69,25 @@ class MainActivity : AppCompatActivity() {
     val RC_SIGN_IN: Int = 1
     private lateinit var auth: FirebaseAuth
     val SM: StaffMethods = StaffMethods()
+
+    val listener = object : SurvicateEventListener() {
+        override fun onSurveyDisplayed(event: SurveyDisplayedEvent) {
+            Log.d("SurveyEvent","DELEGATE survey_displayed " + event.surveyId)
+            SM.sendEventSurvey("survey displayed", event.surveyId, null, null)
+        }
+        override fun onQuestionAnswered(event: QuestionAnsweredEvent) {
+            Log.d("SurveyEvent", "DELEGATE question_answered " + event.surveyId + "/" + event.questionText + "/" + event.answer.value)
+            SM.sendEventSurvey("survey question answered", event.surveyId, event.questionText, event.answer.value)
+        }
+        override fun onSurveyClosed(event: SurveyClosedEvent) {
+            Log.d("SurveyEvent","DELEGATE survey_closed " + event.surveyId)
+            SM.sendEventSurvey("survey closed", event.surveyId, null, null)
+        }
+        override fun onSurveyCompleted(event: SurveyCompletedEvent) {
+            Log.d("SurveyEvent","DELEGATE survey_completed " + event.surveyId)
+            SM.sendEventSurvey("survey completed", event.surveyId, null, null)
+        }
+    }
 
     @SuppressLint("ResourceAsColor")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -100,6 +126,12 @@ class MainActivity : AppCompatActivity() {
         AppsFlyerLib.getInstance().start(this)
         Log.d("AppsFlyerLib", "Start")
 
+        Survicate.init(this)
+        if (GlobalStuff.TypeUserForSurvicate == "test") {
+            Survicate.reset()
+        }
+        Survicate.setUserTrait(UserTrait("testORprod", GlobalStuff.TypeUserForSurvicate))
+
         Adapty.activate(
             applicationContext,
             AdaptyConfig.Builder("public_live_acbEIggW.S6BV02NUN0hqnxiqZLGS")
@@ -118,6 +150,7 @@ class MainActivity : AppCompatActivity() {
             //AppsFlyerLib.getInstance().setCustomerUserId(GlobalStuff.customerID)
             AppsFlyerLib.getInstance().setCustomerIdAndLogSession(GlobalStuff.customerID, this)
             OneSignal.login(GlobalStuff.customerID!!)
+            Survicate.setUserTrait(UserTrait("user_id", GlobalStuff.customerID))
             Log.d("AppsFlyerLib", "setCustomerUserId")
         }
 
@@ -125,17 +158,26 @@ class MainActivity : AppCompatActivity() {
 
         Adapty.setOnProfileUpdatedListener{ profile ->
             GlobalStuff.AdaptyProfileID = profile.profileId
+            val OldPremiumAccess = GlobalStuff.premiumAccess
             val premium = profile.accessLevels["premium"]
 
             if (premium?.isActive == true)
             {
                 GlobalStuff.premiumAccess = true
+                if (!OldPremiumAccess)
+                {
+                    Survicate.setUserTrait(UserTrait("paidStatus", "premiumAccess"))
+                }
                 GlobalStuff.subscriptionId = premium.vendorProductId
             }
             else
             {
-                GlobalStuff.premiumAccess = false;
-                GlobalStuff.subscriptionId = null;
+                GlobalStuff.premiumAccess = false
+                if (OldPremiumAccess)
+                {
+                    Survicate.setUserTrait(UserTrait("paidStatus", "free plan"))
+                }
+                GlobalStuff.subscriptionId = null
             }
 
             //BuildProfileToken(profile.customAttributes, premium)
@@ -202,6 +244,7 @@ class MainActivity : AppCompatActivity() {
         SM.ReadPermit()
         SM.ReadFavorites()
         SM.ReadHistory()
+        SM.SetDefaultsForRating()
 
         if (GlobalStuff.OwnAC != null) {
             OneSignal.InAppMessages.addTrigger("os_ownAC", GlobalStuff.OwnAC!!.Code)
@@ -229,6 +272,8 @@ class MainActivity : AppCompatActivity() {
 
         Log.d("onCreate", "End")
 
+        Survicate.addEventListener(listener)
+
         if (GlobalStuff.NotiData != null)
         {
             OpenNotificationFlight(GlobalStuff.NotiData!!)
@@ -250,6 +295,7 @@ class MainActivity : AppCompatActivity() {
         Adapty.getProfile { result ->
             when (result) {
                 is AdaptyResult.Success -> {
+                    Log.d("AdaptyGetProfile", "Success")
                     val profile = result.value
                     GlobalStuff.AdaptyProfileID = profile.profileId
                     val premium = profile.accessLevels["premium"]
@@ -454,6 +500,11 @@ class MainActivity : AppCompatActivity() {
         //}
     }
 
+    override fun onDestroy() {
+        Survicate.removeEventListener(listener)
+        super.onDestroy()
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == RC_SIGN_IN || 1==1) {
@@ -490,6 +541,14 @@ class MainActivity : AppCompatActivity() {
                 event.eventProperties = mutableMapOf("type_system" to "google",
                     "UserID" to if (GlobalStuff.customerID == null) "-" else GlobalStuff.customerID)
                 GlobalStuff.amplitude?.track(event)
+
+                Survicate.setUserTrait(UserTrait("user_id", GlobalStuff.customerID))
+                val traits = listOf(
+                    UserTrait("first_name", acct.givenName),
+                    UserTrait("last_name", acct.familyName),
+                    UserTrait("email", acct.email)
+                )
+                Survicate.setUserTraits(traits)
 
                 SM.SaveCustomerID()
                 OneSignal.login(cMD5)

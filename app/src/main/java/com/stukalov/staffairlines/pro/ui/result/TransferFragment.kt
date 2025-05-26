@@ -24,6 +24,8 @@ import com.stukalov.staffairlines.pro.StaffMethods
 import com.stukalov.staffairlines.pro.TransferPoint
 import com.stukalov.staffairlines.pro.TransferResultAdapter
 import com.stukalov.staffairlines.pro.databinding.FragmentTransferBinding
+import com.survicate.surveys.Survicate
+import com.survicate.surveys.traits.UserTrait
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -99,6 +101,9 @@ class TransferFragment : Fragment() {
             switch2.setOnCheckedChangeListener()
             { _, isChecked ->
                 GlobalStuff.UsePermitted = isChecked
+                GlobalStuff.featureUsedFilterPreset += 1
+                Survicate.setUserTrait(UserTrait("featureUsedFilterPreset", GlobalStuff.featureUsedFilterPreset))
+                SM.SaveFeatureData()
                 SM.SaveUsePermitted()
                 SM.sendEventSwitcherPresetFilter(isChecked, 1)
                 RunExtendedSearch()

@@ -10,6 +10,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven { url = uri("https://repo.survicate.com") }
     }
 }
 rootProject.name = "StaffAirlinesKotlin"

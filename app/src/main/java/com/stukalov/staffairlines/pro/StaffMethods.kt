@@ -1,21 +1,15 @@
 package com.stukalov.staffairlines.pro
 
-import android.content.Context
-import android.os.Bundle
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
-import android.widget.FrameLayout
-import android.widget.Toast
-import androidx.core.view.isVisible
-import androidx.lifecycle.lifecycleScope
 import com.adapty.errors.AdaptyError
 import com.adapty.models.AdaptyPaywallProduct
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.onesignal.OneSignal
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.survicate.surveys.Survicate
 import okhttp3.ConnectionSpec
 import okhttp3.Credentials
 import okhttp3.OkHttpClient
@@ -25,6 +19,7 @@ import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Period
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Arrays
 import java.util.UUID
@@ -607,6 +602,23 @@ class StaffMethods {
         }
     }
 
+    fun SaveFeatureData()
+    {
+        val editor = GlobalStuff.prefs.edit()
+        editor.putString("featureUsedFilterPreset", GlobalStuff.featureUsedFilterPreset.toString()).apply()
+        editor.putString("featureUsedSchedule", GlobalStuff.featureUsedSchedule.toString()).apply()
+    }
+
+    fun GetFeatureData()
+    {
+        if (GlobalStuff.prefs.contains("featureUsedFilterPreset")) {
+            GlobalStuff.featureUsedFilterPreset = GlobalStuff.prefs.getString("featureUsedFilterPreset", "0")!!.toInt()
+        }
+        if (GlobalStuff.prefs.contains("featureUsedSchedule")) {
+            GlobalStuff.featureUsedSchedule = GlobalStuff.prefs.getString("featureUsedSchedule", "0")!!.toInt()
+        }
+    }
+
     fun GetPermittedString(): String
     {
         val astr = mutableListOf<String>()
@@ -832,6 +844,16 @@ class StaffMethods {
         GlobalStuff.amplitude?.track(event)
     }
 
+    // события, связанные с опросами
+    fun sendEventSurvey(typeEvent: String, surveyId: String, question: String?, answerValue: String?)
+    {
+        val event = GlobalStuff.GetBaseEvent(typeEvent, false, false)
+        event.eventProperties = mutableMapOf("surveyId" to surveyId,
+            "question" to if (question.isNullOrEmpty()) "" else question,
+            "answerValue" to if (answerValue.isNullOrEmpty()) "" else answerValue)
+        GlobalStuff.amplitude?.track(event)
+    }
+
     fun GetTransferDetails(): TransferDetails
     {
         var tpcnt = 0
@@ -884,5 +906,184 @@ class StaffMethods {
         {
             return null
         }
+    }
+
+    fun GetAppSessionCount(key: String): Int
+    {
+        var result = 0
+        if (GlobalStuff.prefs.contains(key)) {
+            result = GlobalStuff.prefs.getString(key, "0")!!.toInt()
+        }
+        if (key == "appSessionsCount") {
+            GlobalStuff.appSessionsCount = result
+        }
+        else
+        {
+            GlobalStuff.appSessionsCountGlobal = result
+        }
+        return result
+    }
+
+    fun SaveAppSessionCount(key: String)
+    {
+        val editor = GlobalStuff.prefs.edit()
+        var res = 0
+        if (key == "appSessionsCount")
+        {
+            res = GlobalStuff.appSessionsCount
+        }
+        else
+        {
+            res = GlobalStuff.appSessionsCountGlobal
+        }
+        editor.putString(key, res.toString()).apply()
+    }
+
+    fun GetRatingEventsCount()
+    {
+        if (GlobalStuff.prefs.contains("ratingEventsCount")) {
+            GlobalStuff.ratingEventsCount = GlobalStuff.prefs.getString("ratingEventsCount", "0")!!.toInt()
+        }
+    }
+
+    fun SaveRatingEventsCount()
+    {
+        val editor = GlobalStuff.prefs.edit()
+        editor.putString("ratingEventsCount", GlobalStuff.ratingEventsCount.toString() ).apply()
+    }
+
+    fun GetFirstOpenDate()
+    {
+        if (GlobalStuff.prefs.contains("firstOpenDate")) {
+            GlobalStuff.firstOpenDate = LocalDateTime.ofEpochSecond(GlobalStuff.prefs.getString("firstOpenDate", "0")!!.toLong(), 0, ZoneOffset.UTC)
+        }
+    }
+
+    fun SaveFirstOpenDate(dt: LocalDateTime)
+    {
+        val editor = GlobalStuff.prefs.edit()
+        editor.putString("firstOpenDate", dt.toEpochSecond(ZoneOffset.UTC).toString() ).apply()
+    }
+
+    fun GetFirstOpenDateGlobal()
+    {
+        if (GlobalStuff.prefs.contains("firstOpenDateGlobal")) {
+            GlobalStuff.firstOpenDateGlobal = LocalDateTime.ofEpochSecond(GlobalStuff.prefs.getString("firstOpenDateGlobal", "0")!!.toLong(), 0, ZoneOffset.UTC)
+        }
+    }
+
+    fun SaveFirstOpenDateGlobal(dt: LocalDateTime)
+    {
+        val editor = GlobalStuff.prefs.edit()
+        editor.putString("firstOpenDateGlobal", dt.toEpochSecond(ZoneOffset.UTC).toString() ).apply()
+    }
+
+    // Функция инкремента/инициализации счетчиков сессий и даты первого запуска вызывается:
+    // - каждый раз при старте аппа
+    // - при переходе в активное состояние из фонового состояния (т.е. когда апп был запущен, но не использовался, и пользователь переключается на него)
+    fun SetDefaultsForRating()
+    {
+        GlobalStuff.appSessionsCount = GetAppSessionCount("appSessionsCount") + 1
+        SaveAppSessionCount("appSessionsCount")
+
+        GlobalStuff.appSessionsCountGlobal = GetAppSessionCount("appSessionsCountGlobal") + 1
+        SaveAppSessionCount("appSessionsCountGlobal")
+
+        GetFirstOpenDate()
+        GetFirstOpenDateGlobal()
+
+        if (GlobalStuff.appSessionsCount == 1)
+        {
+            GlobalStuff.firstOpenDate = LocalDateTime.now()
+            SaveFirstOpenDate(LocalDateTime.now())
+        }
+        if (GlobalStuff.appSessionsCountGlobal == 1)
+        {
+            GlobalStuff.firstOpenDateGlobal = LocalDateTime.now()
+            SaveFirstOpenDateGlobal(LocalDateTime.now())
+        }
+    }
+
+    // Функция инкремента ratingEventsCount вызывается:
+    // - при нажатии пользователем кнопки поиска (непосредственно перед самим поиском)
+    fun IncRatingEventsCount()
+    {
+        GetRatingEventsCount()
+        GlobalStuff.ratingEventsCount += 1
+        SaveRatingEventsCount()
+    }
+
+    // Показываем попап запроса рейтинга
+    fun AskForRating()
+    {
+        // фиксируем в аналитике показ формы
+        val event = GlobalStuff.GetBaseEvent("request rating", true, false)
+        event.eventProperties = mutableMapOf("timeFromInstallDays" to Period.between(GlobalStuff.firstOpenDate?.toLocalDate(), LocalDate.now()).days,
+            "timeFromInstallDaysG" to Period.between(GlobalStuff.firstOpenDateGlobal?.toLocalDate(), LocalDate.now()),
+            "sessionsAmount" to GlobalStuff.appSessionsCount,
+            "sessionsAmountG" to GlobalStuff.appSessionsCountGlobal,
+            "eventsAmount" to GlobalStuff.ratingEventsCount,
+            "UserID" to if (GlobalStuff.customerID == null) "-" else GlobalStuff.customerID)
+        GlobalStuff.amplitude?.track(event)
+
+        ResetCounters()
+
+        // показываем стандартный контрол запроса рейтинга
+        val appPackageName = "com.stukalov.staffairlines.pro"
+        try
+        {
+            GlobalStuff.mActivity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)))
+        }
+        catch (ex: ActivityNotFoundException)
+        {
+            GlobalStuff.mActivity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)))
+        }
+    }
+
+    fun ResetCounters()
+    {
+        // сбрасываем сбрасываемые счетчики
+        GlobalStuff.appSessionsCount = 0
+        GlobalStuff.firstOpenDate = LocalDateTime.now()
+        SaveAppSessionCount("appSessionsCount")
+        SaveFirstOpenDate(LocalDateTime.now())
+    }
+
+    // Функция проверки критериев, должны ли мы показывать попап запроса рейтинга
+    fun ShouldAskForRating(): Boolean
+    {
+        val firstLaunchDate = GlobalStuff.firstOpenDate
+        var daysFrom = Period.between(firstLaunchDate?.toLocalDate(), LocalDate.now()).days
+
+        var appSesCnt = GlobalStuff.appSessionsCount
+        var ratEventsCnt = GlobalStuff.ratingEventsCount
+        // попап показываем, если:
+        // - количество сессий с момента последнего сброса счетчика больше или равно 30
+        // - И количество целевых действий больше или равно 30
+        // - И с момента последнего сброса счетчика firstLaunchDate прошло более 7 суток
+        val result = appSesCnt >= 30 //10
+            && ratEventsCnt >= 30   //10
+            && daysFrom >= 7.0
+        return true//result
+    }
+
+    // Метод вызывается на форме детализации рейса через 5 секунд после открытия, если не произошло ни одно из событий:
+    // - пользователь кликнул на ссылку FlyZED
+    // - пользователь кликнул на кнопку подписки на рейс
+    // - пользователь кликнул на кнопку Back
+    // - закрылась форма детализации рейса
+    fun AskForRatingIfNeeded(): Boolean
+    {
+        if (ShouldAskForRating())
+        {
+            val sel = (0..1).random()
+            if (sel == 0) {
+                AskForRating()
+            } else {
+                Survicate.invokeEvent("waitOnFlightDetailsScreen")
+                ResetCounters()
+            }
+        }
+        return false
     }
 }

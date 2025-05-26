@@ -22,7 +22,7 @@ android {
         applicationId "com.stukalov.staffairlines.pro"
         minSdk 26
         targetSdk 34
-        versionCode 47
+        versionCode 48
         versionName "2.0.1"
         ndk {
             abiFilters "armeabi-v7a", "x86_64", "arm64-v8a", "x86"
@@ -122,4 +122,5 @@ dependencies {
     implementation 'com.amplitude:analytics-android:1.20.3'
     implementation 'com.appsflyer:af-android-sdk:6.12.1'
     implementation 'com.onesignal:OneSignal:[5.0.0, 5.1.99]'
+    implementation("com.survicate:survicate-sdk:6.3.0")
 }
