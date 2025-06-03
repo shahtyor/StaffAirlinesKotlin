@@ -93,7 +93,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        Adapty.logLevel = AdaptyLogLevel.VERBOSE
+        //Adapty.logLevel = AdaptyLogLevel.VERBOSE
 
         val cd = ColorDrawable(Color.parseColor("#3b3b3b"))
 
@@ -110,7 +110,7 @@ class MainActivity : AppCompatActivity() {
             GlobalStuff.prefs = getSharedPreferences("settings", Context.MODE_PRIVATE)
         }*/
 
-        SM.GetCustomerID()
+        //SM.GetCustomerID()
 
         val amplitude = Amplitude(
             Configuration(
@@ -132,7 +132,7 @@ class MainActivity : AppCompatActivity() {
         }
         Survicate.setUserTrait(UserTrait("testORprod", GlobalStuff.TypeUserForSurvicate))
 
-        Adapty.activate(
+        /*Adapty.activate(
             applicationContext,
             AdaptyConfig.Builder("public_live_acbEIggW.S6BV02NUN0hqnxiqZLGS")
                 .withObserverMode(true) //default false
@@ -140,7 +140,7 @@ class MainActivity : AppCompatActivity() {
                 .withIpAddressCollectionDisabled(false) //default false
                 .withAdIdCollectionDisabled(false) // default false
                 .build()
-        )
+        )*/
 
         if (GlobalStuff.customerID != null)
         {
@@ -160,6 +160,8 @@ class MainActivity : AppCompatActivity() {
             GlobalStuff.AdaptyProfileID = profile.profileId
             val OldPremiumAccess = GlobalStuff.premiumAccess
             val premium = profile.accessLevels["premium"]
+
+            Log.d("setOnProfileUpdatedListener", "premium=" + premium?.isActive.toString())
 
             if (premium?.isActive == true)
             {
@@ -276,6 +278,7 @@ class MainActivity : AppCompatActivity() {
 
         if (GlobalStuff.NotiData != null)
         {
+            GlobalStuff.FirstHomeOpen = false
             OpenNotificationFlight(GlobalStuff.NotiData!!)
         }
         else
@@ -290,67 +293,37 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun AdaptyGetProfile(initCF: Boolean = false)
-    {
-        Adapty.getProfile { result ->
-            when (result) {
-                is AdaptyResult.Success -> {
-                    Log.d("AdaptyGetProfile", "Success")
-                    val profile = result.value
-                    GlobalStuff.AdaptyProfileID = profile.profileId
-                    val premium = profile.accessLevels["premium"]
+    fun AdaptyGetProfile(initCF: Boolean = false) {
+        val profile = GlobalStuff.aProfile!!
+        BuildProfileToken(profile.customAttributes, GlobalStuff.premiumAccess)
 
-                    if (premium?.isActive == true)
-                    {
-                        GlobalStuff.premiumAccess = true
-                        GlobalStuff.subscriptionId = premium.vendorProductId
-                        OneSignal.User.addTag("active_subscription", "true")
-                    }
-                    else
-                    {
-                        GlobalStuff.premiumAccess = false
-                        GlobalStuff.subscriptionId = null
-                        OneSignal.User.addTag("active_subscription", "false")
+        if (!GlobalStuff.Token.isNullOrEmpty()) {
+            lifecycleScope.launch {
+                val rem = withContext(Dispatchers.IO) { SM.RemainSubscribe(GlobalStuff.Token!!) }
+
+                if (rem != null) {
+                    GlobalStuff.Remain = rem.count
+
+                    if (GlobalStuff.HF != null) {
+                        GlobalStuff.HF?.SetPlan()
                     }
 
-                    BuildProfileToken(profile.customAttributes, premium)
-
-                    if (!GlobalStuff.Token.isNullOrEmpty()) {
-                        lifecycleScope.launch {
-                            val rem = withContext(Dispatchers.IO) { SM.RemainSubscribe(GlobalStuff.Token!!) }
-
-                            if (rem != null) {
-                                GlobalStuff.Remain = rem.count
-
-                                if (GlobalStuff.HF != null) {
-                                    GlobalStuff.HF?.SetPlan()
-                                }
-
-                                if (initCF)
-                                {
-                                    if (GlobalStuff.CF != null) {
-                                        GlobalStuff.CF?.Init(GlobalStuff.CF?.requireContext()!!)
-                                    }
-                                    GlobalStuff.navController.navigateUp()
-                                }
-                            }
+                    if (initCF) {
+                        if (GlobalStuff.CF != null) {
+                            GlobalStuff.CF?.Init(GlobalStuff.CF?.requireContext()!!)
                         }
-                    }
-                    else {
-                        if (GlobalStuff.HF != null) {
-                            GlobalStuff.HF!!.SetPlan()
-                        }
+                        GlobalStuff.navController.navigateUp()
                     }
                 }
-                is AdaptyResult.Error -> {
-                    val error = result.error
-                    // handle the error
-                }
+            }
+        } else {
+            if (GlobalStuff.HF != null) {
+                GlobalStuff.HF!!.SetPlan()
             }
         }
     }
 
-    fun BuildProfileToken(im: ImmutableMap<String, Any>, premium: AdaptyProfile.AccessLevel?)
+    fun BuildProfileToken(im: ImmutableMap<String, Any>, premium: Boolean)
     {
         try
         {
@@ -372,7 +345,7 @@ class MainActivity : AppCompatActivity() {
                     val dnon = so3.toFloatOrNull()
                     isub = dsub!!.toInt()
                     inon = dnon!!.toInt()
-                    if (premium != null && premium.isActive)
+                    if (premium)
                     {
                         prem = true;
                     }
@@ -382,6 +355,7 @@ class MainActivity : AppCompatActivity() {
                     Log.d("BuildProfileToken", e.message + "..." + e.stackTrace)
                 }
                 GlobalStuff.customerProfile = ProfileTokens(isub, inon, prem, "", "", so1)
+                Log.d("BuildProfileToken", isub.toString() + "-" + inon.toString() + "-" + prem.toString() + "-" + so1)
             }
         }
         catch (ex: Exception)
@@ -410,6 +384,7 @@ class MainActivity : AppCompatActivity() {
 
             if (extras != null) {
                 Log.d("ExtrasProcess", "extras != null")
+                GlobalStuff.FirstHomeOpen = false
 
                 extras.keySet().forEach { key ->
                     if (key != null) {

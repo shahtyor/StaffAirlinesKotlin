@@ -22,7 +22,7 @@ android {
         applicationId "com.stukalov.staffairlines.pro"
         minSdk 26
         targetSdk 34
-        versionCode 48
+        versionCode 49
         versionName "2.0.1"
         ndk {
             abiFilters "armeabi-v7a", "x86_64", "arm64-v8a", "x86"
@@ -93,7 +93,7 @@ dependencies {
     implementation 'androidx.activity:activity:1.8.0'
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
 
-    implementation platform('io.adapty:adapty-bom:3.3.0')
+    implementation platform('io.adapty:adapty-bom:3.8.0')
     implementation 'io.adapty:android-sdk'
     implementation 'io.adapty:android-ui'
 

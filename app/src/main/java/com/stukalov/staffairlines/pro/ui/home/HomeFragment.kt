@@ -35,6 +35,7 @@ import com.stukalov.staffairlines.pro.ui.paywall.AdaptyController
 import com.survicate.surveys.Survicate
 import com.survicate.surveys.traits.UserTrait
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
@@ -341,6 +342,8 @@ class HomeFragment : Fragment() {
 
         GlobalStuff.setActionBar(false, true, "")
 
+        Log.d("Home.onResume", GlobalStuff.GetProfileCompleted.toString())
+
         OneSignal.InAppMessages.addTrigger("os_open_screen", "formSearch")
 
         /*if (GlobalStuff.FirstSearchForm)
@@ -394,6 +397,14 @@ class HomeFragment : Fragment() {
                 GlobalStuff.FirstLaunch = false
                 GlobalStuff.SaveOneSignalToAdapty()
                 GlobalStuff.HomeFromSelect = false
+            }
+
+            if (GlobalStuff.FirstHomeOpen)
+            {
+                GlobalStuff.FirstHomeOpen = false
+                if (!GlobalStuff.premiumAccess) {
+                    AdControl.GetPaywallViewParams("onOpenTest")
+                }
             }
 
             /*OneSignal.InAppMessages.addTrigger("os_ownAC", GlobalStuff.OwnAC!!.Code)
@@ -569,6 +580,7 @@ class HomeFragment : Fragment() {
         GlobalStuff.PointOfShow = "Try premium"
 
         AdControl.GetPaywallViewParams("test_main_action2")
+        //AdControl.GetPaywallViewParams("onOpen")
     }
 
     fun invite_click(view: View) {

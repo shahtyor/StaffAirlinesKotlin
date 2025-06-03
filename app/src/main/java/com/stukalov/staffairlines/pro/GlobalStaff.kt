@@ -14,6 +14,7 @@ import androidx.navigation.NavController
 import com.adapty.Adapty
 import com.adapty.errors.AdaptyError
 import com.adapty.models.AdaptyPaywallProduct
+import com.adapty.models.AdaptyProfile
 import com.adapty.models.AdaptyProfileParameters
 import com.adapty.ui.AdaptyUI
 import com.amplitude.android.Amplitude
@@ -46,10 +47,12 @@ import java.time.format.DateTimeFormatter
         var CF: CredentialsFragment? = null
         var Token: String? = null
         var FirstLaunch: Boolean = true
+        var FirstHomeOpen: Boolean = true
         var HomeFromSelect: Boolean = false
         var Remain: Int = 5
         var CarouselShowed = false
         var UsePermitted = true
+        var GetProfileCompleted = false
 
         var featureUsedFilterPreset: Int = 0
         var featureUsedSchedule : Int = 0
@@ -89,6 +92,7 @@ import java.time.format.DateTimeFormatter
         var AdaptyPurchaseProcess: Boolean = false
         var ExitPurchase: Boolean = false
 
+        var aProfile: AdaptyProfile? = null
         var AdaptyProfileID: String? = null
         var AdaptyPaywallID: String? = null
         var AdaptyPaywallRev: Int? = null
@@ -121,14 +125,14 @@ import java.time.format.DateTimeFormatter
                 this.actionBar = actionBar
             }
 
+            if (actionBar?.isShowing != true)
+            {
+                actionBar?.show()
+            }
+
             actionBar?.setDisplayHomeAsUpEnabled(upEnable)
             actionBar?.title = title
             if (visibility) {
-                if (actionBar?.isShowing != true)
-                {
-                    actionBar?.show()
-                }
-
                 actionBar?.setBackgroundDrawable(colorgray)
                 actionBar?.elevation = 2f
             }

@@ -10,6 +10,11 @@ import android.view.WindowManager
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.adapty.Adapty
+import com.adapty.models.AdaptyConfig
+import com.adapty.utils.AdaptyLogLevel
+import com.adapty.utils.AdaptyResult
+import com.onesignal.OneSignal
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -31,10 +36,26 @@ class SplashActivity : AppCompatActivity() {
         GlobalStuff.prefs = getSharedPreferences("settings", Context.MODE_PRIVATE)
         GlobalStuff.DeviceID = SM.GetGUID()
 
+        Adapty.logLevel = AdaptyLogLevel.VERBOSE
+
         window.setFlags(
             WindowManager.LayoutParams.FLAG_FULLSCREEN,
             WindowManager.LayoutParams.FLAG_FULLSCREEN
         )
+
+        SM.GetCustomerID()
+
+        Adapty.activate(
+            applicationContext,
+            AdaptyConfig.Builder("public_live_acbEIggW.S6BV02NUN0hqnxiqZLGS")
+                .withObserverMode(true) //default false
+                .withCustomerUserId(GlobalStuff.customerID) //default null
+                .withIpAddressCollectionDisabled(false) //default false
+                .withAdIdCollectionDisabled(false) // default false
+                .build()
+        )
+
+        AdaptyGetProfile()
 
         ExtrasProcess(intent.extras)
 
@@ -75,6 +96,40 @@ class SplashActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         }, 3000)*/
+    }
+
+    fun AdaptyGetProfile(initCF: Boolean = false)
+    {
+        Log.d("AdaptyGetProfile", "Start")
+        Adapty.getProfile { result ->
+            when (result) {
+                is AdaptyResult.Success -> {
+                    Log.d("AdaptyGetProfile", "Success")
+                    val profile = result.value
+                    GlobalStuff.aProfile = profile
+                    GlobalStuff.AdaptyProfileID = profile.profileId
+                    val premium = profile.accessLevels["premium"]
+
+                    if (premium?.isActive == true)
+                    {
+                        GlobalStuff.premiumAccess = true
+                        GlobalStuff.subscriptionId = premium.vendorProductId
+                        OneSignal.User.addTag("active_subscription", "true")
+                    }
+                    else
+                    {
+                        GlobalStuff.premiumAccess = false
+                        GlobalStuff.subscriptionId = null
+                        OneSignal.User.addTag("active_subscription", "false")
+                    }
+                    GlobalStuff.GetProfileCompleted = true
+                }
+                is AdaptyResult.Error -> {
+                    val error = result.error
+                    Log.d("AdaptyGetProfile", error.message!!)
+                }
+            }
+        }
     }
 
     private fun ExtrasProcess(extras: Bundle?) {

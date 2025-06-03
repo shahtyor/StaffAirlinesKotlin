@@ -17,8 +17,15 @@ class AdaptyController {
             when (result) {
                 is AdaptyResult.Success -> {
                     val paywall = result.value
-                    GlobalStuff.AdaptyPaywallID = paywall.placementId
-                    GlobalStuff.AdaptyPaywallRev = paywall.revision
+
+                    val paramPaywallConfigDisable = paywall.remoteConfig?.dataMap?.get("statusPaywall")
+                    if (paramPaywallConfigDisable == "disable")
+                    {
+                        return@getPaywall
+                    }
+
+                    GlobalStuff.AdaptyPaywallID = paywall.placement.id
+                    GlobalStuff.AdaptyPaywallRev = paywall.placement.revision
 
                     Adapty.getPaywallProducts(paywall) { resprod ->
                         when (resprod) {
