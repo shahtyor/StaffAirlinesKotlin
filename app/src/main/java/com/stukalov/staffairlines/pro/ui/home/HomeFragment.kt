@@ -20,8 +20,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.adapty.Adapty
-import com.adapty.utils.AdaptyResult
 import com.onesignal.OneSignal
 import com.stukalov.staffairlines.pro.GetNonDirectType
 import com.stukalov.staffairlines.pro.GlobalStuff
@@ -31,11 +29,11 @@ import com.stukalov.staffairlines.pro.R
 import com.stukalov.staffairlines.pro.ResultType
 import com.stukalov.staffairlines.pro.StaffMethods
 import com.stukalov.staffairlines.pro.databinding.FragmentHomeBinding
+import com.stukalov.staffairlines.pro.ui.onboard.OnboardController
 import com.stukalov.staffairlines.pro.ui.paywall.AdaptyController
 import com.survicate.surveys.Survicate
 import com.survicate.surveys.traits.UserTrait
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
@@ -76,6 +74,7 @@ class HomeFragment : Fragment() {
     lateinit var tvHomeSearchCurrent: TextView
     val SM: StaffMethods = StaffMethods()
     val AdControl: AdaptyController = AdaptyController()
+    val OnboardControl: OnboardController = OnboardController()
     val SCREEN_NAME = "formSearch"
 
     override fun onCreateView(
@@ -387,10 +386,14 @@ class HomeFragment : Fragment() {
                 GlobalStuff.amplitude?.track(event)
 
                 GlobalStuff.CarouselShowed = true
-                GlobalStuff.navController.navigate(R.id.carousel_frag, Bundle())
+
+
+                OnboardControl.GetOnboardViewParams("onOpenOnboarding")
             } else {
                 GlobalStuff.actionBar?.show()
-                GlobalStuff.navController.navigate(R.id.sel_ac_frag, Bundle())
+                val bundle = Bundle()
+                bundle.putString("SelACMode", "home")
+                GlobalStuff.navController.navigate(R.id.sel_ac_frag, bundle)
             }
         } else {
             if (!GlobalStuff.HomeFromSelect) {
@@ -401,9 +404,13 @@ class HomeFragment : Fragment() {
 
             if (GlobalStuff.FirstHomeOpen)
             {
-                GlobalStuff.FirstHomeOpen = false
                 if (!GlobalStuff.premiumAccess) {
-                    AdControl.GetPaywallViewParams("onOpenTest")
+                    if (GlobalStuff.CarouselShowed) {
+                        AdControl.GetPaywallViewParams("afterOnboarding")
+                    }
+                    else {
+                        AdControl.GetPaywallViewParams("onOpen")
+                    }
                 }
             }
 
@@ -579,7 +586,7 @@ class HomeFragment : Fragment() {
         SetDisable(false)
         GlobalStuff.PointOfShow = "Try premium"
 
-        AdControl.GetPaywallViewParams("test_main_action2")
+        AdControl.GetPaywallViewParams("main_try_premium_a_ver")
         //AdControl.GetPaywallViewParams("onOpen")
     }
 
@@ -608,7 +615,7 @@ class HomeFragment : Fragment() {
                 SetDisable(false)
                 GlobalStuff.PointOfShow = "Next day search option"
 
-                AdControl.GetPaywallViewParams("test_main_action2")
+                AdControl.GetPaywallViewParams("next_day_a_ver")
             }
             else {
                 spin_layout.isVisible = true

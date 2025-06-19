@@ -72,6 +72,7 @@ class HistoryFragment : Fragment() {
         GlobalStuff.amplitude?.track(event)
 
         GlobalStuff.setActionBar(true, false, "History")
+        GlobalStuff.FirstHomeOpen = false
     }
 
     override fun onDestroyView() {

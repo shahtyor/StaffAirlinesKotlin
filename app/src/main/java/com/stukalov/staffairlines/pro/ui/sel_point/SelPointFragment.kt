@@ -137,6 +137,7 @@ class SelPointFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
+        GlobalStuff.FirstHomeOpen = false
         GlobalStuff.setActionBar(true, true, "Flights")
     }
 

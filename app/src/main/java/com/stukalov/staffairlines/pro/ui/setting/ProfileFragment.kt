@@ -11,6 +11,7 @@ import com.google.android.material.tabs.TabLayout
 import com.stukalov.staffairlines.pro.FragmentAdapter
 import com.stukalov.staffairlines.pro.GlobalStuff
 import com.stukalov.staffairlines.pro.R
+import com.stukalov.staffairlines.pro.StaffMethods
 import com.stukalov.staffairlines.pro.databinding.FragmentProfilesetBinding
 
 const val ARG_OBJECT = "object"

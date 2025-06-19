@@ -193,6 +193,7 @@ class SelACFragment : Fragment() {
 
         if (strmode == "home")
         {
+            GlobalStuff.FirstHomeOpen = true
             GlobalStuff.navController.navigate(R.id.main_frag, Bundle())
         }
         else

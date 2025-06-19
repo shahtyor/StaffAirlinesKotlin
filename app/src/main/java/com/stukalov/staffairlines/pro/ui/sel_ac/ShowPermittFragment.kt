@@ -44,7 +44,7 @@ class ShowPermittFragment : Fragment() {
 
     fun GetData(text: String): MutableList<PermittedAC> {
 
-        val tmpLoc = GlobalStuff.Permitted
+        val tmpLoc = GlobalStuff.Permitted.sortedBy { it.Permit }
         var tmp = tmpLoc.toMutableList()
 
         return tmp

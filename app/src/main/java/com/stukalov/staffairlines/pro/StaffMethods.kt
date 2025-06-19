@@ -4,12 +4,19 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
+import androidx.lifecycle.lifecycleScope
+import com.adapty.Adapty
 import com.adapty.errors.AdaptyError
 import com.adapty.models.AdaptyPaywallProduct
+import com.adapty.utils.AdaptyResult
+import com.adapty.utils.ImmutableMap
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.onesignal.OneSignal
 import com.survicate.surveys.Survicate
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.ConnectionSpec
 import okhttp3.Credentials
 import okhttp3.OkHttpClient
@@ -1064,7 +1071,7 @@ class StaffMethods {
         val result = appSesCnt >= 30 //10
             && ratEventsCnt >= 30   //10
             && daysFrom >= 7.0
-        return true//result
+        return result
     }
 
     // Метод вызывается на форме детализации рейса через 5 секунд после открытия, если не произошло ни одно из событий:
@@ -1085,5 +1092,86 @@ class StaffMethods {
             }
         }
         return false
+    }
+
+    fun AdaptyGetProfile()
+    {
+        Log.d("AdaptyGetProfile", "Start")
+
+        // отправляем событие «getProfile» в амплитуд
+        val event = GlobalStuff.GetBaseEvent("getProfile", false, true)
+        GlobalStuff.amplitude?.track(event)
+
+        Adapty.getProfile { result ->
+            when (result) {
+                is AdaptyResult.Success -> {
+                    Log.d("AdaptyGetProfile", "Success")
+                    val profile = result.value
+                    GlobalStuff.aProfile = profile
+                    GlobalStuff.AdaptyProfileID = profile.profileId
+                    val premium = profile.accessLevels["premium"]
+
+                    if (premium != null) {
+                        BuildProfileToken(profile.customAttributes, premium.isActive)
+
+                        if (premium.isActive) {
+                            GlobalStuff.premiumAccess = true
+                            GlobalStuff.subscriptionId = premium.vendorProductId
+                            OneSignal.User.addTag("active_subscription", "true")
+                        } else {
+                            GlobalStuff.premiumAccess = false
+                            GlobalStuff.subscriptionId = null
+                            OneSignal.User.addTag("active_subscription", "false")
+                        }
+                    }
+                    GlobalStuff.GetProfileCompleted = true
+                }
+                is AdaptyResult.Error -> {
+                    val error = result.error
+                    Log.d("AdaptyGetProfile", error.message!!)
+                }
+            }
+        }
+    }
+
+    fun BuildProfileToken(im: ImmutableMap<String, Any>, premium: Boolean)
+    {
+        try
+        {
+            val o1 = im.get("own_ac")
+            val o2 = im.get("subscribe_tokens")
+            val o3 = im.get("nonsubscribe_tokens")
+
+            if (o1 != null && o2 != null && o3 != null)
+            {
+                val so1 = o1.toString()
+                val so2 = o2.toString()
+                val so3 = o3.toString()
+                var isub: Int = 0
+                var inon: Int = 0
+                var prem: Boolean = false
+                try
+                {
+                    val dsub = so2.toFloatOrNull()
+                    val dnon = so3.toFloatOrNull()
+                    isub = dsub!!.toInt()
+                    inon = dnon!!.toInt()
+                    if (premium)
+                    {
+                        prem = true;
+                    }
+                }
+                catch (e: Exception)
+                {
+                    Log.d("BuildProfileToken", e.message + "..." + e.stackTrace)
+                }
+                GlobalStuff.customerProfile = ProfileTokens(isub, inon, prem, "", "", so1)
+                Log.d("BuildProfileToken", isub.toString() + "-" + inon.toString() + "-" + prem.toString() + "-" + so1)
+            }
+        }
+        catch (ex: Exception)
+        {
+            Log.d("BuildProfileToken", ex.message + "..." + ex.stackTrace)
+        }
     }
 }

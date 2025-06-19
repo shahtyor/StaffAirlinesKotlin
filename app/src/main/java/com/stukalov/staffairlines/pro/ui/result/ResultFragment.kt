@@ -370,7 +370,7 @@ class ResultFragment : Fragment() {
                     spin_layout.isVisible = true
                     GlobalStuff.PointOfShow = "Transfer option"
 
-                    AdControl.GetPaywallViewParams("test_main_action2")
+                    AdControl.GetPaywallViewParams("transfer_a_ver")
                 } else {
                     GlobalStuff.navController.navigate(R.id.transferlayout, Bundle())
                 }
@@ -396,7 +396,7 @@ class ResultFragment : Fragment() {
                 spin_layout.isVisible = true
                 GlobalStuff.PointOfShow = "Transfer option"
 
-                AdControl.GetPaywallViewParams("test_main_action2")
+                AdControl.GetPaywallViewParams("transfer_a_ver")
             } else {
                 GlobalStuff.navController.navigate(R.id.transferlayout, Bundle())
             }
@@ -509,6 +509,7 @@ class ResultFragment : Fragment() {
         if (GlobalStuff.ResType == ResultType.Direct) {
             OneSignal.InAppMessages.addTrigger("os_open_screen", "resultSearch")
         }
+        GlobalStuff.FirstHomeOpen = false
     }
 
     fun InitFirstSegment(view: View) {

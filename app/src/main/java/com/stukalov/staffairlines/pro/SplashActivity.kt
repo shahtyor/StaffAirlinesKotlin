@@ -44,6 +44,8 @@ class SplashActivity : AppCompatActivity() {
         )
 
         SM.GetCustomerID()
+        SM.GetUsePermitted()
+        SM.GetFeatureData()
 
         Adapty.activate(
             applicationContext,
@@ -88,9 +90,6 @@ class SplashActivity : AppCompatActivity() {
             }
         }
 
-        SM.GetUsePermitted()
-        SM.GetFeatureData()
-
         /*Handler(Looper.getMainLooper()).postDelayed({
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
@@ -98,9 +97,14 @@ class SplashActivity : AppCompatActivity() {
         }, 3000)*/
     }
 
-    fun AdaptyGetProfile(initCF: Boolean = false)
+    fun AdaptyGetProfile()
     {
         Log.d("AdaptyGetProfile", "Start")
+
+        // отправляем событие «getProfile» в амплитуд
+        val event = GlobalStuff.GetBaseEvent("getProfile", false, true)
+        GlobalStuff.amplitude?.track(event)
+
         Adapty.getProfile { result ->
             when (result) {
                 is AdaptyResult.Success -> {

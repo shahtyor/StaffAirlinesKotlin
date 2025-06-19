@@ -137,7 +137,7 @@ class FavouritesFragment : Fragment() {
         super.onResume()
         GlobalStuff.setActionBar(true, false, "Favourites")
 
-        
+        GlobalStuff.FirstHomeOpen = false
     }
 
     override fun onDestroyView() {

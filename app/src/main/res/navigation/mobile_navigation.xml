@@ -87,6 +87,13 @@
                 />
 
             <fragment
+                android:id="@+id/onboard_frag"
+                android:name="com.stukalov.staffairlines.pro.ui.onboard.OnboardUiFragment"
+                android:label=""
+                tools:layout="@layout/fragment_onboard_ui"
+                />
+
+            <fragment
                 android:id="@+id/login_frag"
                 android:name="com.stukalov.staffairlines.pro.ui.setting.LoginFragment"
                 android:label="SignIn"

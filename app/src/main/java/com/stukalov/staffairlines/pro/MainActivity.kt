@@ -14,6 +14,7 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
@@ -22,6 +23,14 @@ import com.adapty.Adapty
 import com.adapty.models.AdaptyConfig
 import com.adapty.models.AdaptyProfile
 import com.adapty.models.AdaptyProfileParameters
+import com.adapty.ui.AdaptyUI
+import com.adapty.ui.onboardings.actions.AdaptyOnboardingCloseAction
+import com.adapty.ui.onboardings.actions.AdaptyOnboardingCustomAction
+import com.adapty.ui.onboardings.actions.AdaptyOnboardingOpenPaywallAction
+import com.adapty.ui.onboardings.actions.AdaptyOnboardingStateUpdatedAction
+import com.adapty.ui.onboardings.errors.AdaptyOnboardingError
+import com.adapty.ui.onboardings.events.AdaptyOnboardingAnalyticsEvent
+import com.adapty.ui.onboardings.listeners.AdaptyOnboardingEventListener
 import com.adapty.utils.AdaptyLogLevel
 import com.adapty.utils.AdaptyResult
 import com.adapty.utils.ImmutableMap
@@ -106,12 +115,6 @@ class MainActivity : AppCompatActivity() {
 
         GlobalStuff.Pax = 1
 
-        /*if (GlobalStuff.prefs == null) {
-            GlobalStuff.prefs = getSharedPreferences("settings", Context.MODE_PRIVATE)
-        }*/
-
-        //SM.GetCustomerID()
-
         val amplitude = Amplitude(
             Configuration(
                 apiKey = getString(R.string.amplitude_api_key),
@@ -120,6 +123,25 @@ class MainActivity : AppCompatActivity() {
                 flushQueueSize = 5,
             )
         )
+
+        var amplitudeDeviceId = amplitude.store.deviceId
+        if (amplitudeDeviceId.isNullOrEmpty())
+        {
+            amplitudeDeviceId = amplitude.getDeviceId()
+        }
+
+        if (!amplitudeDeviceId.isNullOrEmpty()) {
+            GlobalStuff.AdaptyAmplitudeDeviceId = amplitudeDeviceId
+            Adapty.setIntegrationIdentifier("amplitude_device_id", amplitude.store.deviceId!!) { error ->
+                if (error != null)
+                {
+                    Log.d("Adapty.setIntegrationIdentifier", error.adaptyErrorCode.name + "..." + error.message + "..." + error.originalError?.message)
+                }
+            }
+        }
+        else {
+            Log.d("Adapty.setIntegrationIdentifier", "amplitudeDeviceId=NULL")
+        }
 
         AppsFlyerLib.getInstance().init(getString(R.string.appsFlyerDevKey), ConversionLietener(), this)
         AppsFlyerLib.getInstance().waitForCustomerUserId(true)
@@ -294,8 +316,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun AdaptyGetProfile(initCF: Boolean = false) {
-        val profile = GlobalStuff.aProfile!!
-        BuildProfileToken(profile.customAttributes, GlobalStuff.premiumAccess)
+        if (GlobalStuff.aProfile != null) {
+            val profile = GlobalStuff.aProfile!!
+            SM.BuildProfileToken(profile.customAttributes, GlobalStuff.premiumAccess)
+        }
 
         if (!GlobalStuff.Token.isNullOrEmpty()) {
             lifecycleScope.launch {
@@ -320,47 +344,6 @@ class MainActivity : AppCompatActivity() {
             if (GlobalStuff.HF != null) {
                 GlobalStuff.HF!!.SetPlan()
             }
-        }
-    }
-
-    fun BuildProfileToken(im: ImmutableMap<String, Any>, premium: Boolean)
-    {
-        try
-        {
-            val o1 = im.get("own_ac")
-            val o2 = im.get("subscribe_tokens")
-            val o3 = im.get("nonsubscribe_tokens")
-
-            if (o1 != null && o2 != null && o3 != null)
-            {
-                val so1 = o1.toString()
-                val so2 = o2.toString()
-                val so3 = o3.toString()
-                var isub: Int = 0
-                var inon: Int = 0
-                var prem: Boolean = false
-                try
-                {
-                    val dsub = so2.toFloatOrNull()
-                    val dnon = so3.toFloatOrNull()
-                    isub = dsub!!.toInt()
-                    inon = dnon!!.toInt()
-                    if (premium)
-                    {
-                        prem = true;
-                    }
-                }
-                catch (e: Exception)
-                {
-                    Log.d("BuildProfileToken", e.message + "..." + e.stackTrace)
-                }
-                GlobalStuff.customerProfile = ProfileTokens(isub, inon, prem, "", "", so1)
-                Log.d("BuildProfileToken", isub.toString() + "-" + inon.toString() + "-" + prem.toString() + "-" + so1)
-            }
-        }
-        catch (ex: Exception)
-        {
-            Log.d("BuildProfileToken", ex.message + "..." + ex.stackTrace)
         }
     }
 
@@ -499,6 +482,71 @@ class MainActivity : AppCompatActivity() {
         val md = MessageDigest.getInstance("MD5")
         return BigInteger(1, md.digest(input.toByteArray())).toString(16).padStart(32, '0')
     }
+
+    /*private fun checkAndRequestMissingPermissions(context: Context) {
+        // check required permissions - request those which have not already been granted
+        val missingPermissionsToBeRequested = ArrayList<String>()
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission) != PackageManager.PERMISSION_GRANTED)
+            missingPermissionsToBeRequested.add(Manifest.permission.BLUETOOTH)
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED)
+            missingPermissionsToBeRequested.add(Manifest.permission.BLUETOOTH_ADMIN)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            // For Android 12 and above require both BLUETOOTH_CONNECT and BLUETOOTH_SCAN
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED)
+                missingPermissionsToBeRequested.add(Manifest.permission.BLUETOOTH_CONNECT)
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED)
+                missingPermissionsToBeRequested.add(Manifest.permission.BLUETOOTH_SCAN)
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // FINE_LOCATION is needed for Android 10 and above
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+                missingPermissionsToBeRequested.add(Manifest.permission.ACCESS_FINE_LOCATION)
+        } else {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+                missingPermissionsToBeRequested.add(Manifest.permission.ACCESS_COARSE_LOCATION)
+        }
+
+        if (missingPermissionsToBeRequested.isNotEmpty()) {
+            writeToLog("Missing the following permissions: $missingPermissionsToBeRequested")
+            ActivityCompat.requestPermissions(this, missingPermissionsToBeRequested.toArray(arrayOfNulls<String>(0)), REQUEST_MULTIPLE_PERMISSIONS)
+        } else {
+            writeToLog("All required permissions GRANTED !")
+        }
+    }*/
+
+    /*fun myOnBoardingShow()
+    {
+        Adapty.getOnboarding("onOpenOnboarding") { result ->
+            when (result) {
+                is AdaptyResult.Success -> {
+                    val onboarding = result.value
+
+                    val paramOnboardingConfigDisable = onboarding.remoteConfig?.dataMap?.get("statusOnboarding")
+
+                    if (paramOnboardingConfigDisable == "disable")
+                    {
+                        val configuration =  AdaptyUI.getOnboardingConfiguration(onboarding)
+
+                        val view = AdaptyUI.getOnboardingView(this, configuration, eventListener)
+                        view.show(configuration, this.eventListener)
+                    }
+                    else
+                    {
+                        val configuration =  AdaptyUI.getOnboardingConfiguration(onboarding)
+
+                        AdaptyUI.getOnboardingView(this, configuration, eventListener)
+                    }
+                }
+                is AdaptyResult.Error -> {
+                    val error = result.error
+                    // handle the error
+                }
+            }
+        }
+    }*/
 
     private fun googleFirebaseAuth(acct: GoogleSignInAccount) {
         val credential = GoogleAuthProvider.getCredential(acct.idToken, null)

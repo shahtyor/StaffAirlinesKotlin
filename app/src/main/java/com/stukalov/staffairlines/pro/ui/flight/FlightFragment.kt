@@ -35,7 +35,6 @@ import com.stukalov.staffairlines.pro.R
 import com.stukalov.staffairlines.pro.RType
 import com.stukalov.staffairlines.pro.ResultType
 import com.stukalov.staffairlines.pro.StaffMethods
-import com.stukalov.staffairlines.pro.StoppableTimer
 import com.stukalov.staffairlines.pro.ui.paywall.AdaptyController
 import com.survicate.surveys.Survicate
 import kotlinx.coroutines.Dispatchers
@@ -108,6 +107,8 @@ class FlightFragment : Fragment() {
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        SM.AdaptyGetProfile()
 
         Survicate.enterScreen(SCREEN_NAME)
 
@@ -545,6 +546,7 @@ class FlightFragment : Fragment() {
         super.onResume()
         GlobalStuff.AskRatingTimer.start()
 
+        GlobalStuff.FirstHomeOpen = false
         SendEventsShowDetails()
     }
 
@@ -581,7 +583,7 @@ class FlightFragment : Fragment() {
             spin_layout.isVisible = true
             GlobalStuff.PointOfShow = "Subscribe option"
 
-            AdControl.GetPaywallViewParams("test_main_action2")
+            AdControl.GetPaywallViewParams("push_a_ver")
         }
         else if (GlobalStuff.Remain == 0)
         {
@@ -650,8 +652,14 @@ class FlightFragment : Fragment() {
     {
         val f = GlobalStuff.OneResult!!
 
-        var custProf = GlobalStuff.customerProfile
-        if (GlobalStuff.premiumAccess && GlobalStuff.customerProfile != null && SumTokens(GlobalStuff.customerProfile!!) >= 1) // есть премиум подписка и хватает токенов
+        var sumTokens = 0
+        val custProf = GlobalStuff.customerProfile
+        if (custProf != null)
+        {
+            sumTokens = SumTokens(custProf)
+        }
+
+        if (GlobalStuff.premiumAccess && sumTokens >= 1) // есть премиум подписка и хватает токенов
         {
             AlertDialog.Builder(view.context)
                 .setTitle("Post Request")
@@ -660,14 +668,24 @@ class FlightFragment : Fragment() {
                 .setNegativeButton("Cancel") { dialog, id -> dialog.cancel() }
                 .show()
         }
-        else // нет премиум подписки
+        else if (!GlobalStuff.premiumAccess && sumTokens == 0)
         {
             // кидаем на пэйвол
             val spin_layout = view.findViewById<FrameLayout>(R.id.spinner_flight)
             spin_layout.isVisible = true
             GlobalStuff.PointOfShow = "Agent option"
 
-            AdControl.GetPaywallViewParams("test_main_action2")        }
+            AdControl.GetPaywallViewParams("agent")
+        }
+        else if (GlobalStuff.premiumAccess && sumTokens == 0)
+        {
+            // кидаем на пэйвол
+            val spin_layout = view.findViewById<FrameLayout>(R.id.spinner_flight)
+            spin_layout.isVisible = true
+            GlobalStuff.PointOfShow = "Agent option"
+
+            AdControl.GetPaywallViewParams("flight_detail")
+        }
     }
 
     fun CreateRequest(view: View)

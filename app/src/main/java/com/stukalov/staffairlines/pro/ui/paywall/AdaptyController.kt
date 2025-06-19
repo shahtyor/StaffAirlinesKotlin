@@ -1,6 +1,7 @@
 package com.stukalov.staffairlines.pro.ui.paywall
 
 import android.os.Bundle
+import android.util.Log
 import com.adapty.Adapty
 import com.adapty.ui.AdaptyUI
 import com.adapty.utils.AdaptyResult
@@ -21,6 +22,8 @@ class AdaptyController {
                     val paramPaywallConfigDisable = paywall.remoteConfig?.dataMap?.get("statusPaywall")
                     if (paramPaywallConfigDisable == "disable")
                     {
+                        Log.d("getPaywall", "statusPaywall=" + paramPaywallConfigDisable.toString())
+                        GlobalStuff.FirstHomeOpen = false
                         return@getPaywall
                     }
 

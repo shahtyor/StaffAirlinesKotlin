@@ -146,6 +146,8 @@ class PaywallUiFragment : Fragment(R.layout.fragment_paywall_ui) {
             "UserID" to if (GlobalStuff.customerID == null) "-" else GlobalStuff.customerID)
         GlobalStuff.amplitude?.track(event)
 
+        GlobalStuff.FirstHomeOpen = false
+
         paywallView.showPaywall(
             viewConfig,
             products,

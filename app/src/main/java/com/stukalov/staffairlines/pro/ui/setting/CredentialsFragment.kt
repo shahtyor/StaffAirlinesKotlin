@@ -68,6 +68,8 @@ class CredentialsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        SM.AdaptyGetProfile()
+
         tvCredLogin = view.findViewById(R.id.tvCredLogin)
         tvCredFirst = view.findViewById(R.id.tvCredFirst)
         tvCredSecond = view.findViewById(R.id.tvCredSecond)
@@ -132,6 +134,7 @@ class CredentialsFragment : Fragment() {
                         GlobalStuff.customerEmail = null
                         GlobalStuff.customerLastName = null
                         GlobalStuff.customerFirstName = null
+                        GlobalStuff.Remain = 0
 
                         val traits = listOf(
                             UserTrait("user_id", ""),

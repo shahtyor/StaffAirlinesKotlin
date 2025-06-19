@@ -17,6 +17,7 @@ import com.adapty.models.AdaptyPaywallProduct
 import com.adapty.models.AdaptyProfile
 import com.adapty.models.AdaptyProfileParameters
 import com.adapty.ui.AdaptyUI
+import com.adapty.ui.onboardings.AdaptyOnboardingConfiguration
 import com.amplitude.android.Amplitude
 import com.amplitude.core.events.BaseEvent
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -89,11 +90,13 @@ import java.time.format.DateTimeFormatter
         var AdaptyProducts: List<AdaptyPaywallProduct> = listOf()
         var AdaptyConfig: AdaptyUI.LocalizedViewConfiguration? = null
         var AdaptyErr: AdaptyError? = null
+        var OnboardConfig: AdaptyOnboardingConfiguration? = null
         var AdaptyPurchaseProcess: Boolean = false
         var ExitPurchase: Boolean = false
 
         var aProfile: AdaptyProfile? = null
         var AdaptyProfileID: String? = null
+        var AdaptyAmplitudeDeviceId: String? = null
         var AdaptyPaywallID: String? = null
         var AdaptyPaywallRev: Int? = null
         var PointOfShow: String? = null
@@ -202,6 +205,24 @@ import java.time.format.DateTimeFormatter
             if (eventUserID && !customerID.isNullOrEmpty())
             {
                 event.eventProperties = mutableMapOf<String, Any?>("UserID" to customerID)
+            }
+
+            if (AdaptyAmplitudeDeviceId.isNullOrEmpty()) {
+                val di = amplitude?.getDeviceId()
+                if (!di.isNullOrEmpty()) {
+                    Adapty.setIntegrationIdentifier("amplitude_device_id", di) { error ->
+                        if (error != null) {
+                            Log.d(
+                                "Adapty.setIntegrationIdentifier",
+                                error.adaptyErrorCode.name + "..." + error.message + "..." + error.originalError?.message
+                            )
+                        }
+                        else
+                        {
+                            AdaptyAmplitudeDeviceId = di
+                        }
+                    }
+                }
             }
 
             return event
